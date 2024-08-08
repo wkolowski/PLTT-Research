@@ -123,4 +123,59 @@ $e ::=$ \\
 
 \end{frame}
 
+\section{Bidirectional STLC}
+
+\newcommand{\fullcheck}[3]{#1 \vdash #2 \mathcolor{blue}{\Leftarrow} #3}
+\renewcommand{\check}[2]{\fullcheck{\Gamma}{#1}{#2}}
+
+\newcommand{\fullinfer}[3]{#1 \vdash #2 \mathcolor{red}{\Rightarrow} #3}
+\newcommand{\infer}[2]{\fullinfer{\Gamma}{#1}{#2}}
+
+\begin{frame}{Bidirectional typing}
+
+\begin{center}
+  $\infrule[Var]{\sidecond{(x : A) \in \Gamma}}{\infer{x}{A}}$
+
+  \vspace{2em}
+
+  $\infrule[Annot]{\check{x}{A}}{\infer{\annot{x}{A}}{A}}$
+
+  \vspace{2em}
+
+  $\infrule[Sub]{\infer{x}{B} \quad \sidecond{A = B}}{\check{x}{A}}$
+\end{center}
+
+\end{frame}
+
+\begin{frame}{Bidirectional typing}
+
+\begin{center}
+
+  $\infrule{\fullcheck{\extend{\Gamma}{x}{A}}{e}{B}}{\check{\fun{x}{e}}{\Fun{A}{B}}}$ \quad
+  $\infrule{\infer{f}{\Fun{A}{B}} \quad \check{a}{A}}{\infer{\app{f}{a}}{B}}$
+
+  \vspace{2em}
+
+  $\infrule{\check{a}{A} \quad \check{b}{B}}{\check{\pair{a}{b}}{\Prod{A}{B}}}$ \quad
+  $\infrule{\infer{e}{\Prod{A}{B}}}{\infer{\outl[e]}{A}}$ \quad
+  $\infrule{\infer{e}{\Prod{A}{B}}}{\infer{\outr[e]}{B}}$
+
+  \vspace{2em}
+
+  $\infrule{\check{e}{A}}{\check{\inl[e]}{\Sum{A}{B}}}$ \quad
+  $\infrule{\check{e}{B}}{\check{\inr[e]}{\Sum{A}{B}}}$
+
+  \vspace{2em}
+
+  $\infrule{\infer{e}{\Sum{A}{B}} \quad \check{f}{\Fun{A}{C}} \quad \check{g}{\Fun{B}{C}}}{\check{\case{e}{f}{g}}{C}}$
+
+  \vspace{2em}
+
+  $\infrule{}{\infer{\unit}{\Unit}}$ \quad
+  $\infrule{\check{e}{\Empty}}{\check{\elimEmpty[e]}{A}}$
+
+\end{center}
+
+\end{frame}
+
 \end{document}

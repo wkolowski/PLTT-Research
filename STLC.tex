@@ -138,11 +138,11 @@ $e ::=$ \\
 
   \vspace{2em}
 
-  $\infrule[Annot]{\check{x}{A}}{\infer{\annot{x}{A}}{A}}$
+  $\infrule[Annot]{\check{e}{A}}{\infer{\annot{e}{A}}{A}}$
 
   \vspace{2em}
 
-  $\infrule[Sub]{\infer{x}{B} \quad \sidecond{A = B}}{\check{x}{A}}$
+  $\infrule[Sub]{\infer{e}{B} \quad \sidecond{A = B}}{\check{e}{A}}$
 \end{center}
 
 \end{frame}
@@ -173,6 +173,98 @@ $e ::=$ \\
 
   $\infrule{}{\infer{\unit}{\Unit}}$ \quad
   $\infrule{\check{e}{\Empty}}{\check{\elimEmpty[e]}{A}}$
+
+\end{center}
+
+\end{frame}
+
+\section{Typing with a hint}
+
+\newcommand{\fullhinting}[4]{#1 \vdash #2 \mathcolor{blue}{\Leftarrow} #3 \mathcolor{red}{\Rightarrow} #4}
+\newcommand{\hinting}[3]{\fullhinting{\Gamma}{#1}{#2}{#3}}
+
+\newcommand{\Hint}{\mathbf{?}}
+
+\newcommand{\combinehints}[2]{#1 \sqcap #2}
+
+\begin{frame}{Grammar}
+
+Hints: \\
+$H ::= \Hint \pipe \Fun{H_1}{H_2} \pipe \Prod{H_1}{H_2} \pipe \Sum{H_1}{H_2} \pipe \Unit \pipe \Empty$
+
+\vspace{2em}
+
+Typing contexts assign types to variables, but annotations in terms are hints, not necessarily types.
+
+\end{frame}
+
+\begin{frame}{Combining hints}
+
+\begin{center}
+  $\combinehints{\Hint}{H} = H$ \\
+  $\combinehints{H}{\Hint} = H$ \\
+  $\combinehints{(\Fun{H_1}{H_2})}{(\Fun{H'_1}{H'_2})} = \Fun{(\combinehints{H_1}{H'_1})}{(\combinehints{H_2}{H'_2})}$ \\
+  $\combinehints{(\Prod{H_1}{H_2})}{(\Prod{H'_1}{H'_2})} = \Prod{(\combinehints{H_1}{H'_1})}{(\combinehints{H_2}{H'_2})}$ \\
+  $\combinehints{(\Sum{H_1}{H_2})}{(\Sum{H'_1}{H'_2})} = \Sum{(\combinehints{H_1}{H'_1})}{(\combinehints{H_2}{H'_2})}$ \\
+  $\combinehints{\Unit}{\Unit} = \Unit$ \\
+  $\combinehints{\Empty}{\Empty} = \Empty$
+\end{center}
+
+\end{frame}
+
+\begin{frame}{Typing with hints}
+
+\begin{center}
+  $\infrule[Var]{\sidecond{(x : A) \in \Gamma} \quad \sidecond{\combinehints{H}{A} = A}}{\hinting{x}{H}{A}}$
+
+  \vspace{2em}
+
+  $\infrule[Annot]{\hinting{e}{\combinehints{H_1}{H_2}}{A}}{\hinting{\annot{e}{H_1}}{H_2}{A}}$
+
+  \vspace{2em}
+
+  $\infrule{\sidecond{\combinehints{H}{\Unit} = \Unit}}{\hinting{\unit}{H}{\Unit}}$ \quad
+  $\infrule{\hinting{e}{\Empty}{\Empty}}{\hinting{\elimEmpty[e]}{A}{A}}$
+\end{center}
+
+\end{frame}
+
+\begin{frame}{Typing with hints}
+
+\begin{center}
+
+  $\infrule{\sidecond{\combinehints{H}{(\Fun{\Hint}{\Hint})} = \Fun{A}{H'}} \quad \fullhinting{\extend{\Gamma}{x}{A}}{e}{H'}{B}}{\hinting{\fun{x}{e}}{H}{\Fun{A}{B}}}$
+
+  \vspace{1em}
+
+  $\infrule{\hinting{f}{\Fun{\Hint}{H}}{\Fun{H'}{B}} \quad \hinting{a}{H'}{A}}{\hinting{\app{f}{a}}{H}{B}}$
+
+  \vspace{1em}
+
+  $\infrule{\sidecond{\combinehints{H}{(\Prod{\Hint}{\Hint})} = \Prod{H_1}{H_2}} \quad \hinting{a}{H_1}{A} \quad \hinting{b}{H_2}{B}}{\hinting{\pair{a}{b}}{H}{\Prod{A}{B}}}$
+
+  \vspace{1em}
+
+  $\infrule{\hinting{e}{\Prod{H}{\Hint}}{\Prod{A}{B}}}{\hinting{\outl[e]}{H}{A}}$ \quad
+  $\infrule{\hinting{e}{\Prod{H}{\Hint}}{\Prod{A}{B}}}{\hinting{\outr[e]}{H}{B}}$
+
+\end{center}
+
+\end{frame}
+
+\begin{frame}{Typing with hint}
+
+\begin{center}
+
+$\infrule{\sidecond{\combinehints{H}{(\Sum{\Hint}{\Hint})} = \Sum{H'}{B}} \quad \hinting{e}{H'}{A}}{\hinting{\inl[e]}{H}{\Sum{A}{B}}}$
+
+\vspace{2em}
+
+$\infrule{\sidecond{\combinehints{H}{(\Sum{\Hint}{\Hint})} = \Sum{A}{H'}} \quad \hinting{e}{H'}{B}}{\hinting{\inr[e]}{H}{\Sum{A}{B}}}$
+
+\vspace{2em}
+
+$\infrule{\hinting{e}{\Sum{\Hint}{\Hint}}{\Sum{A}{B}} \quad \hinting{f}{\Fun{A}{H}}{\Fun{A}{C}} \quad \hinting{g}{\Fun{B}{H}}{\Fun{B}{C}}}{\hinting{\case{e}{f}{g}}{H}{C}}$
 
 \end{center}
 

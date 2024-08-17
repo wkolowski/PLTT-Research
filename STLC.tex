@@ -178,7 +178,7 @@ $e ::=$ \\
 
 \end{frame}
 
-\section{Typing with a hint}
+\section{STLC with hints}
 
 \newcommand{\fullhinting}[4]{#1 \vdash #2 \mathcolor{blue}{\Leftarrow} #3 \mathcolor{red}{\Rightarrow} #4}
 \newcommand{\hinting}[3]{\fullhinting{\Gamma}{#1}{#2}{#3}}
@@ -212,7 +212,7 @@ Typing contexts assign types to variables, but annotations in terms are hints, n
 
 \end{frame}
 
-\begin{frame}{Typing with hints}
+\begin{frame}{Hinting}
 
 \begin{center}
   $\infrule[Var]{\sidecond{(x : A) \in \Gamma} \quad \sidecond{\combinehints{H}{A} = A}}{\hinting{x}{H}{A}}$
@@ -229,7 +229,7 @@ Typing contexts assign types to variables, but annotations in terms are hints, n
 
 \end{frame}
 
-\begin{frame}{Typing with hints}
+\begin{frame}{Hinting}
 
 \begin{center}
 
@@ -252,7 +252,7 @@ Typing contexts assign types to variables, but annotations in terms are hints, n
 
 \end{frame}
 
-\begin{frame}{Typing with hint}
+\begin{frame}{Hinting}
 
 \begin{center}
 
@@ -269,5 +269,83 @@ $\infrule{\hinting{e}{\Sum{\Hint}{\Hint}}{\Sum{A}{B}} \quad \hinting{f}{\Fun{A}{
 \end{center}
 
 \end{frame}
+
+\section{STLC with hints v2}
+
+\newcommand{\hintfor}[2]{#1\ \triangle\ #2}
+
+\begin{frame}{Hinting v2}
+
+\begin{center}
+  $\hintfor{H}{\fun{x}{e}} = \combinehints{H}{(\Fun{\Hint}{\Hint})}$ \\
+  $\hintfor{H}{\pair{e_1}{e_2}} = \combinehints{H}{(\Prod{\Hint}{\Hint})}$ \\
+  $\hintfor{H}{\inl[e]} = \combinehints{H}{(\Sum{\Hint}{\Hint})}$ \\
+  $\hintfor{H}{\inr[e]} = \combinehints{H}{(\Sum{\Hint}{\Hint})}$ \\
+  $\hintfor{H}{\unit} = \combinehints{H}{\Unit}$
+\end{center}
+
+\end{frame}
+
+\begin{frame}{Hinting v2}
+
+\begin{center}
+  $\infrule[Var]{\sidecond{(x : A) \in \Gamma} \quad \sidecond{\combinehints{H}{A} = A}}{\hinting{x}{H}{A}}$
+
+  \vspace{2em}
+
+  $\infrule[Annot]{\hinting{e}{\combinehints{H_1}{H_2}}{A}}{\hinting{\annot{e}{H_1}}{H_2}{A}}$
+
+  \vspace{2em}
+
+  $\infrule[HintFor]{\sidecond{e\ \texttt{is a constructor}} \quad \sidecond{\hintfor{H}{e} = H'} \quad \hinting{e}{H'}{A}}{\hinting{e}{H}{A}}$
+\end{center}
+  
+  \end{frame}
+  
+  \begin{frame}{Hinting v2}
+  
+  \begin{center}
+  
+    $\infrule{\fullhinting{\extend{\Gamma}{x}{A}}{e}{H}{B}}{\hinting{\fun{x}{e}}{\Fun{A}{H}}{\Fun{A}{B}}}$
+  
+    \vspace{1em}
+  
+    $\infrule{\hinting{f}{\Fun{\Hint}{H}}{\Fun{H'}{B}} \quad \hinting{a}{H'}{A}}{\hinting{\app{f}{a}}{H}{B}}$
+  
+    \vspace{1em}
+  
+    $\infrule{\hinting{a}{H_1}{A} \quad \hinting{b}{H_2}{B}}{\hinting{\pair{a}{b}}{\Prod{H_1}{H_2}}{\Prod{A}{B}}}$
+  
+    \vspace{1em}
+  
+    $\infrule{\hinting{e}{\Prod{H}{\Hint}}{\Prod{A}{B}}}{\hinting{\outl[e]}{H}{A}}$ \quad
+    $\infrule{\hinting{e}{\Prod{H}{\Hint}}{\Prod{A}{B}}}{\hinting{\outr[e]}{H}{B}}$
+  
+  \end{center}
+  
+  \end{frame}
+  
+  \begin{frame}{Hinting v2}
+  
+  \begin{center}
+  
+  $\infrule{\hinting{e}{H}{A}}{\hinting{\inl[e]}{\Sum{H}{B}}{\Sum{A}{B}}}$
+  
+  \vspace{2em}
+  
+  $\infrule{\hinting{e}{H}{B}}{\hinting{\inr[e]}{\Sum{A}{H}}{\Sum{A}{B}}}$
+  
+  \vspace{2em}
+  
+  $\infrule{\hinting{e}{\Sum{\Hint}{\Hint}}{\Sum{A}{B}} \quad \hinting{f}{\Fun{A}{H}}{\Fun{A}{C}} \quad \hinting{g}{\Fun{B}{H}}{\Fun{B}{C}}}{\hinting{\case{e}{f}{g}}{H}{C}}$
+
+  \vspace{2em}
+
+  $\infrule{}{\hinting{\unit}{\Unit}{\Unit}}$ \quad
+  $\infrule{\hinting{e}{\Empty}{\Empty}}{\hinting{\elimEmpty[e]}{A}{A}}$
+  
+  \end{center}
+  
+  \end{frame}
 
 \end{document}

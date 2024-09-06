@@ -22,20 +22,7 @@
 \newcommand{\inr}[1][]{\texttt{inr}\ #1}
 \newcommand{\case}[3]{\texttt{case}\ #1\ \texttt{of}\ (#2, #3)}
 \newcommand{\unit}{\texttt{unit}}
-\newcommand{\elimEmpty}[1][]{\texttt{exfalso}\ #1}
-
-\newcommand{\True}{\top}
-\newcommand{\False}{\bot}
-\newcommand{\Not}[1]{\neg #1}
-\newcommand{\Or}[2]{#1 \lor #2}
-\renewcommand{\And}[2]{#1 \land #2}
-\newcommand{\Impl}[2]{#1 \Rightarrow #2}
-\newcommand{\Iff}[2]{#1 \Leftrightarrow #2}
-
-\newcommand{\All}[3]{\forall #1 : #2. #3}
-\newcommand{\Ex}[3]{\exists #1 : #2. #3}
-
-\newcommand{\Eq}[3][]{#2 =_{#1} #3}
+\newcommand{\exfalso}[1][]{\texttt{exfalso}\ #1}
 
 \newcommand{\subst}[3]{#1\left[#2 := #3\right]}
 
@@ -56,7 +43,7 @@
 
 \begin{document}
 
-\begin{frame}{Grammar}
+\begin{frame}{Types and contexts}
 
 Types: \\
 $A, B ::= \Fun{A}{B} \pipe \Prod{A}{B} \pipe \Sum{A}{B} \pipe \Unit \pipe \Empty$
@@ -65,8 +52,69 @@ $A, B ::= \Fun{A}{B} \pipe \Prod{A}{B} \pipe \Sum{A}{B} \pipe \Unit \pipe \Empty
 
 Typing contexts: \\
 $\Gamma ::= \emptytypingctx \pipe \extend{\Gamma}{x}{A}$
+  
+\end{frame}
+
+\section{Intrinsic STLC}
+
+\newcommand{\ifun}[3]{\lambda #1 : #2. #3}
+\newcommand{\iinl}[2]{\texttt{inl}_{#1}\ #2}
+\newcommand{\iinr}[2]{\texttt{inr}_{#1}\ #2}
+
+\begin{frame}{Terms}
+
+Terms: \\
+$e ::=$ \\
+\qquad $x \pipe$ \\
+\qquad $\ifun{x}{A}{e} \pipe \app{e_1}{e_2} \pipe$ \\
+\qquad $\pair{e_1}{e_2} \pipe \outl[e] \pipe \outr[e] \pipe$ \\
+\qquad $\iinl{A}{e} \pipe \iinr{A}{e} \pipe \case{e}{e_1}{e_2} \pipe$ \\
+\qquad $\unit \pipe \exfalso{e}$
 
 \vspace{2em}
+
+\end{frame}
+
+\begin{frame}{Declarative typing -- basics}
+
+\begin{center}
+  $\infrule[Var]{\sidecond{(x : A) \in \Gamma}}{\typing{x}{A}}$
+\end{center}
+
+\end{frame}
+
+\begin{frame}{Declarative typing -- type-directed rules}
+
+\begin{center}
+  $\infrule{\fulltyping{\extend{\Gamma}{x}{A}}{e}{B}}{\typing{\ifun{x}{A}{e}}{\Fun{A}{B}}}$ \quad
+  $\infrule{\typing{f}{\Fun{A}{B}} \quad \typing{a}{A}}{\typing{\app{f}{a}}{B}}$
+
+  \vspace{2em}
+
+  $\infrule{\typing{a}{A} \quad \typing{b}{B}}{\typing{\pair{a}{b}}{\Prod{A}{B}}}$ \quad
+  $\infrule{\typing{e}{\Prod{A}{B}}}{\typing{\outl[e]}{A}}$ \quad
+  $\infrule{\typing{e}{\Prod{A}{B}}}{\typing{\outr[e]}{B}}$
+
+  \vspace{2em}
+
+  $\infrule{\typing{e}{A}}{\typing{\iinl{B}{e}}{\Sum{A}{B}}}$ \quad
+  $\infrule{\typing{e}{B}}{\typing{\iinr{A}{e}}{\Sum{A}{B}}}$
+
+  \vspace{2em}
+
+  $\infrule{\typing{e}{\Sum{A}{B}} \quad \typing{f}{\Fun{A}{C}} \quad \typing{g}{\Fun{B}{C}}}{\typing{\case{e}{f}{g}}{C}}$
+
+  \vspace{2em}
+
+  $\infrule{}{\typing{\unit}{\Unit}}$ \quad
+  $\infrule{\typing{e}{\Empty}}{\typing{\exfalso[e]}{A}}$
+\end{center}
+
+\end{frame}
+
+\section{Extrinsic STLC}
+
+\begin{frame}{Terms}
 
 Terms: \\
 $e ::=$ \\
@@ -74,15 +122,11 @@ $e ::=$ \\
 \qquad $\fun{x}{e} \pipe \app{e_1}{e_2} \pipe$ \\
 \qquad $\pair{e_1}{e_2} \pipe \outl[e] \pipe \outr[e] \pipe$ \\
 \qquad $\inl[e] \pipe \inr[e] \pipe \case{e}{e_1}{e_2} \pipe$ \\
-\qquad $\unit \pipe \elimEmpty{e}$
-
-\vspace{2em}
-
+\qquad $\unit \pipe \exfalso{e}$
+  
 \end{frame}
 
-\section{Declarative STLC}
-
-\begin{frame}{Declarative typing basics}
+\begin{frame}{Declarative typing -- basics}
 
 \begin{center}
   $\infrule[Var]{\sidecond{(x : A) \in \Gamma}}{\typing{x}{A}}$
@@ -118,7 +162,7 @@ $e ::=$ \\
   \vspace{2em}
 
   $\infrule{}{\typing{\unit}{\Unit}}$ \quad
-  $\infrule{\typing{e}{\Empty}}{\typing{\elimEmpty[e]}{A}}$
+  $\infrule{\typing{e}{\Empty}}{\typing{\exfalso[e]}{A}}$
 \end{center}
 
 \end{frame}
@@ -150,7 +194,6 @@ $e ::=$ \\
 \begin{frame}{Bidirectional typing}
 
 \begin{center}
-
   $\infrule{\fullcheck{\extend{\Gamma}{x}{A}}{e}{B}}{\check{\fun{x}{e}}{\Fun{A}{B}}}$ \quad
   $\infrule{\infer{f}{\Fun{A}{B}} \quad \check{a}{A}}{\infer{\app{f}{a}}{B}}$
 
@@ -172,8 +215,7 @@ $e ::=$ \\
   \vspace{2em}
 
   $\infrule{}{\infer{\unit}{\Unit}}$ \quad
-  $\infrule{\check{e}{\Empty}}{\check{\elimEmpty[e]}{A}}$
-
+  $\infrule{\check{e}{\Empty}}{\check{\exfalso[e]}{A}}$
 \end{center}
 
 \end{frame}
@@ -224,7 +266,7 @@ Typing contexts assign types to variables, but annotations in terms are hints, n
   \vspace{2em}
 
   $\infrule{\sidecond{\combinehints{H}{\Unit} = \Unit}}{\hinting{\unit}{H}{\Unit}}$ \quad
-  $\infrule{\hinting{e}{\Empty}{\Empty}}{\hinting{\elimEmpty[e]}{A}{A}}$
+  $\infrule{\hinting{e}{\Empty}{\Empty}}{\hinting{\exfalso[e]}{A}{A}}$
 \end{center}
 
 \end{frame}
@@ -232,7 +274,6 @@ Typing contexts assign types to variables, but annotations in terms are hints, n
 \begin{frame}{Hinting}
 
 \begin{center}
-
   $\infrule{\sidecond{\combinehints{H}{(\Fun{\Hint}{\Hint})} = \Fun{A}{H'}} \quad \fullhinting{\extend{\Gamma}{x}{A}}{e}{H'}{B}}{\hinting{\fun{x}{e}}{H}{\Fun{A}{B}}}$
 
   \vspace{1em}
@@ -247,7 +288,6 @@ Typing contexts assign types to variables, but annotations in terms are hints, n
 
   $\infrule{\hinting{e}{\Prod{H}{\Hint}}{\Prod{A}{B}}}{\hinting{\outl[e]}{H}{A}}$ \quad
   $\infrule{\hinting{e}{\Prod{H}{\Hint}}{\Prod{A}{B}}}{\hinting{\outr[e]}{H}{B}}$
-
 \end{center}
 
 \end{frame}
@@ -255,17 +295,15 @@ Typing contexts assign types to variables, but annotations in terms are hints, n
 \begin{frame}{Hinting}
 
 \begin{center}
+  $\infrule{\sidecond{\combinehints{H}{(\Sum{\Hint}{\Hint})} = \Sum{H'}{B}} \quad \hinting{e}{H'}{A}}{\hinting{\inl[e]}{H}{\Sum{A}{B}}}$
 
-$\infrule{\sidecond{\combinehints{H}{(\Sum{\Hint}{\Hint})} = \Sum{H'}{B}} \quad \hinting{e}{H'}{A}}{\hinting{\inl[e]}{H}{\Sum{A}{B}}}$
+  \vspace{2em}
 
-\vspace{2em}
+  $\infrule{\sidecond{\combinehints{H}{(\Sum{\Hint}{\Hint})} = \Sum{A}{H'}} \quad \hinting{e}{H'}{B}}{\hinting{\inr[e]}{H}{\Sum{A}{B}}}$
 
-$\infrule{\sidecond{\combinehints{H}{(\Sum{\Hint}{\Hint})} = \Sum{A}{H'}} \quad \hinting{e}{H'}{B}}{\hinting{\inr[e]}{H}{\Sum{A}{B}}}$
+  \vspace{2em}
 
-\vspace{2em}
-
-$\infrule{\hinting{e}{\Sum{\Hint}{\Hint}}{\Sum{A}{B}} \quad \hinting{f}{\Fun{A}{H}}{\Fun{A}{C}} \quad \hinting{g}{\Fun{B}{H}}{\Fun{B}{C}}}{\hinting{\case{e}{f}{g}}{H}{C}}$
-
+  $\infrule{\hinting{e}{\Sum{\Hint}{\Hint}}{\Sum{A}{B}} \quad \hinting{f}{\Fun{A}{H}}{\Fun{A}{C}} \quad \hinting{g}{\Fun{B}{H}}{\Fun{B}{C}}}{\hinting{\case{e}{f}{g}}{H}{C}}$
 \end{center}
 
 \end{frame}
@@ -300,52 +338,48 @@ $\infrule{\hinting{e}{\Sum{\Hint}{\Hint}}{\Sum{A}{B}} \quad \hinting{f}{\Fun{A}{
   $\infrule[HintFor]{\sidecond{e\ \texttt{is a constructor}} \quad \sidecond{\hintfor{H}{e} = H'} \quad \hinting{e}{H'}{A}}{\hinting{e}{H}{A}}$
 \end{center}
   
-  \end{frame}
+\end{frame}
   
-  \begin{frame}{Hinting v2}
+\begin{frame}{Hinting v2}
   
-  \begin{center}
+\begin{center}
+  $\infrule{\fullhinting{\extend{\Gamma}{x}{A}}{e}{H}{B}}{\hinting{\fun{x}{e}}{\Fun{A}{H}}{\Fun{A}{B}}}$
+
+  \vspace{1em}
+
+  $\infrule{\hinting{f}{\Fun{\Hint}{H}}{\Fun{H'}{B}} \quad \hinting{a}{H'}{A}}{\hinting{\app{f}{a}}{H}{B}}$
+
+  \vspace{1em}
+
+  $\infrule{\hinting{a}{H_1}{A} \quad \hinting{b}{H_2}{B}}{\hinting{\pair{a}{b}}{\Prod{H_1}{H_2}}{\Prod{A}{B}}}$
+
+  \vspace{1em}
+
+  $\infrule{\hinting{e}{\Prod{H}{\Hint}}{\Prod{A}{B}}}{\hinting{\outl[e]}{H}{A}}$ \quad
+  $\infrule{\hinting{e}{\Prod{H}{\Hint}}{\Prod{A}{B}}}{\hinting{\outr[e]}{H}{B}}$
+\end{center}
   
-    $\infrule{\fullhinting{\extend{\Gamma}{x}{A}}{e}{H}{B}}{\hinting{\fun{x}{e}}{\Fun{A}{H}}{\Fun{A}{B}}}$
+\end{frame}
   
-    \vspace{1em}
-  
-    $\infrule{\hinting{f}{\Fun{\Hint}{H}}{\Fun{H'}{B}} \quad \hinting{a}{H'}{A}}{\hinting{\app{f}{a}}{H}{B}}$
-  
-    \vspace{1em}
-  
-    $\infrule{\hinting{a}{H_1}{A} \quad \hinting{b}{H_2}{B}}{\hinting{\pair{a}{b}}{\Prod{H_1}{H_2}}{\Prod{A}{B}}}$
-  
-    \vspace{1em}
-  
-    $\infrule{\hinting{e}{\Prod{H}{\Hint}}{\Prod{A}{B}}}{\hinting{\outl[e]}{H}{A}}$ \quad
-    $\infrule{\hinting{e}{\Prod{H}{\Hint}}{\Prod{A}{B}}}{\hinting{\outr[e]}{H}{B}}$
-  
-  \end{center}
-  
-  \end{frame}
-  
-  \begin{frame}{Hinting v2}
-  
-  \begin{center}
-  
+\begin{frame}{Hinting v2}
+
+\begin{center}
   $\infrule{\hinting{e}{H}{A}}{\hinting{\inl[e]}{\Sum{H}{B}}{\Sum{A}{B}}}$
-  
+
   \vspace{2em}
-  
+
   $\infrule{\hinting{e}{H}{B}}{\hinting{\inr[e]}{\Sum{A}{H}}{\Sum{A}{B}}}$
-  
+
   \vspace{2em}
-  
+
   $\infrule{\hinting{e}{\Sum{\Hint}{\Hint}}{\Sum{A}{B}} \quad \hinting{f}{\Fun{A}{H}}{\Fun{A}{C}} \quad \hinting{g}{\Fun{B}{H}}{\Fun{B}{C}}}{\hinting{\case{e}{f}{g}}{H}{C}}$
 
   \vspace{2em}
 
   $\infrule{}{\hinting{\unit}{\Unit}{\Unit}}$ \quad
-  $\infrule{\hinting{e}{\Empty}{\Empty}}{\hinting{\elimEmpty[e]}{A}{A}}$
-  
-  \end{center}
-  
-  \end{frame}
+  $\infrule{\hinting{e}{\Empty}{\Empty}}{\hinting{\exfalso[e]}{A}{A}}$
+\end{center}
+
+\end{frame}
 
 \end{document}

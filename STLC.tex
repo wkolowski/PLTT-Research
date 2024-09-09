@@ -55,6 +55,57 @@ $\Gamma ::= \emptytypingctx \pipe \extend{\Gamma}{x}{A}$
   
 \end{frame}
 
+\section{Extrinsic STLC}
+
+\begin{frame}{Terms}
+
+Terms: \\
+$e ::=$ \\
+\qquad $x \pipe$ \\
+\qquad $\fun{x}{e} \pipe \app{e_1}{e_2} \pipe$ \\
+\qquad $\pair{e_1}{e_2} \pipe \outl[e] \pipe \outr[e] \pipe$ \\
+\qquad $\inl[e] \pipe \inr[e] \pipe \case{e}{e_1}{e_2} \pipe$ \\
+\qquad $\unit \pipe \exfalso{e}$
+
+\end{frame}
+
+\begin{frame}{Declarative typing -- basics}
+
+\begin{center}
+  $\infrule[Var]{\sidecond{(x : A) \in \Gamma}}{\typing{x}{A}}$
+\end{center}
+
+\end{frame}
+
+\begin{frame}{Declarative typing -- type-directed rules}
+
+\begin{center}
+  $\infrule{\fulltyping{\extend{\Gamma}{x}{A}}{e}{B}}{\typing{\fun{x}{e}}{\Fun{A}{B}}}$ \quad
+  $\infrule{\typing{f}{\Fun{A}{B}} \quad \typing{a}{A}}{\typing{\app{f}{a}}{B}}$
+
+  \vspace{2em}
+
+  $\infrule{\typing{a}{A} \quad \typing{b}{B}}{\typing{\pair{a}{b}}{\Prod{A}{B}}}$ \quad
+  $\infrule{\typing{e}{\Prod{A}{B}}}{\typing{\outl[e]}{A}}$ \quad
+  $\infrule{\typing{e}{\Prod{A}{B}}}{\typing{\outr[e]}{B}}$
+
+  \vspace{2em}
+
+  $\infrule{\typing{e}{A}}{\typing{\inl[e]}{\Sum{A}{B}}}$ \quad
+  $\infrule{\typing{e}{B}}{\typing{\inr[e]}{\Sum{A}{B}}}$
+
+  \vspace{2em}
+
+  $\infrule{\typing{e}{\Sum{A}{B}} \quad \typing{f}{\Fun{A}{C}} \quad \typing{g}{\Fun{B}{C}}}{\typing{\case{e}{f}{g}}{C}}$
+
+  \vspace{2em}
+
+  $\infrule{}{\typing{\unit}{\Unit}}$ \quad
+  $\infrule{\typing{e}{\Empty}}{\typing{\exfalso[e]}{A}}$
+\end{center}
+
+\end{frame}
+
 \section{Intrinsic STLC}
 
 \newcommand{\ifun}[3]{\lambda #1 : #2. #3}
@@ -112,7 +163,7 @@ $e ::=$ \\
 
 \end{frame}
 
-\section{Extrinsic STLC}
+\section{Extrinsic v2}
 
 \begin{frame}{Terms}
 

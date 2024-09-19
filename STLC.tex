@@ -108,6 +108,21 @@ $e ::=$ \\
 
 \end{frame}
 
+\begin{frame}{Metatheory}
+
+Extrinsic STLC enjoys strong metatheoretical properties:
+
+\begin{itemize}
+  \item Termination: computation on well-typed terms always terminates.
+  \item Confluence: computing with a well-typed term produces a unique result.
+  \item Type preservation: computing with a well-typed term preserves its type.
+  \item Canonicity: in the empty context, normal forms are inductively generated from term constructors.
+\end{itemize}
+
+However, extrinsic STLC does not enjoy another important property: \textbf{uniqueness of typing}. This means that there are terms which can be assigned multiple types.
+
+\end{frame}
+
 \section{Intrinsic STLC}
 
 \newcommand{\ifun}[3]{\lambda #1 : #2. #3}
@@ -148,7 +163,13 @@ $e ::=$ \\
 
 \end{frame}
 
-\section{Annotations}
+\begin{frame}{Metatheory}
+
+Because of the annotations on lambda, sum constructors and exfalso, intrinsic STLC does enjoy uniqueness of typing. It is easy to prove this by induction: types of most terms are determined by the induction hypothesis, whereas for the aforementioned four we need to supplement the induction hypothesis with the annotation.
+
+\end{frame}
+
+\section{Bidirectional STLC}
 
 \newcommand{\newterm}[1]{\mathcolor{green}{#1}}
 
@@ -229,6 +250,12 @@ $e ::=$ \\
   $\infrule{\infer{e}{\Sum{A}{B}} \quad \infer{f}{\Fun{A}{C}} \quad \infer{g}{\Fun{B}{C}}}{\infer{\case{e}{f}{g}}{C}}$
 
 \end{center}
+
+\end{frame}
+
+\begin{frame}{Metatheory}
+
+Similarly to extrinsic STLC, typing is not unique in Bidirectional STLC. This is because while we do have annotations in terms, we are not forced to use them. Therefore, we can check terms like $\fun{x}{x}$ with many types. However, inference is unique.
 
 \end{frame}
 
@@ -330,6 +357,12 @@ Typing contexts assign types to variables, but annotations in terms are hints, n
 
 \end{frame}
 
+\begin{frame}{Metatheory}
+
+Similarly to extrinsic STLC, STLC with hints v1 does not enjoy uniqueness of typing. This is because we still can have terms like $\fun{x}{x}$ with hint $\Hint$, which can be typed with multiple types. However, if the hint is informative enough, then the type is unique. Moreover, every typable term can be given a hint which makes its type unique.
+
+\end{frame}
+
 \section{Hinting v2}
 
 \newcommand{\hintfor}[2]{#1\ \triangle\ #2}
@@ -401,6 +434,12 @@ Typing contexts assign types to variables, but annotations in terms are hints, n
   $\infrule{}{\hinting{\unit}{\Unit}{\Unit}}$ \quad
   $\infrule{\hinting{e}{\Empty}{\Empty}}{\hinting{\exfalso[e]}{A}{A}}$
 \end{center}
+
+\end{frame}
+
+\begin{frame}{Metatheory}
+
+Metatheoretically, STLC with hints v2 is similar to v1.
 
 \end{frame}
 

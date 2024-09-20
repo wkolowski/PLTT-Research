@@ -134,6 +134,10 @@ However, extrinsic STLC does not enjoy another important property: \textbf{uniqu
 
 \begin{frame}{Terms}
 
+Note: red color marks places which differ from Extrinsic STLC.
+
+\vspace{2em}
+
 Terms: \\
 $e ::=$ \\
 \qquad $x \pipe$ \\
@@ -174,6 +178,10 @@ Because of the annotations on lambda, sum constructors and exfalso, intrinsic ST
 \newcommand{\newterm}[1]{\mathcolor{green}{#1}}
 
 \begin{frame}{Terms}
+
+Note: green color marks terms which were not present in Extrinsic STLC.
+
+\vspace{2em}
 
 Terms: \\
 $e ::=$ \\
@@ -255,7 +263,99 @@ $e ::=$ \\
 
 \begin{frame}{Metatheory}
 
-Similarly to extrinsic STLC, typing is not unique in Bidirectional STLC. This is because while we do have annotations in terms, we are not forced to use them. Therefore, we can check terms like $\fun{x}{x}$ with many types. However, inference is unique.
+Similarly to Extrinsic STLC, typing is not unique in Bidirectional STLC. This is because while we do have annotations in terms, we are not forced to use them. Therefore, we can check terms like $\fun{x}{x}$ with many types. However, inference is unique.
+
+\end{frame}
+
+\section{Hints}
+
+\newcommand{\Hint}{\mathbf{?}}
+
+\newcommand{\combinehints}[2]{#1 \sqcap #2}
+
+\newcommand{\hintorder}[2]{#1 \sqsubseteq #2}
+
+\begin{frame}{Hints}
+
+Hints: \\
+$H ::= \Hint \pipe \Fun{H_1}{H_2} \pipe \Prod{H_1}{H_2} \pipe \Sum{H_1}{H_2} \pipe \Unit \pipe \Empty$
+
+\vspace{2em}
+
+Intuitively, hints are partial types. They are built like types, except that there's one additional way to make hints: $\Hint$, which can be read as ``unknown'', ``hole'' or ``whatever''.
+
+\vspace{2em}
+
+We use the letter $H$ for hints. When we use letters like $A, B, C$ which usually stand for types, it means that the hint \textbf{is} a type, i.e. it doesn't contain any $\Hint$s.
+
+\end{frame}
+
+\begin{frame}{Combining hints}
+
+\begin{center}
+  $\combinehints{\Hint}{H} = H$ \\
+  $\combinehints{H}{\Hint} = H$ \\
+  $\combinehints{(\Fun{H_1}{H_2})}{(\Fun{H'_1}{H'_2})} = \Fun{(\combinehints{H_1}{H'_1})}{(\combinehints{H_2}{H'_2})}$ \\
+  $\combinehints{(\Prod{H_1}{H_2})}{(\Prod{H'_1}{H'_2})} = \Prod{(\combinehints{H_1}{H'_1})}{(\combinehints{H_2}{H'_2})}$ \\
+  $\combinehints{(\Sum{H_1}{H_2})}{(\Sum{H'_1}{H'_2})} = \Sum{(\combinehints{H_1}{H'_1})}{(\combinehints{H_2}{H'_2})}$ \\
+  $\combinehints{\Unit}{\Unit} = \Unit$ \\
+  $\combinehints{\Empty}{\Empty} = \Empty$
+\end{center}
+
+Intuitively, $\combinehints{}{}$ is a partial binary operation which combines two hints which share the same structure, possibly filling the $\Hint$s in the leaves with something more informative coming from the other argument. For hints which have incompatible structure (e.g. function hint and product hint) the result is undefined.
+
+\end{frame}
+
+\begin{frame}{Combining hints -- properties}
+
+The operation $\combinehints{}{}$:
+
+\begin{itemize}
+  \item Is associative: $\combinehints{(\combinehints{H_1}{H_2})}{H_3} = \combinehints{H_1}{(\combinehints{H_2}{H_3})}$
+  \item Is commutative, i.e. $\combinehints{H_1}{H_2} = \combinehints{H_2}{H_1}$
+  \item Has neutral element: $\combinehints{\Hint}{H} = H = \combinehints{H}{\Hint}$
+  \item Is idempotent, i.e. $\combinehints{H}{H} = H$.
+\end{itemize}
+
+\vspace{2em}
+
+So, when $\combinehints{}{}$ happens to defined at all, it forms a commutative idempotent monoid. And as we all know, partial monoids are categories. So it seems hints form a thin groupoid... which they obviously do!
+
+\end{frame}
+
+\begin{frame}{Order on hints}
+
+The operation $\combinehints{}{}$ induces an order on hints in the usual way: $\hintorder{H_1}{H_2} :\equiv (\combinehints{H_1}{H_2} = H_2)$.
+
+\vspace{2em}
+
+This order can be intuitively interpreted as an information increase: $\hintorder{H_1}{H_2}$ means that hint $H_2$ is more informative than $H_1$, but in a compatible way. In other words, $H_1$ and $H_2$ have the same structure, but some $\Hint$s from $H_1$ can be refined to something more informative in $H_2$.
+
+\end{frame}
+
+\begin{frame}{Order on hints -- explicitly}
+
+
+\begin{center}
+  $\infrule{}{\hintorder{\Hint}{H}}$
+
+  \vspace{2em}
+
+  $\infrule{\hintorder{H_1}{H_1'} \quad \hintorder{H_2}{H_2'}}{\hintorder{\Fun{H_1}{H_2}}{\Fun{H'_1}{H'_2}}}$
+
+  \vspace{2em}
+
+  $\infrule{\hintorder{H_1}{H_1'} \quad \hintorder{H_2}{H_2'}}{\hintorder{\Prod{H_1}{H_2}}{\Prod{H_1'}{H_2'}}}$
+
+  \vspace{2em}
+
+  $\infrule{\hintorder{H_1}{H_1'} \quad \hintorder{H_2}{H_2'}}{\hintorder{\Sum{H_1}{H_2}}{\Sum{H_1'}{H_2'}}}$
+
+  \vspace{2em}
+
+  $\infrule{}{\hintorder{\Unit}{\Unit}}$ \quad
+  $\infrule{}{\hintorder{\Empty}{\Empty}}$
+\end{center}
 
 \end{frame}
 
@@ -264,14 +364,9 @@ Similarly to extrinsic STLC, typing is not unique in Bidirectional STLC. This is
 \newcommand{\fullhinting}[4]{#1 \vdash #2 \mathcolor{blue}{\Leftarrow} #3 \mathcolor{red}{\Rightarrow} #4}
 \newcommand{\hinting}[3]{\fullhinting{\Gamma}{#1}{#2}{#3}}
 
-\newcommand{\Hint}{\mathbf{?}}
+\begin{frame}{Terms}
 
-\newcommand{\combinehints}[2]{#1 \sqcap #2}
-
-\begin{frame}{Hints and terms}
-
-Hints: \\
-$H ::= \Hint \pipe \Fun{H_1}{H_2} \pipe \Prod{H_1}{H_2} \pipe \Sum{H_1}{H_2} \pipe \Unit \pipe \Empty$
+Note: red color marks differences from Bidirectional STLC.
 
 \vspace{2em}
 
@@ -289,24 +384,19 @@ Typing contexts assign types to variables, but annotations in terms are hints, n
 
 \end{frame}
 
-\begin{frame}{Combining hints}
+\begin{frame}{Notations}
 
-\begin{center}
-  $\combinehints{\Hint}{H} = H$ \\
-  $\combinehints{H}{\Hint} = H$ \\
-  $\combinehints{(\Fun{H_1}{H_2})}{(\Fun{H'_1}{H'_2})} = \Fun{(\combinehints{H_1}{H'_1})}{(\combinehints{H_2}{H'_2})}$ \\
-  $\combinehints{(\Prod{H_1}{H_2})}{(\Prod{H'_1}{H'_2})} = \Prod{(\combinehints{H_1}{H'_1})}{(\combinehints{H_2}{H'_2})}$ \\
-  $\combinehints{(\Sum{H_1}{H_2})}{(\Sum{H'_1}{H'_2})} = \Sum{(\combinehints{H_1}{H'_1})}{(\combinehints{H_2}{H'_2})}$ \\
-  $\combinehints{\Unit}{\Unit} = \Unit$ \\
-  $\combinehints{\Empty}{\Empty} = \Empty$
-\end{center}
+$\ifun{x}{A}{e} :\equiv \annot{\fun{x}{e}}{\Fun{A}{\Hint}}$ \\
+$\iinl{A}{e} :\equiv \annot{\inl{e}}{\Sum{\Hint}{A}}$ \\
+$\iinr{A}{e} :\equiv \annot{\inr{e}}{\Sum{A}{\Hint}}$ \\
+$\iexfalso{A}{e} :\equiv \annot{\exfalso{e}}{A}$
 
 \end{frame}
 
 \begin{frame}{Hinting -- basic rules}
 
 \begin{center}
-  $\infrule[Var]{\sidecond{(x : A) \in \Gamma} \quad \sidecond{\combinehints{H}{A} = A}}{\hinting{x}{H}{A}}$
+  $\infrule[Var]{\sidecond{(x : A) \in \Gamma} \quad \sidecond{\hintorder{H}{A}}}{\hinting{x}{H}{A}}$
 
   \vspace{2em}
 
@@ -351,7 +441,7 @@ Typing contexts assign types to variables, but annotations in terms are hints, n
 
   \vspace{2em}
 
-  $\infrule{\sidecond{\combinehints{H}{\Unit} = \Unit}}{\hinting{\unit}{H}{\Unit}}$ \quad
+  $\infrule{\sidecond{\hintorder{H}{\Unit}}}{\hinting{\unit}{H}{\Unit}}$ \quad
   $\infrule{\hinting{e}{\Empty}{\Empty}}{\hinting{\exfalso[e]}{A}{A}}$
 \end{center}
 
@@ -367,7 +457,7 @@ Similarly to extrinsic STLC, STLC with hints v1 does not enjoy uniqueness of typ
 
 \newcommand{\hintfor}[2]{#1\ \triangle\ #2}
 
-\begin{frame}{Hinting v2}
+\begin{frame}{Hinting v2 -- hints for term constructors}
 
 \begin{center}
   $\hintfor{H}{\fun{x}{e}} = \combinehints{H}{(\Fun{\Hint}{\Hint})}$ \\
@@ -379,10 +469,10 @@ Similarly to extrinsic STLC, STLC with hints v1 does not enjoy uniqueness of typ
 
 \end{frame}
 
-\begin{frame}{Hinting v2}
+\begin{frame}{Hinting v2 -- basic rules}
 
 \begin{center}
-  $\infrule[Var]{\sidecond{(x : A) \in \Gamma} \quad \sidecond{\combinehints{H}{A} = A}}{\hinting{x}{H}{A}}$
+  $\infrule[Var]{\sidecond{(x : A) \in \Gamma} \quad \sidecond{\hintorder{H}{A}}}{\hinting{x}{H}{A}}$
 
   \vspace{2em}
 
@@ -394,8 +484,8 @@ Similarly to extrinsic STLC, STLC with hints v1 does not enjoy uniqueness of typ
 \end{center}
   
 \end{frame}
-  
-\begin{frame}{Hinting v2}
+
+\begin{frame}{Hinting v2 -- basic rules}
   
 \begin{center}
   $\infrule{\fullhinting{\extend{\Gamma}{x}{A}}{e}{H}{B}}{\hinting{\fun{x}{e}}{\Fun{A}{H}}{\Fun{A}{B}}}$
@@ -416,7 +506,7 @@ Similarly to extrinsic STLC, STLC with hints v1 does not enjoy uniqueness of typ
   
 \end{frame}
   
-\begin{frame}{Hinting v2}
+\begin{frame}{Hinting v2 -- type-directed rules}
 
 \begin{center}
   $\infrule{\hinting{e}{H}{A}}{\hinting{\inl[e]}{\Sum{H}{B}}{\Sum{A}{B}}}$

@@ -59,6 +59,12 @@ $\Gamma ::= \emptytypingctx \pipe \extend{\Gamma}{x}{A}$
 
 \section{Extrinsic STLC}
 
+\begin{frame}{Extrinsic STLC}
+
+Extrinsic STLC is the simplest version of typed lambda calculus. The terms are the same as in untyped lambda calculus (with the addition of terms for products, sums, unit and empty). The typing relation takes the form of a type assignment system -- we describe which terms have which types, without worrying about issues such as implementation.
+
+\end{frame}
+
 \begin{frame}{Terms}
 
 Terms: \\
@@ -113,13 +119,19 @@ $e ::=$ \\
 Extrinsic STLC enjoys strong metatheoretical properties:
 
 \begin{itemize}
+  \item Confluence: if a term can be reduced to two different terms, these two can in turn be reduced to a common result.
   \item Termination: computation on well-typed terms always terminates.
-  \item Confluence: computing with a well-typed term produces a unique result.
   \item Type preservation: computing with a well-typed term preserves its type.
   \item Canonicity: in the empty context, normal forms are inductively generated from term constructors.
 \end{itemize}
 
-However, extrinsic STLC does not enjoy another important property: \textbf{uniqueness of typing}. This means that there are terms which can be assigned multiple types.
+Intuitively: given a well-typed term, in finite time it computes to another term of the same type which cannot compute anymore. In the empty context, we know the result of this computation must be a constructor.
+
+\end{frame}
+
+\begin{frame}{Uniqueness of typing}
+
+However, extrinsic STLC does not enjoy another important property: \textbf{uniqueness of typing}. This means that there are terms which can be assigned multiple types. For example, $\fun{x}{x}$ can be assigned the type $\Fun{A}{A}$ for any type $A$. There four culprits of this failure are lambda abstractions, sum constructors and exfalso.
 
 \end{frame}
 
@@ -131,6 +143,12 @@ However, extrinsic STLC does not enjoy another important property: \textbf{uniqu
 \newcommand{\iexfalso}[2]{\texttt{exfalso}_{#1}\ #2}
 
 \newcommand{\termdiff}[1]{\mathcolor{red}{#1}}
+
+\begin{frame}{Intrinsic STLC}
+
+Intrinsic STLC is the most widespread version of typed lambda calculus. The terms differ from Extrinsic STLC, as type annotations are mandatory on lambdas, sum constructors and the empty type eliminator.
+
+\end{frame}
 
 \begin{frame}{Terms}
 
@@ -176,6 +194,12 @@ Because of the annotations on lambda, sum constructors and exfalso, intrinsic ST
 \section{Bidirectional STLC}
 
 \newcommand{\newterm}[1]{\mathcolor{green}{#1}}
+
+\begin{frame}{Bidirectional STLC}
+
+Bidirectional STLC is a version of simply typed lambda calculus which focuses on an efficient implementation of the typechecker. The terms are as in Extrinsic STLC, but with the addition of a general type annotation construct that can appear anywhere and is not mandatory. The typing relation can be presented as type assignment system for reference, but more important are the type checking and type inference relations, both of which are algorithmic, i.e. easily implementable.
+
+\end{frame}
 
 \begin{frame}{Terms}
 
@@ -246,7 +270,7 @@ $e ::=$ \\
 
   \vspace{2em}
 
-  $\infrule{}{\infer{\unit}{\Unit}}$ \quad
+  $\infrule{}{\check{\unit}{\Unit}}$ \quad
   $\infrule{\check{e}{\Empty}}{\check{\exfalso[e]}{A}}$
 \end{center}
 
@@ -255,8 +279,15 @@ $e ::=$ \\
 \begin{frame}{Bidirectional typing -- additional rules}
 
 \begin{center}
+  $\infrule{}{\infer{\unit}{\Unit}}$
+
+  \vspace{2em}
+
   $\infrule{\infer{e}{\Sum{A}{B}} \quad \infer{f}{\Fun{A}{C}} \quad \infer{g}{\Fun{B}{C}}}{\infer{\case{e}{f}{g}}{C}}$
 
+  \vspace{2em}
+
+  $\infrule{\infer{a}{A} \quad \infer{b}{B}}{\infer{\pair{a}{b}}{\Prod{A}{B}}}$
 \end{center}
 
 \end{frame}
@@ -277,7 +308,10 @@ Similarly to Extrinsic STLC, typing is not unique in Bidirectional STLC. This is
 
 \begin{frame}{Hints}
 
-Hints: \\
+We introduce hints, which will be useful to describe two more variants of STLC.
+
+\vspace{2em}
+
 $H ::= \Hint \pipe \Fun{H_1}{H_2} \pipe \Prod{H_1}{H_2} \pipe \Sum{H_1}{H_2} \pipe \Unit \pipe \Empty$
 
 \vspace{2em}
@@ -364,6 +398,12 @@ This order can be intuitively interpreted as an information increase: $\hintorde
 \newcommand{\fullhinting}[4]{#1 \vdash #2 \mathcolor{blue}{\Leftarrow} #3 \mathcolor{red}{\Rightarrow} #4}
 \newcommand{\hinting}[3]{\fullhinting{\Gamma}{#1}{#2}{#3}}
 
+\begin{frame}{Hinting v1}
+
+STLC with hints (version 1) is a flavour of STLC inspired by Bidirectional STLC. The main insight behind it is that in Bidirectional STLC, we have a hard time deciding whether a rule should be in checking mode or in inference mode, so why not combine them into one? This way, we would have some input type that guides us, but also produce an output type, which is in some sense ``better''. This is a bit silly if we already have the type we need as input, but we can make this idea work by introducing hints, which are types with holes, and insisting that the input is not a type, but merely a hint.
+
+\end{frame}
+
 \begin{frame}{Terms}
 
 Note: red color marks differences from Bidirectional STLC.
@@ -381,15 +421,6 @@ $e ::=$ \\
 \vspace{2em}
 
 Typing contexts assign types to variables, but annotations in terms are hints, not necessarily types.
-
-\end{frame}
-
-\begin{frame}{Notations}
-
-$\ifun{x}{A}{e} :\equiv \annot{\fun{x}{e}}{\Fun{A}{\Hint}}$ \\
-$\iinl{A}{e} :\equiv \annot{\inl{e}}{\Sum{\Hint}{A}}$ \\
-$\iinr{A}{e} :\equiv \annot{\inr{e}}{\Sum{A}{\Hint}}$ \\
-$\iexfalso{A}{e} :\equiv \annot{\exfalso{e}}{A}$
 
 \end{frame}
 
@@ -456,6 +487,15 @@ Similarly to extrinsic STLC, STLC with hints v1 does not enjoy uniqueness of typ
 \section{Hinting v2}
 
 \newcommand{\hintfor}[2]{#1\ \triangle\ #2}
+
+\begin{frame}{Hinting v2}
+
+STLC with hints (version 2) is a slight variation on the first one. The problem is that the rules of v1 look ugly, because we need to do so much management of the hints. To deal with this, we relegate all this work into a single separate rule (which uses a new operation), making all the remaining ones much more readable.
+
+\vspace{2em}
+
+The terms are the same as in STLC with hints v1
+\end{frame}
 
 \begin{frame}{Hinting v2 -- hints for term constructors}
 

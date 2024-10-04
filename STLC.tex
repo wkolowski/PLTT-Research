@@ -31,7 +31,8 @@
 \newcommand{\fulltyping}[3]{#1 \vdash #2 : #3}
 \newcommand{\typing}[2]{\fulltyping{\Gamma}{#1}{#2}}
 
-\newcommand{\infrule}[3][]{\displaystyle \frac{#2}{#3} \textsc{\footnotesize{#1}}}
+\newcommand{\rulename}[1]{\textsc{\footnotesize{#1}}}
+\newcommand{\infrule}[3][]{\displaystyle \frac{#2}{#3} \rulename{#1}}
 
 \newcommand{\emptytypingctx}{\cdot}
 \newcommand{\extend}[3]{#1, #2 : #3}
@@ -39,9 +40,11 @@
 
 \newcommand{\sidecond}[1]{#1}
 
-\title{STLC}
+\title{A zoo of STLCs}
 
 \begin{document}
+
+\frame{\titlepage}
 
 \section{Commons}
 
@@ -472,18 +475,18 @@ Intuitively, $\combinehints{}{}$ is a partial binary operation which combines tw
 
 \begin{frame}{Combining hints -- properties}
 
-The operation $\combinehints{}{}$:
+If all possible results of $\combinehints{}{}$ are defined, then:
 
 \begin{itemize}
-  \item Is associative: $\combinehints{(\combinehints{H_1}{H_2})}{H_3} = \combinehints{H_1}{(\combinehints{H_2}{H_3})}$
-  \item Is commutative, i.e. $\combinehints{H_1}{H_2} = \combinehints{H_2}{H_1}$
-  \item Has neutral element: $\combinehints{\Hint}{H} = H = \combinehints{H}{\Hint}$
-  \item Is idempotent, i.e. $\combinehints{H}{H} = H$.
+  \item $\combinehints{(\combinehints{H_1}{H_2})}{H_3} = \combinehints{H_1}{(\combinehints{H_2}{H_3})}$
+  \item $\combinehints{H_1}{H_2} = \combinehints{H_2}{H_1}$
+  \item $\combinehints{\Hint}{H} = H = \combinehints{H}{\Hint}$
+  \item $\combinehints{H}{H} = H$.
 \end{itemize}
 
 \vspace{2em}
 
-So, when $\combinehints{}{}$ happens to defined at all, it forms a commutative idempotent monoid. And as we all know, partial monoids are categories. So it seems hints form a thin groupoid... which they obviously do!
+If $\combinehints{}{}$ were not partial, it would be a commutative idempotent monoid. But since it is partial, meh...
 
 \end{frame}
 
@@ -554,6 +557,14 @@ Typing contexts assign types to variables, but annotations in terms are hints, n
 
 \end{frame}
 
+\begin{frame}{Declarative typing -- differences}
+
+\begin{center}
+  $\infrule{\typing{e}{A} \quad \sidecond{\hintorder{H}{A}}}{\typing{\annot{e}{H}}{A}}$
+\end{center}
+
+\end{frame}
+
 \begin{frame}{Hinting -- basic rules}
 
 \begin{center}
@@ -573,7 +584,7 @@ Typing contexts assign types to variables, but annotations in terms are hints, n
 
   \vspace{1em}
 
-  $\infrule{\hinting{f}{\Fun{\Hint}{H}}{\Fun{H'}{B}} \quad \hinting{a}{H'}{A}}{\hinting{\app{f}{a}}{H}{B}}$
+  $\infrule{\hinting{f}{\Fun{\Hint}{H}}{\Fun{A}{B}} \quad \hinting{a}{A}{A}}{\hinting{\app{f}{a}}{H}{B}}$
 
   \vspace{1em}
 
@@ -598,7 +609,7 @@ Typing contexts assign types to variables, but annotations in terms are hints, n
 
   \vspace{2em}
 
-  $\infrule{\hinting{e}{\Sum{\Hint}{\Hint}}{\Sum{A}{B}} \quad \begin{array}{c} \hinting{f}{\Fun{A}{H}}{\Fun{A}{C}} \\ \hinting{g}{\Fun{B}{H}}{\Fun{B}{C}} \end{array}}{\hinting{\case{e}{f}{g}}{H}{C}}$
+  $\infrule{\hinting{e}{\Sum{\Hint}{\Hint}}{\Sum{A}{B}} \quad \begin{array}{c} \hinting{f}{\Fun{A}{H}}{\Fun{A}{C}} \\ \hinting{g}{\Fun{B}{C}}{\Fun{B}{C}} \end{array}}{\hinting{\case{e}{f}{g}}{H}{C}}$
 
   \vspace{2em}
 
@@ -649,7 +660,11 @@ STLC with hints (version 2) is a slight variation on the first one. The problem 
 
   $\infrule[HintFor]{\sidecond{e\ \texttt{constructor}} \quad \sidecond{\hintfor{H}{e} = H'} \quad \sidecond{H \neq H'} \quad \hinting{e}{H'}{A}}{\hinting{e}{H}{A}}$
 \end{center}
-  
+
+\vspace{2em}
+
+Note that because of the condition $H \neq H'$, the rule $\rulename{HintFor}$ can only be applied once, and after it is applied only the type-directed rules are available.
+
 \end{frame}
 
 \begin{frame}{Hinting v2 -- type-directed rules}
@@ -659,7 +674,7 @@ STLC with hints (version 2) is a slight variation on the first one. The problem 
 
   \vspace{1em}
 
-  $\infrule{\hinting{f}{\Fun{\Hint}{H}}{\Fun{H'}{B}} \quad \hinting{a}{H'}{A}}{\hinting{\app{f}{a}}{H}{B}}$
+  $\infrule{\hinting{f}{\Fun{\Hint}{H}}{\Fun{A}{B}} \quad \hinting{a}{A}{A}}{\hinting{\app{f}{a}}{H}{B}}$
 
   \vspace{1em}
 
@@ -684,12 +699,84 @@ STLC with hints (version 2) is a slight variation on the first one. The problem 
 
   \vspace{2em}
 
-  $\infrule{\hinting{e}{\Sum{\Hint}{\Hint}}{\Sum{A}{B}} \quad \begin{array}{c} \hinting{f}{\Fun{A}{H}}{\Fun{A}{C}} \\ \hinting{g}{\Fun{B}{H}}{\Fun{B}{C}} \end{array}}{\hinting{\case{e}{f}{g}}{H}{C}}$
+  $\infrule{\hinting{e}{\Sum{\Hint}{\Hint}}{\Sum{A}{B}} \quad \begin{array}{c} \hinting{f}{\Fun{A}{H}}{\Fun{A}{C}} \\ \hinting{g}{\Fun{B}{C}}{\Fun{B}{C}} \end{array}}{\hinting{\case{e}{f}{g}}{H}{C}}$
 
   \vspace{2em}
 
   $\infrule{}{\hinting{\unit}{\Unit}{\Unit}}$ \quad
   $\infrule{\hinting{e}{\Empty}{\Empty}}{\hinting{\exfalso[e]}{A}{A}}$
+\end{center}
+
+\end{frame}
+
+\begin{frame}{Hinting v2 -- alternative rules}
+
+\begin{center}
+  $\infrule[AltApp]{\hinting{a}{?}{A} \quad \hinting{f}{\Fun{A}{H}}{\Fun{A}{B}}}{\hinting{\app{f}{a}}{H}{B}}$
+
+  \vspace{2em}
+
+  $\infrule[AltCase]{\begin{array}{c} \hinting{f}{\Fun{?}{H}}{\Fun{A}{C}} \\ \hinting{g}{\Fun{?}{C}}{\Fun{B}{C}} \end{array} \quad \hinting{e}{\Sum{A}{B}}{\Sum{A}{B}}}{\hinting{\case{e}{f}{g}}{H}{C}}$
+\end{center}
+
+\vspace{2em}
+
+We could have made some different choices. For application, we could try to infer the argument type first and then feed it to the function as a hint. For case, we could try to infer domains of the branches first, then feed these as hints when checking the discriminee.
+
+\end{frame}
+
+\begin{frame}{Notations and derived terms}
+
+We can introduce some handy notations:
+
+\begin{itemize}
+  \item $\check{e}{A} :\equiv \hinting{e}{A}{A}$
+  \item $\infer{e}{A} :\equiv \hinting{e}{\Hint}{A}$
+\end{itemize}
+
+We can embed Intrinsic STLC terms:
+
+\begin{itemize}
+  \item $\ifun{x}{A}{e} :\equiv \annot{\fun{x}{e}}{\Fun{A}{\Hint}}$ \\
+  \item $\iinl{B}{e} :\equiv \annot{\inl{e}}{\Sum{\Hint}{B}}$ \\
+  \item $\iinr{A}{e} :\equiv \annot{\inr{e}}{\Sum{A}{\Hint}}$ \\
+  \item $\iexfalso{A}{e} :\equiv \annot{\exfalso{e}}{A}$
+\end{itemize}
+
+We can also embed Dual Intrinsic STLC terms:
+
+\begin{itemize}
+  \item $\iapp{A}{f}{a} :\equiv \app{\annot{f}{\Fun{A}{\Hint}}}{a}$
+  \item $\ioutl{B}{e} :\equiv \outl{\annot{e}{\Prod{\Hint}{B}}}$
+  \item $\ioutr{A}{e} :\equiv \outl{\annot{e}{\Prod{A}{\Hint}}}$
+  \item $\icase{A}{B}{e}{f}{g} :\equiv \case{\annot{e}{\Sum{A}{B}}}{f}{g}$
+\end{itemize}
+
+\end{frame}
+
+\begin{frame}{Rules for derived terms}
+
+\begin{center}
+  $\infrule{\fullinfer{\extend{\Gamma}{x}{A}}{e}{B}}{\infer{\ifun{x}{A}{e}}{\Fun{A}{B}}}$ \quad
+  $\infrule{\check{f}{\Fun{A}{B}} \quad \check{a}{A}}{\check{\iapp{A}{f}{a}}{B}}$
+
+  \vspace{2em}
+
+  $\infrule{\check{e}{\Prod{A}{B}}}{\check{\ioutl{B}{e}}{A}}$ \enspace
+  $\infrule{\check{e}{\Prod{A}{B}}}{\check{\ioutr{A}{e}}{B}}$
+
+  \vspace{2em}
+
+  $\infrule{\infer{e}{A}}{\infer{\iinl{B}{e}}{\Sum{A}{B}}}$ \quad
+  $\infrule{\infer{e}{B}}{\infer{\iinr{A}{e}}{\Sum{A}{B}}}$
+
+  \vspace{2em}
+
+  $\infrule{\check{e}{\Sum{A}{B}} \quad \check{f}{\Fun{A}{C}} \quad \check{g}{\Fun{B}{C}}}{\check{\icase{A}{B}{e}{f}{g}}{C}}$
+
+  \vspace{2em}
+
+  $\infrule{\infer{e}{\Empty}}{\infer{\iexfalso{A}{e}}{A}}$
 \end{center}
 
 \end{frame}

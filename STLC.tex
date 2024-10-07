@@ -16,13 +16,13 @@
 \newcommand{\fun}[2]{\lambda #1. #2}
 \newcommand{\app}[2]{#1\ #2}
 \newcommand{\pair}[2]{(#1, #2)}
-\newcommand{\outl}[1][]{\texttt{outl}\ #1}
-\newcommand{\outr}[1][]{\texttt{outr}\ #1}
-\newcommand{\inl}[1][]{\texttt{inl}\ #1}
-\newcommand{\inr}[1][]{\texttt{inr}\ #1}
+\newcommand{\outl}[1]{\texttt{outl}\ #1}
+\newcommand{\outr}[1]{\texttt{outr}\ #1}
+\newcommand{\inl}[1]{\texttt{inl}\ #1}
+\newcommand{\inr}[1]{\texttt{inr}\ #1}
 \newcommand{\case}[3]{\texttt{case}\ #1\ \texttt{of}\ (#2, #3)}
 \newcommand{\unit}{\texttt{unit}}
-\newcommand{\exfalso}[1][]{\texttt{exfalso}\ #1}
+\newcommand{\exfalso}[1]{\texttt{exfalso}\ #1}
 
 \newcommand{\subst}[3]{#1\left[#2 := #3\right]}
 
@@ -74,8 +74,8 @@ Terms: \\
 $e ::=$ \\
 \qquad $x \pipe$ \\
 \qquad $\fun{x}{e} \pipe \app{e_1}{e_2} \pipe$ \\
-\qquad $\pair{e_1}{e_2} \pipe \outl[e] \pipe \outr[e] \pipe$ \\
-\qquad $\inl[e] \pipe \inr[e] \pipe \case{e}{e_1}{e_2} \pipe$ \\
+\qquad $\pair{e_1}{e_2} \pipe \outl{e} \pipe \outr{e} \pipe$ \\
+\qquad $\inl{e} \pipe \inr{e} \pipe \case{e}{e_1}{e_2} \pipe$ \\
 \qquad $\unit \pipe \exfalso{e}$
 
 \end{frame}
@@ -97,13 +97,13 @@ $e ::=$ \\
   \vspace{2em}
 
   $\infrule{\typing{a}{A} \quad \typing{b}{B}}{\typing{\pair{a}{b}}{\Prod{A}{B}}}$ \quad
-  $\infrule{\typing{e}{\Prod{A}{B}}}{\typing{\outl[e]}{A}}$ \quad
-  $\infrule{\typing{e}{\Prod{A}{B}}}{\typing{\outr[e]}{B}}$
+  $\infrule{\typing{e}{\Prod{A}{B}}}{\typing{\outl{e}}{A}}$ \quad
+  $\infrule{\typing{e}{\Prod{A}{B}}}{\typing{\outr{e}}{B}}$
 
   \vspace{2em}
 
-  $\infrule{\typing{e}{A}}{\typing{\inl[e]}{\Sum{A}{B}}}$ \quad
-  $\infrule{\typing{e}{B}}{\typing{\inr[e]}{\Sum{A}{B}}}$
+  $\infrule{\typing{e}{A}}{\typing{\inl{e}}{\Sum{A}{B}}}$ \quad
+  $\infrule{\typing{e}{B}}{\typing{\inr{e}}{\Sum{A}{B}}}$
 
   \vspace{2em}
 
@@ -112,7 +112,7 @@ $e ::=$ \\
   \vspace{2em}
 
   $\infrule{}{\typing{\unit}{\Unit}}$ \quad
-  $\infrule{\typing{e}{\Empty}}{\typing{\exfalso[e]}{A}}$
+  $\infrule{\typing{e}{\Empty}}{\typing{\exfalso{e}}{A}}$
 \end{center}
 
 \end{frame}
@@ -158,8 +158,8 @@ Terms: \\
 $e ::=$ \\
 \qquad $x \pipe \newterm{\annot{e}{A}} \pipe$ \\
 \qquad $\fun{x}{e} \pipe \app{e_1}{e_2} \pipe$ \\
-\qquad $\pair{e_1}{e_2} \pipe \outl[e] \pipe \outr[e] \pipe$ \\
-\qquad $\inl[e] \pipe \inr[e] \pipe \case{e}{e_1}{e_2} \pipe$ \\
+\qquad $\pair{e_1}{e_2} \pipe \outl{e} \pipe \outr{e} \pipe$ \\
+\qquad $\inl{e} \pipe \inr{e} \pipe \case{e}{e_1}{e_2} \pipe$ \\
 \qquad $\unit \pipe \exfalso{e}$
 
 \end{frame}
@@ -203,13 +203,13 @@ $e ::=$ \\
   \vspace{2em}
 
   $\infrule{\check{a}{A} \quad \check{b}{B}}{\check{\pair{a}{b}}{\Prod{A}{B}}}$ \quad
-  $\infrule{\infer{e}{\Prod{A}{B}}}{\infer{\outl[e]}{A}}$ \quad
-  $\infrule{\infer{e}{\Prod{A}{B}}}{\infer{\outr[e]}{B}}$
+  $\infrule{\infer{e}{\Prod{A}{B}}}{\infer{\outl{e}}{A}}$ \quad
+  $\infrule{\infer{e}{\Prod{A}{B}}}{\infer{\outr{e}}{B}}$
 
   \vspace{2em}
 
-  $\infrule{\check{e}{A}}{\check{\inl[e]}{\Sum{A}{B}}}$ \quad
-  $\infrule{\check{e}{B}}{\check{\inr[e]}{\Sum{A}{B}}}$
+  $\infrule{\check{e}{A}}{\check{\inl{e}}{\Sum{A}{B}}}$ \quad
+  $\infrule{\check{e}{B}}{\check{\inr{e}}{\Sum{A}{B}}}$
 
   \vspace{2em}
 
@@ -218,7 +218,7 @@ $e ::=$ \\
   \vspace{2em}
 
   $\infrule{}{\check{\unit}{\Unit}}$ \quad
-  $\infrule{\check{e}{\Empty}}{\check{\exfalso[e]}{A}}$
+  $\infrule{\check{e}{\Empty}}{\check{\exfalso{e}}{A}}$
 \end{center}
 
 \end{frame}
@@ -274,7 +274,7 @@ Terms: \\
 $e ::=$ \\
 \qquad $x \pipe$ \\
 \qquad $\termdiff{\ifun{x}{A}{e}} \pipe \app{e_1}{e_2} \pipe$ \\
-\qquad $\pair{e_1}{e_2} \pipe \outl[e] \pipe \outr[e] \pipe$ \\
+\qquad $\pair{e_1}{e_2} \pipe \outl{e} \pipe \outr{e} \pipe$ \\
 \qquad $\termdiff{\iinl{A}{e}} \pipe \termdiff{\iinr{A}{e}} \pipe \case{e}{e_1}{e_2} \pipe$ \\
 \qquad $\unit \pipe \termdiff{\iexfalso{A}{e}}$
 
@@ -316,8 +316,8 @@ $e ::=$ \\
   \vspace{2em}
 
   $\infrule{\infer{a}{A} \quad \infer{b}{B}}{\infer{\pair{a}{b}}{\Prod{A}{B}}}$ \quad
-  $\infrule{\infer{e}{\Prod{A}{B}}}{\infer{\outl[e]}{A}}$ \quad
-  $\infrule{\infer{e}{\Prod{A}{B}}}{\infer{\outr[e]}{B}}$
+  $\infrule{\infer{e}{\Prod{A}{B}}}{\infer{\outl{e}}{A}}$ \quad
+  $\infrule{\infer{e}{\Prod{A}{B}}}{\infer{\outr{e}}{B}}$
 
   \vspace{2em}
 
@@ -366,7 +366,7 @@ $e ::=$ \\
 \qquad $x \pipe$ \\
 \qquad $\fun{x}{e} \pipe \termdiff{\iapp{A}{e_1}{e_2}} \pipe$ \\
 \qquad $\pair{e_1}{e_2} \pipe \termdiff{\ioutl{A}{e}} \pipe \termdiff{\ioutr{A}{e}} \pipe$ \\
-\qquad $\inl[e] \pipe \inr[e] \pipe \termdiff{\icase{A}{B}{e}{e_1}{e_2}} \pipe$ \\
+\qquad $\inl{e} \pipe \inr{e} \pipe \termdiff{\icase{A}{B}{e}{e_1}{e_2}} \pipe$ \\
 \qquad $\unit \pipe \exfalso{e}$
 
 \end{frame}
@@ -410,8 +410,8 @@ $e ::=$ \\
 
   \vspace{2em}
 
-  $\infrule{\check{e}{A}}{\check{\inl[e]}{\Sum{A}{B}}}$ \quad
-  $\infrule{\check{e}{B}}{\check{\inr[e]}{\Sum{A}{B}}}$
+  $\infrule{\check{e}{A}}{\check{\inl{e}}{\Sum{A}{B}}}$ \quad
+  $\infrule{\check{e}{B}}{\check{\inr{e}}{\Sum{A}{B}}}$
 
   \vspace{2em}
 
@@ -420,7 +420,7 @@ $e ::=$ \\
   \vspace{2em}
 
   $\infrule{}{\check{\unit}{\Unit}}$ \quad
-  $\infrule{\check{e}{\Empty}}{\check{\exfalso[e]}{A}}$
+  $\infrule{\check{e}{\Empty}}{\check{\exfalso{e}}{A}}$
 \end{center}
 
 \end{frame}
@@ -433,9 +433,9 @@ Even though Dual Intrinsic STLC has plenty of mandatory annotations, it does not
 
 \section{Hints}
 
-\newcommand{\Hint}{\mathbf{?}}
+\newcommand{\Hole}{\textbf{?}}
 
-\newcommand{\combinehints}[2]{#1 \sqcap #2}
+\newcommand{\combinehints}[2]{#1 \sqcup #2}
 
 \newcommand{\hintorder}[2]{#1 \sqsubseteq #2}
 
@@ -445,23 +445,23 @@ We introduce hints, which will be useful to describe two more variants of STLC.
 
 \vspace{2em}
 
-$H ::= \Hint \pipe \Fun{H_1}{H_2} \pipe \Prod{H_1}{H_2} \pipe \Sum{H_1}{H_2} \pipe \Unit \pipe \Empty$
+$H ::= \Hole \pipe \Fun{H_1}{H_2} \pipe \Prod{H_1}{H_2} \pipe \Sum{H_1}{H_2} \pipe \Unit \pipe \Empty$
 
 \vspace{2em}
 
-Intuitively, hints are partial types. They are built like types, except that there's one additional way to make hints: $\Hint$, which can be read as ``unknown'', ``hole'' or ``whatever''.
+Intuitively, hints are partial types. They are built like types, except that there's one additional way to make hints: $\Hole$, which can be read as ``unknown'', ``hole'' or ``whatever''.
 
 \vspace{2em}
 
-We use the letter $H$ for hints. When we use letters like $A, B, C$ which usually stand in for types, it means that the hint \textbf{is} a type, i.e. it doesn't contain any $\Hint$s.
+We use the letter $H$ for hints. When we use letters like $A, B, C$ which usually stand in for types, it means that the hint \textbf{is} a type, i.e. it doesn't contain any $\Hole$s.
 
 \end{frame}
 
 \begin{frame}{Combining hints}
 
 \begin{center}
-  $\combinehints{\Hint}{H} = H$ \\
-  $\combinehints{H}{\Hint} = H$ \\
+  $\combinehints{\Hole}{H} = H$ \\
+  $\combinehints{H}{\Hole} = H$ \\
   $\combinehints{(\Fun{H_1}{H_2})}{(\Fun{H'_1}{H'_2})} = \Fun{(\combinehints{H_1}{H'_1})}{(\combinehints{H_2}{H'_2})}$ \\
   $\combinehints{(\Prod{H_1}{H_2})}{(\Prod{H'_1}{H'_2})} = \Prod{(\combinehints{H_1}{H'_1})}{(\combinehints{H_2}{H'_2})}$ \\
   $\combinehints{(\Sum{H_1}{H_2})}{(\Sum{H'_1}{H'_2})} = \Sum{(\combinehints{H_1}{H'_1})}{(\combinehints{H_2}{H'_2})}$ \\
@@ -469,18 +469,18 @@ We use the letter $H$ for hints. When we use letters like $A, B, C$ which usuall
   $\combinehints{\Empty}{\Empty} = \Empty$
 \end{center}
 
-Intuitively, $\combinehints{}{}$ is a partial binary operation which combines two hints which share the same structure, possibly filling the $\Hint$s in the leaves with something more informative coming from the other argument. For hints which have incompatible structure (e.g. function hint and product hint) the result is undefined.
+Intuitively, $\combinehints{}{}$ is a partial binary operation which combines two hints which share the same structure, possibly filling the $\Hole$s in the leaves with something more informative coming from the other argument. For hints which have incompatible structure (e.g. function hint and product hint) the result is undefined.
 
 \end{frame}
 
 \begin{frame}{Combining hints -- properties}
 
-If all possible results of $\combinehints{}{}$ are defined, then:
+If all relevant results are defined, then:
 
 \begin{itemize}
   \item $\combinehints{(\combinehints{H_1}{H_2})}{H_3} = \combinehints{H_1}{(\combinehints{H_2}{H_3})}$
   \item $\combinehints{H_1}{H_2} = \combinehints{H_2}{H_1}$
-  \item $\combinehints{\Hint}{H} = H = \combinehints{H}{\Hint}$
+  \item $\combinehints{\Hole}{H} = H = \combinehints{H}{\Hole}$
   \item $\combinehints{H}{H} = H$.
 \end{itemize}
 
@@ -496,7 +496,7 @@ The operation $\combinehints{}{}$ induces an order on hints in the usual way: $\
 
 \vspace{2em}
 
-This order can be intuitively interpreted as an information increase: $\hintorder{H_1}{H_2}$ means that hint $H_2$ is more informative than $H_1$, but in a compatible way. In other words, $H_1$ and $H_2$ have the same structure, but some $\Hint$s from $H_1$ can be refined to something more informative in $H_2$.
+This order can be intuitively interpreted as an information increase: $\hintorder{H_1}{H_2}$ means that hint $H_2$ is more informative than $H_1$, but in a compatible way. In other words, $H_1$ and $H_2$ have the same structure, but some $\Hole$s from $H_1$ can be refined to something more informative in $H_2$.
 
 \end{frame}
 
@@ -504,7 +504,7 @@ This order can be intuitively interpreted as an information increase: $\hintorde
 
 
 \begin{center}
-  $\infrule{}{\hintorder{\Hint}{H}}$
+  $\infrule{}{\hintorder{\Hole}{H}}$
 
   \vspace{2em}
 
@@ -547,8 +547,8 @@ Terms: \\
 $e ::=$ \\
 \qquad $x \pipe \termdiff{\annot{e}{H}} \pipe $ \\
 \qquad $\fun{x}{e} \pipe \app{e_1}{e_2} \pipe$ \\
-\qquad $\pair{e_1}{e_2} \pipe \outl[e] \pipe \outr[e] \pipe$ \\
-\qquad $\inl[e] \pipe \inr[e] \pipe \case{e}{e_1}{e_2} \pipe$ \\
+\qquad $\pair{e_1}{e_2} \pipe \outl{e} \pipe \outr{e} \pipe$ \\
+\qquad $\inl{e} \pipe \inr{e} \pipe \case{e}{e_1}{e_2} \pipe$ \\
 \qquad $\unit \pipe \exfalso{e}$
 
 \vspace{2em}
@@ -580,20 +580,20 @@ Typing contexts assign types to variables, but annotations in terms are hints, n
 \begin{frame}{Hinting -- type-directed rules 1}
 
 \begin{center}
-  $\infrule{\sidecond{\combinehints{H}{(\Fun{\Hint}{\Hint})} = \Fun{A}{H'}} \quad \fullhinting{\extend{\Gamma}{x}{A}}{e}{H'}{B}}{\hinting{\fun{x}{e}}{H}{\Fun{A}{B}}}$
+  $\infrule{\sidecond{\combinehints{H}{(\Fun{\Hole}{\Hole})} = \Fun{A}{H'}} \quad \fullhinting{\extend{\Gamma}{x}{A}}{e}{H'}{B}}{\hinting{\fun{x}{e}}{H}{\Fun{A}{B}}}$
 
   \vspace{1em}
 
-  $\infrule{\hinting{f}{\Fun{\Hint}{H}}{\Fun{A}{B}} \quad \hinting{a}{A}{A}}{\hinting{\app{f}{a}}{H}{B}}$
+  $\infrule{\hinting{f}{\Fun{\Hole}{H}}{\Fun{A}{B}} \quad \hinting{a}{A}{A}}{\hinting{\app{f}{a}}{H}{B}}$
 
   \vspace{1em}
 
-  $\infrule{\sidecond{\combinehints{H}{(\Prod{\Hint}{\Hint})} = \Prod{H_1}{H_2}} \quad \hinting{a}{H_1}{A} \quad \hinting{b}{H_2}{B}}{\hinting{\pair{a}{b}}{H}{\Prod{A}{B}}}$
+  $\infrule{\sidecond{\combinehints{H}{(\Prod{\Hole}{\Hole})} = \Prod{H_1}{H_2}} \quad \hinting{a}{H_1}{A} \quad \hinting{b}{H_2}{B}}{\hinting{\pair{a}{b}}{H}{\Prod{A}{B}}}$
 
   \vspace{1em}
 
-  $\infrule{\hinting{e}{\Prod{H}{\Hint}}{\Prod{A}{B}}}{\hinting{\outl[e]}{H}{A}}$ \quad
-  $\infrule{\hinting{e}{\Prod{H}{\Hint}}{\Prod{A}{B}}}{\hinting{\outr[e]}{H}{B}}$
+  $\infrule{\hinting{e}{\Prod{H}{\Hole}}{\Prod{A}{B}}}{\hinting{\outl{e}}{H}{A}}$ \quad
+  $\infrule{\hinting{e}{\Prod{H}{\Hole}}{\Prod{A}{B}}}{\hinting{\outr{e}}{H}{B}}$
 \end{center}
 
 \end{frame}
@@ -601,27 +601,27 @@ Typing contexts assign types to variables, but annotations in terms are hints, n
 \begin{frame}{Hinting -- type-directed rules 2}
 
 \begin{center}
-  $\infrule{\sidecond{\combinehints{H}{(\Sum{\Hint}{\Hint})} = \Sum{H'}{B}} \quad \hinting{e}{H'}{A}}{\hinting{\inl[e]}{H}{\Sum{A}{B}}}$
+  $\infrule{\sidecond{\combinehints{H}{(\Sum{\Hole}{\Hole})} = \Sum{H'}{B}} \quad \hinting{e}{H'}{A}}{\hinting{\inl{e}}{H}{\Sum{A}{B}}}$
 
   \vspace{2em}
 
-  $\infrule{\sidecond{\combinehints{H}{(\Sum{\Hint}{\Hint})} = \Sum{A}{H'}} \quad \hinting{e}{H'}{B}}{\hinting{\inr[e]}{H}{\Sum{A}{B}}}$
+  $\infrule{\sidecond{\combinehints{H}{(\Sum{\Hole}{\Hole})} = \Sum{A}{H'}} \quad \hinting{e}{H'}{B}}{\hinting{\inr{e}}{H}{\Sum{A}{B}}}$
 
   \vspace{2em}
 
-  $\infrule{\hinting{e}{\Sum{\Hint}{\Hint}}{\Sum{A}{B}} \quad \begin{array}{c} \hinting{f}{\Fun{A}{H}}{\Fun{A}{C}} \\ \hinting{g}{\Fun{B}{C}}{\Fun{B}{C}} \end{array}}{\hinting{\case{e}{f}{g}}{H}{C}}$
+  $\infrule{\hinting{e}{\Sum{\Hole}{\Hole}}{\Sum{A}{B}} \quad \begin{array}{c} \hinting{f}{\Fun{A}{H}}{\Fun{A}{C}} \\ \hinting{g}{\Fun{B}{C}}{\Fun{B}{C}} \end{array}}{\hinting{\case{e}{f}{g}}{H}{C}}$
 
   \vspace{2em}
 
   $\infrule{\sidecond{\hintorder{H}{\Unit}}}{\hinting{\unit}{H}{\Unit}}$ \quad
-  $\infrule{\hinting{e}{\Empty}{\Empty}}{\hinting{\exfalso[e]}{A}{A}}$
+  $\infrule{\hinting{e}{\Empty}{\Empty}}{\hinting{\exfalso{e}}{A}{A}}$
 \end{center}
 
 \end{frame}
 
 \begin{frame}{Metatheory}
 
-Similarly to Extrinsic STLC, STLC with hints v1 does not enjoy uniqueness of typing. This is because we still can have terms like $\fun{x}{x}$ with hint $\Hint$, which can be typed with any type of the form $\Fun{A}{A}$. However, if the hint is informative enough, then the type is unique. Moreover, every typable term can be given a hint which makes its type unique.
+Similarly to Extrinsic STLC, STLC with hints v1 does not enjoy uniqueness of typing. This is because we still can have terms like $\fun{x}{x}$ with hint $\Hole$, which can be typed with any type of the form $\Fun{A}{A}$. However, if the hint is informative enough, then the type is unique. Moreover, every typable term can be given a hint which makes its type unique.
 
 \end{frame}
 
@@ -638,10 +638,10 @@ STLC with hints (version 2) is a slight variation on the first one. The problem 
 \begin{frame}{Hinting v2 -- hints for term constructors}
 
 \begin{center}
-  $\hintfor{H}{\fun{x}{e}} = \combinehints{H}{(\Fun{\Hint}{\Hint})}$ \\
-  $\hintfor{H}{\pair{e_1}{e_2}} = \combinehints{H}{(\Prod{\Hint}{\Hint})}$ \\
-  $\hintfor{H}{\inl[e]} = \combinehints{H}{(\Sum{\Hint}{\Hint})}$ \\
-  $\hintfor{H}{\inr[e]} = \combinehints{H}{(\Sum{\Hint}{\Hint})}$ \\
+  $\hintfor{H}{\fun{x}{e}} = \combinehints{H}{(\Fun{\Hole}{\Hole})}$ \\
+  $\hintfor{H}{\pair{e_1}{e_2}} = \combinehints{H}{(\Prod{\Hole}{\Hole})}$ \\
+  $\hintfor{H}{\inl{e}} = \combinehints{H}{(\Sum{\Hole}{\Hole})}$ \\
+  $\hintfor{H}{\inr{e}} = \combinehints{H}{(\Sum{\Hole}{\Hole})}$ \\
   $\hintfor{H}{\unit} = \combinehints{H}{\Unit}$
 \end{center}
 
@@ -674,7 +674,7 @@ Note that because of the condition $H \neq H'$, the rule $\rulename{HintFor}$ ca
 
   \vspace{1em}
 
-  $\infrule{\hinting{f}{\Fun{\Hint}{H}}{\Fun{A}{B}} \quad \hinting{a}{A}{A}}{\hinting{\app{f}{a}}{H}{B}}$
+  $\infrule{\hinting{f}{\Fun{\Hole}{H}}{\Fun{A}{B}} \quad \hinting{a}{A}{A}}{\hinting{\app{f}{a}}{H}{B}}$
 
   \vspace{1em}
 
@@ -682,8 +682,8 @@ Note that because of the condition $H \neq H'$, the rule $\rulename{HintFor}$ ca
 
   \vspace{1em}
 
-  $\infrule{\hinting{e}{\Prod{H}{\Hint}}{\Prod{A}{B}}}{\hinting{\outl[e]}{H}{A}}$ \quad
-  $\infrule{\hinting{e}{\Prod{H}{\Hint}}{\Prod{A}{B}}}{\hinting{\outr[e]}{H}{B}}$
+  $\infrule{\hinting{e}{\Prod{H}{\Hole}}{\Prod{A}{B}}}{\hinting{\outl{e}}{H}{A}}$ \quad
+  $\infrule{\hinting{e}{\Prod{H}{\Hole}}{\Prod{A}{B}}}{\hinting{\outr{e}}{H}{B}}$
 \end{center}
   
 \end{frame}
@@ -691,20 +691,28 @@ Note that because of the condition $H \neq H'$, the rule $\rulename{HintFor}$ ca
 \begin{frame}{Hinting v2 -- type-directed rules}
 
 \begin{center}
-  $\infrule{\hinting{e}{H}{A}}{\hinting{\inl[e]}{\Sum{H}{B}}{\Sum{A}{B}}}$
+  $\infrule{\hinting{e}{H}{A}}{\hinting{\inl{e}}{\Sum{H}{B}}{\Sum{A}{B}}}$
 
   \vspace{2em}
 
-  $\infrule{\hinting{e}{H}{B}}{\hinting{\inr[e]}{\Sum{A}{H}}{\Sum{A}{B}}}$
+  $\infrule{\hinting{e}{H}{B}}{\hinting{\inr{e}}{\Sum{A}{H}}{\Sum{A}{B}}}$
 
   \vspace{2em}
 
-  $\infrule{\hinting{e}{\Sum{\Hint}{\Hint}}{\Sum{A}{B}} \quad \begin{array}{c} \hinting{f}{\Fun{A}{H}}{\Fun{A}{C}} \\ \hinting{g}{\Fun{B}{C}}{\Fun{B}{C}} \end{array}}{\hinting{\case{e}{f}{g}}{H}{C}}$
+  $\infrule{\hinting{e}{\Sum{\Hole}{\Hole}}{\Sum{A}{B}} \quad \begin{array}{c} \hinting{f}{\Fun{A}{H}}{\Fun{A}{C}} \\ \hinting{g}{\Fun{B}{C}}{\Fun{B}{C}} \end{array}}{\hinting{\case{e}{f}{g}}{H}{C}}$
 
   \vspace{2em}
 
   $\infrule{}{\hinting{\unit}{\Unit}{\Unit}}$ \quad
-  $\infrule{\hinting{e}{\Empty}{\Empty}}{\hinting{\exfalso[e]}{A}{A}}$
+  $\infrule{\hinting{e}{\Empty}{\Empty}}{\hinting{\exfalso{e}}{A}{A}}$
+\end{center}
+
+\end{frame}
+
+\begin{frame}{Hinting v2 -- alternative basic rules}
+
+\begin{center}
+  $\infrule[HintFor']{\hinting{e}{\hintfor{?}{e}}{A} \quad \sidecond{e\ \texttt{constructor}}}{\hinting{e}{\Hole}{A}}$
 \end{center}
 
 \end{frame}
@@ -731,24 +739,24 @@ We can introduce some handy notations:
 
 \begin{itemize}
   \item $\check{e}{A} :\equiv \hinting{e}{A}{A}$
-  \item $\infer{e}{A} :\equiv \hinting{e}{\Hint}{A}$
+  \item $\infer{e}{A} :\equiv \hinting{e}{\Hole}{A}$
 \end{itemize}
 
 We can embed Intrinsic STLC terms:
 
 \begin{itemize}
-  \item $\ifun{x}{A}{e} :\equiv \annot{\fun{x}{e}}{\Fun{A}{\Hint}}$ \\
-  \item $\iinl{B}{e} :\equiv \annot{\inl{e}}{\Sum{\Hint}{B}}$ \\
-  \item $\iinr{A}{e} :\equiv \annot{\inr{e}}{\Sum{A}{\Hint}}$ \\
+  \item $\ifun{x}{A}{e} :\equiv \annot{\fun{x}{e}}{\Fun{A}{\Hole}}$ \\
+  \item $\iinl{B}{e} :\equiv \annot{\inl{e}}{\Sum{\Hole}{B}}$ \\
+  \item $\iinr{A}{e} :\equiv \annot{\inr{e}}{\Sum{A}{\Hole}}$ \\
   \item $\iexfalso{A}{e} :\equiv \annot{\exfalso{e}}{A}$
 \end{itemize}
 
 We can also embed Dual Intrinsic STLC terms:
 
 \begin{itemize}
-  \item $\iapp{A}{f}{a} :\equiv \app{\annot{f}{\Fun{A}{\Hint}}}{a}$
-  \item $\ioutl{B}{e} :\equiv \outl{\annot{e}{\Prod{\Hint}{B}}}$
-  \item $\ioutr{A}{e} :\equiv \outl{\annot{e}{\Prod{A}{\Hint}}}$
+  \item $\iapp{A}{f}{a} :\equiv \app{\annot{f}{\Fun{A}{\Hole}}}{a}$
+  \item $\ioutl{B}{e} :\equiv \outl{\annot{e}{\Prod{\Hole}{B}}}$
+  \item $\ioutr{A}{e} :\equiv \outr{\annot{e}{\Prod{A}{\Hole}}}$
   \item $\icase{A}{B}{e}{f}{g} :\equiv \case{\annot{e}{\Sum{A}{B}}}{f}{g}$
 \end{itemize}
 

@@ -431,25 +431,29 @@ Even though Dual Intrinsic STLC has plenty of mandatory annotations, it does not
 
 \end{frame}
 
-\section{Hints}
+\section{Hinting}
+
+\newcommand{\fullhinting}[4]{#1 \vdash #2 \mathcolor{blue}{\Leftarrow} #3 \mathcolor{red}{\Rightarrow} #4}
+\newcommand{\hinting}[3]{\fullhinting{\Gamma}{#1}{#2}{#3}}
 
 \newcommand{\Hole}{\textbf{?}}
-
 \newcommand{\combinehints}[2]{#1 \sqcup #2}
-
 \newcommand{\hintorder}[2]{#1 \sqsubseteq #2}
+\newcommand{\hintfor}[1]{\texttt{hint}(#1)}
+
+\begin{frame}{STLC with Hints}
+
+STLC with Hints is a flavour of STLC inspired by Bidirectional STLC. The main insight behind it is that in Bidirectional STLC, we have a hard time deciding whether a rule should be in checking mode or in inference mode, so why not both? This way, we would have some input type that guides us, but also produce an output type, which is in some sense ``better''. This is a bit silly if we already have the correct type as input, but we can make this idea work by introducing hints, which are types with holes, and insisting that the input is not a type, but merely a hint.
+
+\end{frame}
 
 \begin{frame}{Hints}
-
-We introduce hints, which will be useful to describe two more variants of STLC.
-
-\vspace{2em}
 
 $H ::= \Hole \pipe \Fun{H_1}{H_2} \pipe \Prod{H_1}{H_2} \pipe \Sum{H_1}{H_2} \pipe \Unit \pipe \Empty$
 
 \vspace{2em}
 
-Intuitively, hints are partial types. They are built like types, except that there's one additional way to make hints: $\Hole$, which can be read as ``unknown'', ``hole'' or ``whatever''.
+Intuitively, hints are partial types. They are built like types, except that there's one additional constructor, $\Hole$, which can be read as ``hole'' or ``unknown''.
 
 \vspace{2em}
 
@@ -457,51 +461,7 @@ We use the letter $H$ for hints. When we use letters like $A, B, C$ which usuall
 
 \end{frame}
 
-\begin{frame}{Combining hints}
-
-\begin{center}
-  $\combinehints{\Hole}{H} = H$ \\
-  $\combinehints{H}{\Hole} = H$ \\
-  $\combinehints{(\Fun{H_1}{H_2})}{(\Fun{H'_1}{H'_2})} = \Fun{(\combinehints{H_1}{H'_1})}{(\combinehints{H_2}{H'_2})}$ \\
-  $\combinehints{(\Prod{H_1}{H_2})}{(\Prod{H'_1}{H'_2})} = \Prod{(\combinehints{H_1}{H'_1})}{(\combinehints{H_2}{H'_2})}$ \\
-  $\combinehints{(\Sum{H_1}{H_2})}{(\Sum{H'_1}{H'_2})} = \Sum{(\combinehints{H_1}{H'_1})}{(\combinehints{H_2}{H'_2})}$ \\
-  $\combinehints{\Unit}{\Unit} = \Unit$ \\
-  $\combinehints{\Empty}{\Empty} = \Empty$
-\end{center}
-
-Intuitively, $\combinehints{}{}$ is a partial binary operation which combines two hints which share the same structure, possibly filling the $\Hole$s in the leaves with something more informative coming from the other argument. For hints which have incompatible structure (e.g. function hint and product hint) the result is undefined.
-
-\end{frame}
-
-\begin{frame}{Combining hints -- properties}
-
-If all relevant results are defined, then:
-
-\begin{itemize}
-  \item $\combinehints{(\combinehints{H_1}{H_2})}{H_3} = \combinehints{H_1}{(\combinehints{H_2}{H_3})}$
-  \item $\combinehints{H_1}{H_2} = \combinehints{H_2}{H_1}$
-  \item $\combinehints{\Hole}{H} = H = \combinehints{H}{\Hole}$
-  \item $\combinehints{H}{H} = H$.
-\end{itemize}
-
-\vspace{2em}
-
-If $\combinehints{}{}$ were not partial, it would be a commutative idempotent monoid. But since it is partial, meh...
-
-\end{frame}
-
 \begin{frame}{Order on hints}
-
-The operation $\combinehints{}{}$ induces an order on hints in the usual way: $\hintorder{H_1}{H_2} :\equiv (\combinehints{H_1}{H_2} = H_2)$.
-
-\vspace{2em}
-
-This order can be intuitively interpreted as an information increase: $\hintorder{H_1}{H_2}$ means that hint $H_2$ is more informative than $H_1$, but in a compatible way. In other words, $H_1$ and $H_2$ have the same structure, but some $\Hole$s from $H_1$ can be refined to something more informative in $H_2$.
-
-\end{frame}
-
-\begin{frame}{Order on hints -- explicitly}
-
 
 \begin{center}
   $\infrule{}{\hintorder{\Hole}{H}}$
@@ -526,14 +486,54 @@ This order can be intuitively interpreted as an information increase: $\hintorde
 
 \end{frame}
 
-\section{Hinting v1}
+\begin{frame}{Order on hints -- intuition}
 
-\newcommand{\fullhinting}[4]{#1 \vdash #2 \mathcolor{blue}{\Leftarrow} #3 \mathcolor{red}{\Rightarrow} #4}
-\newcommand{\hinting}[3]{\fullhinting{\Gamma}{#1}{#2}{#3}}
+The order can be intuitively interpreted as information increase: $\hintorder{H_1}{H_2}$ means that hint $H_2$ is more informative than $H_1$, but in a compatible way. In other words, $H_1$ and $H_2$ have the same structure, but some $\Hole$s from $H_1$ were possibly refined to something more informative in $H_2$.
 
-\begin{frame}{Hinting v1}
+\end{frame}
 
-STLC with hints (version 1) is a flavour of STLC inspired by Bidirectional STLC. The main insight behind it is that in Bidirectional STLC, we have a hard time deciding whether a rule should be in checking mode or in inference mode, so why not both? This way, we would have some input type that guides us, but also produce an output type, which is in some sense ``better''. This is a bit silly if we already have the type we need as input, but we can make this idea work by introducing hints, which are types with holes, and insisting that the input is not a type, but merely a hint.
+\begin{frame}{Combining hints}
+
+\begin{center}
+  $\combinehints{\Hole}{H} = H$ \\
+  $\combinehints{H}{\Hole} = H$ \\
+  $\combinehints{(\Fun{H_1}{H_2})}{(\Fun{H'_1}{H'_2})} = \Fun{(\combinehints{H_1}{H'_1})}{(\combinehints{H_2}{H'_2})}$ \\
+  $\combinehints{(\Prod{H_1}{H_2})}{(\Prod{H'_1}{H'_2})} = \Prod{(\combinehints{H_1}{H'_1})}{(\combinehints{H_2}{H'_2})}$ \\
+  $\combinehints{(\Sum{H_1}{H_2})}{(\Sum{H'_1}{H'_2})} = \Sum{(\combinehints{H_1}{H'_1})}{(\combinehints{H_2}{H'_2})}$ \\
+  $\combinehints{\Unit}{\Unit} = \Unit$ \\
+  $\combinehints{\Empty}{\Empty} = \Empty$
+\end{center}
+
+The order on hints induces a partial operation $\combinehints{}{}$, which computes the least upper bound of two hints when it exists. Intuitively, $\combinehints{}{}$ combines two hints which share the same structure, filling the $\Hole$s in the leaves with something more informative coming from the other argument. For hints with incompatible structure the result is undefined.
+
+\end{frame}
+
+\begin{frame}{Combining hints -- properties}
+
+If all relevant results are defined, then:
+
+\begin{itemize}
+  \item $\combinehints{(\combinehints{H_1}{H_2})}{H_3} = \combinehints{H_1}{(\combinehints{H_2}{H_3})}$
+  \item $\combinehints{H_1}{H_2} = \combinehints{H_2}{H_1}$
+  \item $\combinehints{\Hole}{H} = H = \combinehints{H}{\Hole}$
+  \item $\combinehints{H}{H} = H$
+\end{itemize}
+
+\vspace{2em}
+
+If $\combinehints{}{}$ were not partial, $(H, \combinehints{}{}, \Hole)$ would be a commutative idempotent monoid. But since it is partial, meh...
+
+\end{frame}
+
+\begin{frame}{Hinting -- hints for term constructors}
+
+\begin{center}
+  $\hintfor{\fun{x}{e}} = \Fun{\Hole}{\Hole}$ \\
+  $\hintfor{\pair{e_1}{e_2}} = \Prod{\Hole}{\Hole}$ \\
+  $\hintfor{\inl{e}} = \Sum{\Hole}{\Hole}$ \\
+  $\hintfor{\inr{e}} = \Sum{\Hole}{\Hole}$ \\
+  $\hintfor{\unit} = \Unit$
+\end{center}
 
 \end{frame}
 
@@ -573,101 +573,19 @@ Typing contexts assign types to variables, but annotations in terms are hints, n
   \vspace{2em}
 
   $\infrule[Annot]{\hinting{e}{\combinehints{H_1}{H_2}}{A}}{\hinting{\annot{e}{H_1}}{H_2}{A}}$
-\end{center}
-
-\end{frame}
-
-\begin{frame}{Hinting -- type-directed rules 1}
-
-\begin{center}
-  $\infrule{\sidecond{\combinehints{H}{(\Fun{\Hole}{\Hole})} = \Fun{A}{H'}} \quad \fullhinting{\extend{\Gamma}{x}{A}}{e}{H'}{B}}{\hinting{\fun{x}{e}}{H}{\Fun{A}{B}}}$
-
-  \vspace{1em}
-
-  $\infrule{\hinting{f}{\Fun{\Hole}{H}}{\Fun{A}{B}} \quad \hinting{a}{A}{A}}{\hinting{\app{f}{a}}{H}{B}}$
-
-  \vspace{1em}
-
-  $\infrule{\sidecond{\combinehints{H}{(\Prod{\Hole}{\Hole})} = \Prod{H_1}{H_2}} \quad \hinting{a}{H_1}{A} \quad \hinting{b}{H_2}{B}}{\hinting{\pair{a}{b}}{H}{\Prod{A}{B}}}$
-
-  \vspace{1em}
-
-  $\infrule{\hinting{e}{\Prod{H}{\Hole}}{\Prod{A}{B}}}{\hinting{\outl{e}}{H}{A}}$ \quad
-  $\infrule{\hinting{e}{\Prod{H}{\Hole}}{\Prod{A}{B}}}{\hinting{\outr{e}}{H}{B}}$
-\end{center}
-
-\end{frame}
-
-\begin{frame}{Hinting -- type-directed rules 2}
-
-\begin{center}
-  $\infrule{\sidecond{\combinehints{H}{(\Sum{\Hole}{\Hole})} = \Sum{H'}{B}} \quad \hinting{e}{H'}{A}}{\hinting{\inl{e}}{H}{\Sum{A}{B}}}$
 
   \vspace{2em}
 
-  $\infrule{\sidecond{\combinehints{H}{(\Sum{\Hole}{\Hole})} = \Sum{A}{H'}} \quad \hinting{e}{H'}{B}}{\hinting{\inr{e}}{H}{\Sum{A}{B}}}$
-
-  \vspace{2em}
-
-  $\infrule{\hinting{e}{\Sum{\Hole}{\Hole}}{\Sum{A}{B}} \quad \begin{array}{c} \hinting{f}{\Fun{A}{H}}{\Fun{A}{C}} \\ \hinting{g}{\Fun{B}{C}}{\Fun{B}{C}} \end{array}}{\hinting{\case{e}{f}{g}}{H}{C}}$
-
-  \vspace{2em}
-
-  $\infrule{\sidecond{\hintorder{H}{\Unit}}}{\hinting{\unit}{H}{\Unit}}$ \quad
-  $\infrule{\hinting{e}{\Empty}{\Empty}}{\hinting{\exfalso{e}}{A}{A}}$
-\end{center}
-
-\end{frame}
-
-\begin{frame}{Metatheory}
-
-Similarly to Extrinsic STLC, STLC with hints v1 does not enjoy uniqueness of typing. This is because we still can have terms like $\fun{x}{x}$ with hint $\Hole$, which can be typed with any type of the form $\Fun{A}{A}$. However, if the hint is informative enough, then the type is unique. Moreover, every typable term can be given a hint which makes its type unique.
-
-\end{frame}
-
-\section{Hinting v2}
-
-\newcommand{\hintfor}[2]{#1\ \triangle\ #2}
-
-\begin{frame}{Hinting v2}
-
-STLC with hints (version 2) is a slight variation on the first one. The problem is that the rules of v1 look ugly, because we need to do so much management of the hints. To deal with this, we relegate all this work into a single separate rule (which uses a new operation), making all the remaining ones much more readable. The terms are the same as in STLC with hints v1.
-
-\end{frame}
-
-\begin{frame}{Hinting v2 -- hints for term constructors}
-
-\begin{center}
-  $\hintfor{H}{\fun{x}{e}} = \combinehints{H}{(\Fun{\Hole}{\Hole})}$ \\
-  $\hintfor{H}{\pair{e_1}{e_2}} = \combinehints{H}{(\Prod{\Hole}{\Hole})}$ \\
-  $\hintfor{H}{\inl{e}} = \combinehints{H}{(\Sum{\Hole}{\Hole})}$ \\
-  $\hintfor{H}{\inr{e}} = \combinehints{H}{(\Sum{\Hole}{\Hole})}$ \\
-  $\hintfor{H}{\unit} = \combinehints{H}{\Unit}$
-\end{center}
-
-\end{frame}
-
-\begin{frame}{Hinting v2 -- basic rules}
-
-\begin{center}
-  $\infrule[Var]{\sidecond{(x : A) \in \Gamma} \quad \sidecond{\hintorder{H}{A}}}{\hinting{x}{H}{A}}$
-
-  \vspace{2em}
-
-  $\infrule[Annot]{\hinting{e}{\combinehints{H_1}{H_2}}{A}}{\hinting{\annot{e}{H_1}}{H_2}{A}}$
-
-  \vspace{2em}
-
-  $\infrule[HintFor]{\sidecond{e\ \texttt{constructor}} \quad \sidecond{\hintfor{H}{e} = H'} \quad \sidecond{H \neq H'} \quad \hinting{e}{H'}{A}}{\hinting{e}{H}{A}}$
+  $\infrule[Hole]{\hinting{e}{\hintfor{e}}{A} \quad \sidecond{e\ \texttt{constructor}}}{\hinting{e}{\Hole}{A}}$
 \end{center}
 
 \vspace{2em}
 
-Note that because of the condition $H \neq H'$, the rule $\rulename{HintFor}$ can only be applied once, and after it is applied only the type-directed rules are available.
+Note that the rule $\rulename{Hole}$ can only be applied once, because $\hintfor{e}$ can never be $\Hole$. After applying $\rulename{Hole}$, the only applicable rules are the type-directed ones.
 
 \end{frame}
 
-\begin{frame}{Hinting v2 -- type-directed rules}
+\begin{frame}{Hinting -- type-directed rules}
   
 \begin{center}
   $\infrule{\fullhinting{\extend{\Gamma}{x}{A}}{e}{H}{B}}{\hinting{\fun{x}{e}}{\Fun{A}{H}}{\Fun{A}{B}}}$
@@ -688,7 +606,7 @@ Note that because of the condition $H \neq H'$, the rule $\rulename{HintFor}$ ca
   
 \end{frame}
   
-\begin{frame}{Hinting v2 -- type-directed rules}
+\begin{frame}{Hinting -- type-directed rules}
 
 \begin{center}
   $\infrule{\hinting{e}{H}{A}}{\hinting{\inl{e}}{\Sum{H}{B}}{\Sum{A}{B}}}$
@@ -709,15 +627,7 @@ Note that because of the condition $H \neq H'$, the rule $\rulename{HintFor}$ ca
 
 \end{frame}
 
-\begin{frame}{Hinting v2 -- alternative basic rules}
-
-\begin{center}
-  $\infrule[HintFor']{\hinting{e}{\hintfor{?}{e}}{A} \quad \sidecond{e\ \texttt{constructor}}}{\hinting{e}{\Hole}{A}}$
-\end{center}
-
-\end{frame}
-
-\begin{frame}{Hinting v2 -- alternative rules}
+\begin{frame}{Hinting -- alternative rules}
 
 \begin{center}
   $\infrule[AltApp]{\hinting{a}{?}{A} \quad \hinting{f}{\Fun{A}{H}}{\Fun{A}{B}}}{\hinting{\app{f}{a}}{H}{B}}$
@@ -791,7 +701,7 @@ We can also embed Dual Intrinsic STLC terms:
 
 \begin{frame}{Metatheory}
 
-Metatheoretically, STLC with hints v2 is similar to v1.
+Similarly to Extrinsic STLC, STLC with Hints does not enjoy uniqueness of typing. This is because we still can have terms like $\fun{x}{x}$ with hint $\Hole$, which can be typed with any type of the form $\Fun{A}{A}$. However, if the hint is informative enough, then the type is unique. Moreover, every typable term can be given a hint which makes its type unique.
 
 \end{frame}
 

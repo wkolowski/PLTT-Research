@@ -40,15 +40,33 @@
 
 \newcommand{\sidecond}[1]{#1}
 
-\title{A zoo of STLCs}
+\title{STLC with Hints\\A nice presentation of algorithmic typing}
+\author{Wojciech Kołowski}
 
 \begin{document}
 
 \frame{\titlepage}
 
-\section{Commons}
+\section{Intro}
 
-\begin{frame}{Types, contexts and terms}
+\begin{frame}{Intro}
+
+In these slides, we will discover a nice presentation of an algorithm for type checking and (incomplete) type inference in the Simply Typed Lambda Calculus (STLC). But before we get the cake, STLC with Hints, we will taste four more variants of STLC to learn where our presentation is coming from:
+
+\begin{itemize}
+  \item Extrinsic STLC -- the most basic variant of STLC.
+  \item Bidirectional STLC -- a nice variant of STLC with intuitive type checking and type inference algorithms.
+  \item Intrinsic STLC -- an old an venerable variant, in which complete type inference is particularly easy.
+  \item Dual Intrinsic STLC -- a crazy and obscure cousin of the above, in which type checking is particualrly easy.
+\end{itemize}
+
+\end{frame}
+
+\begin{frame}{Types, contexts and judgements}
+
+All variants of STLC presented in these slides will have the same types, contexts and declarative typing judgement. The only differences will be terms and possibly additional judgements.
+
+\vspace{2em}
 
 Types: \\
 $A, B ::= \Fun{A}{B} \pipe \Prod{A}{B} \pipe \Sum{A}{B} \pipe \Unit \pipe \Empty$
@@ -57,6 +75,25 @@ $A, B ::= \Fun{A}{B} \pipe \Prod{A}{B} \pipe \Sum{A}{B} \pipe \Unit \pipe \Empty
 
 Typing contexts: \\
 $\Gamma ::= \emptytypingctx \pipe \extend{\Gamma}{x}{A}$
+
+\vspace{2em}
+
+Judgements: \\
+$\fulltyping{\Gamma}{e}{A}$
+
+\end{frame}
+
+\begin{frame}{Types, contexts and judgements -- explanations}
+
+As for types, we have function types $\Fun{A}{B}$, (binary) product types $\Prod{A}{B}$, (binary) sum types $\Sum{A}{B}$, the unit type $\Unit$ and the empty type $\Empty$.
+
+\vspace{2em}
+
+Contexts are either empty (denote by the symbol $\emptytypingctx$) or they are another context $\Gamma$ extended with a typing declaration $x : A$ (denoted by $\extend{\Gamma}{x}{A}$).
+
+\vspace{2em}
+
+The judgement $\fulltyping{\Gamma}{e}{A}$ means that in context $\Gamma$, the term $e$ has type $A$.
 
 \end{frame}
 
@@ -77,6 +114,10 @@ $e ::=$ \\
 \qquad $\pair{e_1}{e_2} \pipe \outl{e} \pipe \outr{e} \pipe$ \\
 \qquad $\inl{e} \pipe \inr{e} \pipe \case{e}{e_1}{e_2} \pipe$ \\
 \qquad $\unit \pipe \exfalso{e}$
+
+\vspace{2em}
+
+Note: the terms are, in order of appearance, variables, functions, applications, pairs, left and right projections, left and right sum constructors, pattern matching for sums, a value of the unit type, and the eliminator for the empty type.
 
 \end{frame}
 
@@ -124,17 +165,19 @@ Extrinsic STLC enjoys strong metatheoretical properties:
 \begin{itemize}
   \item Confluence: if a term can be reduced to two different terms, these two can in turn be reduced to a common result.
   \item Termination: computation on well-typed terms always terminates.
-  \item Type preservation: computing with a well-typed term preserves its type.
+  \item Type preservation: if we compute with a well-typed term, the result has the same type.
   \item Canonicity: in the empty context, normal forms are inductively generated from term constructors.
 \end{itemize}
+
+\vspace{1em}
 
 Intuitively: given a well-typed term, in finite time it computes to another term of the same type which cannot compute anymore. In the empty context, we know the result of this computation must be a constructor.
 
 \end{frame}
 
-\begin{frame}{Uniqueness of typing}
+\begin{frame}{(Non)uniqueness of typing}
 
-However, extrinsic STLC does not enjoy another important property: \textbf{uniqueness of typing}. This means that there are terms which can be assigned multiple types. For example, $\fun{x}{x}$ can be assigned the type $\Fun{A}{A}$ for any type $A$. There four culprits of this failure are lambda abstractions, sum constructors and exfalso.
+Despite these strong metatheoretic properties, Extrinsic STLC does not enjoy another important property: \textbf{uniqueness of typing}. This means that there are terms which can be assigned multiple types. For example, $\fun{x}{x}$ can be assigned the type $\Fun{A}{A}$ for any type $A$. The four culprits of this failure are lambda abstractions, sum constructors and exfalso.
 
 \end{frame}
 
@@ -142,17 +185,19 @@ However, extrinsic STLC does not enjoy another important property: \textbf{uniqu
 
 \newcommand{\newterm}[1]{\mathcolor{green}{#1}}
 
+\newcommand{\fullcheck}[3]{#1 \vdash #2 \mathcolor{blue}{\Leftarrow} #3}
+\renewcommand{\check}[2]{\fullcheck{\Gamma}{#1}{#2}}
+
+\newcommand{\fullinfer}[3]{#1 \vdash #2 \mathcolor{red}{\Rightarrow} #3}
+\newcommand{\infer}[2]{\fullinfer{\Gamma}{#1}{#2}}
+
 \begin{frame}{Bidirectional STLC}
 
-Bidirectional STLC is a version of simply typed lambda calculus which focuses on an efficient implementation of the typechecker. The terms are as in Extrinsic STLC, but with the addition of a general type annotation construct that can appear anywhere and is not mandatory. The typing relation can be presented as type assignment system for reference, but more important are the type checking and type inference relations, both of which are algorithmic, i.e. easily implementable.
+Bidirectional STLC is a version of simply typed lambda calculus which focuses on a clean implementation of the type checker. The terms are as in Extrinsic STLC, but with the addition of a general type annotation construct that can appear anywhere and is not mandatory. The typing judgement is split into two: type checking and type inference, both of which are algorithmic, i.e. easily implementable.
 
 \end{frame}
 
-\begin{frame}{Terms}
-
-Note: green color marks terms which were not present in Extrinsic STLC.
-
-\vspace{2em}
+\begin{frame}{Terms and judgements}
 
 Terms: \\
 $e ::=$ \\
@@ -162,6 +207,16 @@ $e ::=$ \\
 \qquad $\inl{e} \pipe \inr{e} \pipe \case{e}{e_1}{e_2} \pipe$ \\
 \qquad $\unit \pipe \exfalso{e}$
 
+\vspace{2em}
+
+Note: green color marks terms which were not present in Extrinsic STLC.
+
+\vspace{2em}
+
+Judgements: \\
+$\fullcheck{\Gamma}{e}{A}$ -- in context $\Gamma$, term $e$ checks against type $A$ ($A$ is an input) \\
+$\fullinfer{\Gamma}{e}{A}$ -- in context $\Gamma$, term $e$ infers type $A$ ($A$ is an output)
+
 \end{frame}
 
 \begin{frame}{Declarative typing -- new rules}
@@ -170,13 +225,11 @@ $e ::=$ \\
   $\infrule[Annot]{\typing{e}{A}}{\typing{\annot{e}{A}}{A}}$
 \end{center}
 
+\vspace{2em}
+
+Note: the only rules shown are those which were not present in Extrinsic STLC.
+
 \end{frame}
-
-\newcommand{\fullcheck}[3]{#1 \vdash #2 \mathcolor{blue}{\Leftarrow} #3}
-\renewcommand{\check}[2]{\fullcheck{\Gamma}{#1}{#2}}
-
-\newcommand{\fullinfer}[3]{#1 \vdash #2 \mathcolor{red}{\Rightarrow} #3}
-\newcommand{\infer}[2]{\fullinfer{\Gamma}{#1}{#2}}
 
 \begin{frame}{Bidirectional typing -- basics}
 
@@ -239,11 +292,11 @@ $e ::=$ \\
 
 \vspace{1em}
 
-The basic rules are as presented in the previous slide. However, it is possible to add some enhancements. First, we can replace the rule for $\unit$ with an inference rulem and if we need to check, we can use subsumption. Second, the paper argues that sum elimination is a general principle, and so it should allow both checking and inference versions. We could also add an inference rule for pairs. It seems there isn't a trade-off either -- if the checking rule fails, we can use subsumption and try to infer.
+The basic rules are as presented in the previous slide. However, it is possible to add some enhancements. First, we can replace the rule for $\unit$ with an inference rule and if we need to check, we can use subsumption. Second, the paper argues that sum elimination is a general principle, and so it should allow both checking and inference versions. We could also add an inference rule for pairs. It seems there isn't a trade-off either -- if the checking rule fails, we can use subsumption and try to infer.
 
 \end{frame}
 
-\begin{frame}{Metatheory}
+\begin{frame}{(Non)uniqueness of typing}
 
 Similarly to Extrinsic STLC, typing is not unique in Bidirectional STLC. This is because while we do have annotations in terms, we are not forced to use them. Therefore, we can check terms like $\fun{x}{x}$ with any type of the form $\Fun{A}{A}$. However, inference is unique.
 
@@ -260,15 +313,11 @@ Similarly to Extrinsic STLC, typing is not unique in Bidirectional STLC. This is
 
 \begin{frame}{Intrinsic STLC}
 
-Intrinsic STLC is the most widespread version of typed lambda calculus. The terms differ from Extrinsic STLC, as type annotations are mandatory on lambdas, sum constructors and the empty type eliminator.
+Intrinsic STLC is the most widespread version of simply typed lambda calculus. The terms differ somewhat from Extrinsic STLC, as type annotations are mandatory on lambdas, sum constructors and the empty type eliminator, but the typing judgement remains the same.
 
 \end{frame}
 
 \begin{frame}{Terms}
-
-Note: red color marks places which differ from Extrinsic STLC.
-
-\vspace{2em}
 
 Terms: \\
 $e ::=$ \\
@@ -279,6 +328,8 @@ $e ::=$ \\
 \qquad $\unit \pipe \termdiff{\iexfalso{A}{e}}$
 
 \vspace{2em}
+
+Note: red color marks places which differ from Extrinsic STLC.
 
 \end{frame}
 
@@ -297,9 +348,17 @@ $e ::=$ \\
   $\infrule{\typing{e}{\Empty}}{\typing{\iexfalso{A}{e}}{A}}$
 \end{center}
 
+\vspace{2em}
+
+Note: the only rules shown are those that differ from Extrinsic STLC.
+
 \end{frame}
 
-\begin{frame}{Algorithmic typing -- basics}
+\begin{frame}{Type inference -- basics}
+
+Thanks to abundant type annotations, we can (re)interpret the typing judgement $\fulltyping{\Gamma}{e}{A}$ as a type inference judgement $\fullinfer{\Gamma}{e}{A}$.
+
+\vspace{2em}
 
 \begin{center}
   $\infrule[Var]{\sidecond{(x : A) \in \Gamma}}{\infer{x}{A}}$
@@ -307,7 +366,7 @@ $e ::=$ \\
 
 \end{frame}
 
-\begin{frame}{Algorithmic typing -- type-directed rules}
+\begin{frame}{Type inference -- type-directed rules}
 
 \begin{center}
   $\infrule{\fullinfer{\extend{\Gamma}{x}{A}}{e}{B}}{\infer{\ifun{x}{A}{e}}{\Fun{A}{B}}}$ \quad
@@ -336,7 +395,7 @@ $e ::=$ \\
 
 \end{frame}
 
-\begin{frame}{Metatheory}
+\begin{frame}{Uniqueness of typing}
 
 Because of the annotations on lambda, sum constructors and exfalso, Intrinsic STLC does enjoy uniqueness of typing. It is easy to prove this by induction: types of most terms are determined by the induction hypothesis, whereas for the aforementioned four we need to supplement the induction hypothesis with the annotation.
 
@@ -357,10 +416,6 @@ If the usual Intrinsic STLC turns out to be a system in which we can infer all t
 
 \begin{frame}{Terms}
 
-Note: red color marks places which differ from Extrinsic STLC.
-
-\vspace{2em}
-
 Terms: \\
 $e ::=$ \\
 \qquad $x \pipe$ \\
@@ -368,6 +423,10 @@ $e ::=$ \\
 \qquad $\pair{e_1}{e_2} \pipe \termdiff{\ioutl{A}{e}} \pipe \termdiff{\ioutr{A}{e}} \pipe$ \\
 \qquad $\inl{e} \pipe \inr{e} \pipe \termdiff{\icase{A}{B}{e}{e_1}{e_2}} \pipe$ \\
 \qquad $\unit \pipe \exfalso{e}$
+
+\vspace{2em}
+
+Note: red color marks places which differ from Extrinsic STLC.
 
 \end{frame}
 
@@ -386,9 +445,17 @@ $e ::=$ \\
   $\infrule{\typing{e}{\Sum{A}{B}} \quad \typing{f}{\Fun{A}{C}} \quad \typing{g}{\Fun{B}{C}}}{\typing{\icase{A}{B}{e}{f}{g}}{C}}$
 \end{center}
 
+\vspace{2em}
+
+Note: the only rules shown are those that differ from Extrinsic STLC.
+
 \end{frame}
 
-\begin{frame}{Algorithmic typing -- basics}
+\begin{frame}{Type checking -- basics}
+
+Thanks to abundant type annotations, we can (re)interpret the typing judgement $\fulltyping{\Gamma}{e}{A}$ as a type checking judgement $\fullcheck{\Gamma}{e}{A}$.
+
+\vspace{2em}
 
 \begin{center}
   $\infrule[Var]{\sidecond{(x : A) \in \Gamma}}{\check{x}{A}}$
@@ -396,7 +463,7 @@ $e ::=$ \\
 
 \end{frame}
 
-\begin{frame}{Algorithmic typing -- type-directed rules}
+\begin{frame}{Type checking -- type-directed rules}
 
 \begin{center}
   $\infrule{\fullcheck{\extend{\Gamma}{x}{A}}{e}{B}}{\check{\fun{x}{e}}{\Fun{A}{B}}}$ \enspace
@@ -425,7 +492,7 @@ $e ::=$ \\
 
 \end{frame}
 
-\begin{frame}{Metatheory}
+\begin{frame}{(Non)uniqueness of typing}
 
 Even though Dual Intrinsic STLC has plenty of mandatory annotations, it does not enjoy uniqueness of typing for the usual reasons: we can type $\fun{x}{x}$ with any type of the form $\Fun{A}{A}$. The role of the annotations is not to force types to be unique, but to make it possible to implement type checking.
 
@@ -525,7 +592,7 @@ If $\combinehints{}{}$ were not partial, $(H, \combinehints{}{}, \Hole)$ would b
 
 \end{frame}
 
-\begin{frame}{Hinting -- hints for term constructors}
+\begin{frame}{Hints for term constructors}
 
 \begin{center}
   $\hintfor{\fun{x}{e}} = \Fun{\Hole}{\Hole}$ \\
@@ -539,10 +606,6 @@ If $\combinehints{}{}$ were not partial, $(H, \combinehints{}{}, \Hole)$ would b
 
 \begin{frame}{Terms}
 
-Note: red color marks differences from Bidirectional STLC.
-
-\vspace{2em}
-
 Terms: \\
 $e ::=$ \\
 \qquad $x \pipe \termdiff{\annot{e}{H}} \pipe $ \\
@@ -553,7 +616,12 @@ $e ::=$ \\
 
 \vspace{2em}
 
-Typing contexts assign types to variables, but annotations in terms are hints, not necessarily types.
+Note: red color marks differences from Bidirectional STLC.
+
+\vspace{2em}
+
+Judgements: \\
+$\fullhinting{\Gamma}{e}{H}{A}$ -- in context $\Gamma$, term $e$ checks with hint $H$ and infers type $A$
 
 \end{frame}
 
@@ -586,7 +654,7 @@ Note that the rule $\rulename{Hole}$ can only be applied once, because $\hintfor
 \end{frame}
 
 \begin{frame}{Hinting -- type-directed rules}
-  
+
 \begin{center}
   $\infrule{\fullhinting{\extend{\Gamma}{x}{A}}{e}{H}{B}}{\hinting{\fun{x}{e}}{\Fun{A}{H}}{\Fun{A}{B}}}$
 
@@ -603,9 +671,9 @@ Note that the rule $\rulename{Hole}$ can only be applied once, because $\hintfor
   $\infrule{\hinting{e}{\Prod{H}{\Hole}}{\Prod{A}{B}}}{\hinting{\outl{e}}{H}{A}}$ \quad
   $\infrule{\hinting{e}{\Prod{H}{\Hole}}{\Prod{A}{B}}}{\hinting{\outr{e}}{H}{B}}$
 \end{center}
-  
+
 \end{frame}
-  
+
 \begin{frame}{Hinting -- type-directed rules}
 
 \begin{center}
@@ -699,7 +767,7 @@ We can also embed Dual Intrinsic STLC terms:
 
 \end{frame}
 
-\begin{frame}{Metatheory}
+\begin{frame}{(Non)uniqueness of typing}
 
 Similarly to Extrinsic STLC, STLC with Hints does not enjoy uniqueness of typing. This is because we still can have terms like $\fun{x}{x}$ with hint $\Hole$, which can be typed with any type of the form $\Fun{A}{A}$. However, if the hint is informative enough, then the type is unique. Moreover, every typable term can be given a hint which makes its type unique.
 

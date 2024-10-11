@@ -2,43 +2,9 @@
 \usepackage[utf8]{inputenc}
 \usepackage{babel}
 \usepackage{xcolor}
+\usepackage{Commands}
+
 \usetheme{Darmstadt}
-
-\newcommand{\pipe}{\ |\ }
-
-\newcommand{\Fun}[2]{#1 \to #2}
-\newcommand{\Prod}[2]{#1 \times #2}
-\newcommand{\Sum}[2]{#1 + #2}
-\newcommand{\Unit}{\textbf{1}}
-\newcommand{\Empty}{\textbf{0}}
-
-\newcommand{\annot}[2]{(#1 : #2)}
-\newcommand{\fun}[2]{\lambda #1. #2}
-\newcommand{\app}[2]{#1\ #2}
-\newcommand{\pair}[2]{(#1, #2)}
-\newcommand{\outl}[1]{\texttt{outl}\ #1}
-\newcommand{\outr}[1]{\texttt{outr}\ #1}
-\newcommand{\inl}[1]{\texttt{inl}\ #1}
-\newcommand{\inr}[1]{\texttt{inr}\ #1}
-\newcommand{\case}[3]{\texttt{case}\ #1\ \texttt{of}\ (#2, #3)}
-\newcommand{\unit}{\texttt{unit}}
-\newcommand{\exfalso}[1]{\texttt{exfalso}\ #1}
-
-\newcommand{\subst}[3]{#1\left[#2 := #3\right]}
-
-\newcommand{\tyctx}[1]{\mathcolor{brown}{#1\ \texttt{ctx}}}
-
-\newcommand{\fulltyping}[3]{#1 \vdash #2 : #3}
-\newcommand{\typing}[2]{\fulltyping{\Gamma}{#1}{#2}}
-
-\newcommand{\rulename}[1]{\textsc{\footnotesize{#1}}}
-\newcommand{\infrule}[3][]{\displaystyle \frac{#2}{#3} \rulename{#1}}
-
-\newcommand{\emptytypingctx}{\cdot}
-\newcommand{\extend}[3]{#1, #2 : #3}
-\newcommand{\extenddef}[4]{#1, #2 : #3 := #4}
-
-\newcommand{\sidecond}[1]{#1}
 
 \title{STLC with Hints\\A nice presentation of algorithmic typing}
 \author{Wojciech Kołowski}
@@ -183,14 +149,6 @@ Despite these strong metatheoretic properties, Extrinsic STLC does not enjoy ano
 
 \section{Bidirectional}
 
-\newcommand{\newterm}[1]{\mathcolor{green}{#1}}
-
-\newcommand{\fullcheck}[3]{#1 \vdash #2 \mathcolor{blue}{\Leftarrow} #3}
-\renewcommand{\check}[2]{\fullcheck{\Gamma}{#1}{#2}}
-
-\newcommand{\fullinfer}[3]{#1 \vdash #2 \mathcolor{red}{\Rightarrow} #3}
-\newcommand{\infer}[2]{\fullinfer{\Gamma}{#1}{#2}}
-
 \begin{frame}{Bidirectional STLC}
 
 Bidirectional STLC is a version of simply typed lambda calculus which focuses on a clean implementation of the type checker. The terms are as in Extrinsic STLC, but with the addition of a general type annotation construct that can appear anywhere and is not mandatory. The typing judgement is split into two: type checking and type inference, both of which are algorithmic, i.e. easily implementable.
@@ -304,12 +262,6 @@ Similarly to Extrinsic STLC, typing is not unique in Bidirectional STLC. This is
 
 \section{Intrinsic}
 
-\newcommand{\ifun}[3]{\lambda #1 : #2. #3}
-\newcommand{\iinl}[2]{\texttt{inl}_{#1}\ #2}
-\newcommand{\iinr}[2]{\texttt{inr}_{#1}\ #2}
-\newcommand{\iexfalso}[2]{\texttt{exfalso}_{#1}\ #2}
-
-\newcommand{\termdiff}[1]{\mathcolor{red}{#1}}
 
 \begin{frame}{Intrinsic STLC}
 
@@ -403,10 +355,6 @@ Because of the annotations on lambda, sum constructors and exfalso, Intrinsic ST
 
 \section{Dual Intrinsic}
 
-\newcommand{\iapp}[3]{\texttt{app}_{#1}\ #2\ #3}
-\newcommand{\ioutl}[2]{\texttt{outl}_{#1}\ #2}
-\newcommand{\ioutr}[2]{\texttt{outr}_{#1}\ #2}
-\newcommand{\icase}[5]{\texttt{case}_{#1, #2}\ #3\ \texttt{of}\ (#4, #5)}
 
 \begin{frame}{Dual Intrinsic STLC}
 
@@ -499,14 +447,6 @@ Even though Dual Intrinsic STLC has plenty of mandatory annotations, it does not
 \end{frame}
 
 \section{Hinting}
-
-\newcommand{\fullhinting}[4]{#1 \vdash #2 \mathcolor{blue}{\Leftarrow} #3 \mathcolor{red}{\Rightarrow} #4}
-\newcommand{\hinting}[3]{\fullhinting{\Gamma}{#1}{#2}{#3}}
-
-\newcommand{\Hole}{\textbf{?}}
-\newcommand{\combinehints}[2]{#1 \sqcup #2}
-\newcommand{\hintorder}[2]{#1 \sqsubseteq #2}
-\newcommand{\hintfor}[1]{\texttt{hint}(#1)}
 
 \begin{frame}{STLC with Hints}
 
@@ -775,11 +715,7 @@ Similarly to Extrinsic STLC, STLC with Hints does not enjoy uniqueness of typing
 
 \section{Output contexts}
 
-\newcommand{\fulloutctx}[5]{#1 \vdash #2 \mathcolor{blue}{\Leftarrow} #3 \mathcolor{red}{\Rightarrow} #4 \dashv #5}
-\newcommand{\outctx}[3]{\fulloutctx{\Gamma}{#1}{#2}{#3}{\Gamma'}}
-\newcommand{\shortoutctx}[3]{#1 \mathcolor{blue}{\Leftarrow} #2 \mathcolor{red}{\Rightarrow} #3}
-
-\begin{frame}{Terms and judgements}
+\begin{frame}{Terms, contexts and judgements}
 
 Terms: \\
 $e ::=$ \\
@@ -789,11 +725,16 @@ $e ::=$ \\
 \qquad $\inl{e} \pipe \inr{e} \pipe \case{e}{e_1}{e_2} \pipe$ \\
 \qquad $\unit \pipe \exfalso{e}$
 
-\vspace{2em}
+\vspace{1em}
 
-Note: the terms are the same as in STLC with Hints.
+Contexts: \\
+$\Gamma ::= \emptytypingctx \pipe \extend{\Gamma}{x}{H}$
 
-\vspace{2em}
+\vspace{1em}
+
+Note: the terms are the same as in STLC with Hints, but variables in context are now annotated with a hint, not necessarily a type.
+
+\vspace{1em}
 
 Judgements: \\
 $\fulloutctx{\Gamma}{e}{H}{H'}{\Gamma'}$ -- in context $\Gamma$, term $e$ checks with hint $H$ and infers hint $H'$ in output context $\Gamma'$

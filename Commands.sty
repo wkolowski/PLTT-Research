@@ -1,0 +1,81 @@
+\ProvidesPackage{Commands}
+
+% Pipes - used when specifying grammars in BDNF format.
+\newcommand{\pipe}{\ |\ }
+
+% Types.
+\newcommand{\Fun}[2]{#1 \to #2}
+\newcommand{\Prod}[2]{#1 \times #2}
+\newcommand{\Sum}[2]{#1 + #2}
+\newcommand{\Unit}{\textbf{1}}
+\newcommand{\Empty}{\textbf{0}}
+
+% Terms.
+\newcommand{\annot}[2]{(#1 : #2)}
+\newcommand{\fun}[2]{\lambda #1. #2}
+\newcommand{\app}[2]{#1\ #2}
+\newcommand{\pair}[2]{(#1, #2)}
+\newcommand{\outl}[1]{\texttt{outl}\ #1}
+\newcommand{\outr}[1]{\texttt{outr}\ #1}
+\newcommand{\inl}[1]{\texttt{inl}\ #1}
+\newcommand{\inr}[1]{\texttt{inr}\ #1}
+\newcommand{\case}[3]{\texttt{case}\ #1\ \texttt{of}\ (#2, #3)}
+\newcommand{\unit}{\texttt{unit}}
+\newcommand{\exfalso}[1]{\texttt{exfalso}\ #1}
+
+% Intrinsic terms.
+\newcommand{\ifun}[3]{\lambda #1 : #2. #3}
+\newcommand{\iinl}[2]{\texttt{inl}_{#1}\ #2}
+\newcommand{\iinr}[2]{\texttt{inr}_{#1}\ #2}
+\newcommand{\iexfalso}[2]{\texttt{exfalso}_{#1}\ #2}
+
+% Dual Intrinsic terms.
+\newcommand{\iapp}[3]{\texttt{app}_{#1}\ #2\ #3}
+\newcommand{\ioutl}[2]{\texttt{outl}_{#1}\ #2}
+\newcommand{\ioutr}[2]{\texttt{outr}_{#1}\ #2}
+\newcommand{\icase}[5]{\texttt{case}_{#1, #2}\ #3\ \texttt{of}\ (#4, #5)}
+
+% Commands for coloring differences in terms syntax between calculi.
+\newcommand{\newterm}[1]{\mathcolor{green}{#1}}
+\newcommand{\termdiff}[1]{\mathcolor{red}{#1}}
+
+% Hints.
+\newcommand{\Hole}{\textbf{?}}
+\newcommand{\combinehints}[2]{#1 \sqcup #2}
+\newcommand{\hintorder}[2]{#1 \sqsubseteq #2}
+\newcommand{\hintfor}[1]{\texttt{hint}(#1)}
+
+% Typing contexts.
+\newcommand{\emptytypingctx}{\cdot}
+\newcommand{\extend}[3]{#1, #2 : #3}
+\newcommand{\extenddef}[4]{#1, #2 : #3 := #4}
+
+% Side conditions - this command semantically marks side conditions in inference rules, but otherwise does nothing.
+\newcommand{\sidecond}[1]{#1}
+
+% Inference rules.
+\newcommand{\rulename}[1]{\textsc{\footnotesize{#1}}}
+\newcommand{\infrule}[3][]{\displaystyle \frac{#2}{#3} \rulename{#1}}
+
+% Judgements.
+
+% Declarative typing.
+\newcommand{\fulltyping}[3]{#1 \vdash #2 : #3}
+\newcommand{\typing}[2]{\fulltyping{\Gamma}{#1}{#2}}
+
+% Type checking (blue arrow pointing left).
+\newcommand{\fullcheck}[3]{#1 \vdash #2 \mathcolor{blue}{\Leftarrow} #3}
+\renewcommand{\check}[2]{\fullcheck{\Gamma}{#1}{#2}}
+
+% Type inference (red arrow pointing right).
+\newcommand{\fullinfer}[3]{#1 \vdash #2 \mathcolor{red}{\Rightarrow} #3}
+\newcommand{\infer}[2]{\fullinfer{\Gamma}{#1}{#2}}
+
+% Hinting.
+\newcommand{\fullhinting}[4]{#1 \vdash #2 \mathcolor{blue}{\Leftarrow} #3 \mathcolor{red}{\Rightarrow} #4}
+\newcommand{\hinting}[3]{\fullhinting{\Gamma}{#1}{#2}{#3}}
+
+% Hinting with output context.
+\newcommand{\fulloutctx}[5]{#1 \vdash #2 \mathcolor{blue}{\Leftarrow} #3 \mathcolor{red}{\Rightarrow} #4 \dashv #5}
+\newcommand{\outctx}[3]{\fulloutctx{\Gamma}{#1}{#2}{#3}{\Gamma'}}
+\newcommand{\shortoutctx}[3]{#1 \mathcolor{blue}{\Leftarrow} #2 \mathcolor{red}{\Rightarrow} #3}

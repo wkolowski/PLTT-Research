@@ -1,0 +1,264 @@
+\documentclass{beamer}
+\usepackage[utf8]{inputenc}
+\usepackage{babel}
+\usepackage{xcolor}
+\usepackage{Commands}
+
+\usetheme{Darmstadt}
+
+\title{STLC with Subtyping}
+
+\begin{document}
+
+\frame{\titlepage}
+
+\section{Subtyping}
+
+\begin{frame}{Types, contexts and judgements}
+
+Types: \\
+$A, B ::= \Fun{A}{B} \pipe \Prod{A}{B} \pipe \Sum{A}{B} \pipe \Top \pipe \Bot$
+
+\vspace{2em}
+
+Typing contexts: \\
+$\Gamma ::= \emptytypingctx \pipe \extend{\Gamma}{x}{A}$
+
+\vspace{2em}
+
+Judgements: \\
+$\fulltyping{\Gamma}{e}{A}$
+
+\end{frame}
+
+\begin{frame}{Subtyping relation}
+
+\begin{center}
+  $\infrule{}{\subtyping{\Bot}{A}}$ \quad
+  $\infrule{}{\subtyping{A}{\Top}}$
+
+  \vspace{2em}
+
+  $\infrule{\subtyping{A'}{A} \quad \subtyping{B}{B'}}{\subtyping{\Fun{A}{B}}{\Fun{A'}{B'}}}$
+
+  \vspace{2em}
+
+  $\infrule{\subtyping{A}{A'} \quad \subtyping{B}{B'}}{\subtyping{\Prod{A}{B}}{\Prod{A'}{B'}}}$
+
+  \vspace{2em}
+
+  $\infrule{\subtyping{A}{A'} \quad \subtyping{B}{B'}}{\subtyping{\Sum{A}{B}}{\Sum{A'}{B'}}}$
+\end{center}
+
+\vspace{2em}
+
+The subtyping relation is the reflexive-transitive closure of the above rules.
+
+\end{frame}
+
+\begin{frame}{Subtyping -- properties}
+
+Subtyping is a partial order with top and bottom, congruent with type constructors.
+
+\begin{itemize}
+  \item Reflexivity: $\subtyping{A}{A}$
+  \item Transitivity: $\subtyping{A}{B} \implies \subtyping{B}{C} \implies \subtyping{A}{C}$
+  \item Antisymmetry: $\subtyping{A}{B} \implies \subtyping{B}{A} \implies A = B$
+\end{itemize}
+
+\end{frame}
+
+\section{Extrinsic STLC with Subtyping}
+
+\begin{frame}{Terms}
+
+Terms: \\
+$e ::=$ \\
+\qquad $x \pipe$ \\
+\qquad $\fun{x}{e} \pipe \app{e_1}{e_2} \pipe$ \\
+\qquad $\pair{e_1}{e_2} \pipe \outl{e} \pipe \outr{e} \pipe$ \\
+\qquad $\inl{e} \pipe \inr{e} \pipe \case{e}{e_1}{e_2} \pipe$ \\
+\qquad $\unit \pipe \exfalso{e}$
+
+\vspace{2em}
+
+Note: $\unit$ is the term of the $\Top$ type, whereas $\exfalso$ is the eliminator of the $\Bot$ type.
+
+\end{frame}
+
+\begin{frame}{Declarative typing -- differences}
+
+\begin{center}
+  $\infrule[Sub]{\typing{e}{A} \quad \sidecond{\subtyping{A}{B}}}{\typing{e}{B}}$
+\end{center}
+
+\end{frame}
+
+\begin{frame}{Comments}
+
+The only difference between Extrinsic STLC with Subtyping and the original Extrinsic STLC is the addition of the subsumtpion rule. We invoke this rule every time we need subtyping to happen. However, this rule is stationary, and thus non-algorithmic, so we need to seek a better system.
+
+\end{frame}
+
+\section{Bidirectional STLC with Subtyping}
+
+\begin{frame}{Bidirectional typing -- basics}
+
+\begin{center}
+  $\infrule[Var]{\sidecond{(x : A) \in \Gamma}}{\infer{x}{A}}$
+
+  \vspace{2em}
+
+  $\infrule[Annot]{\check{e}{A}}{\infer{\annot{e}{A}}{A}}$
+
+  \vspace{2em}
+
+  $\infrule[Sub]{\infer{e}{B} \quad \sidecond{\subtyping{A}{B}}}{\check{e}{A}}$
+\end{center}
+
+\end{frame}
+
+\begin{frame}{Metatheory}
+
+\begin{itemize}
+  \item
+\end{itemize}
+
+\end{frame}
+
+\section{Hinting}
+
+\begin{frame}{Hints}
+
+We no longer need holes -- because of $\Top$ and $\Bot$, types suffice. We also don't need a separate order on hints, because subtyping suffices.
+
+\end{frame}
+
+\begin{frame}{Least upper bound of two types}
+
+\begin{center}
+  $\subtypinglub{\Bot}{H} = H$ \\
+  $\subtypinglub{H}{\Bot} = H$ \\
+  $\subtypinglub{\Top}{H} = \Top$ \\
+  $\subtypinglub{H}{\Top} = \Top$ \\
+  $\subtypinglub{(\Fun{H_1}{H_2})}{(\Fun{H'_1}{H'_2})} = \Fun{(\subtypingglb{H_1}{H'_1})}{(\subtypinglub{H_2}{H'_2})}$ \\
+  $\subtypinglub{(\Prod{H_1}{H_2})}{(\Prod{H'_1}{H'_2})} = \Prod{(\subtypinglub{H_1}{H'_1})}{(\subtypinglub{H_2}{H'_2})}$ \\
+  $\subtypinglub{(\Sum{H_1}{H_2})}{(\Sum{H'_1}{H'_2})} = \Sum{(\subtypinglub{H_1}{H'_1})}{(\subtypinglub{H_2}{H'_2})}$
+\end{center}
+
+\end{frame}
+
+\begin{frame}{Greatest lower bound of two types}
+
+\begin{center}
+  $\subtypingglb{\Bot}{H} = \Bot$ \\
+  $\subtypingglb{H}{\Bot} = \Bot$ \\
+  $\subtypingglb{\Top}{H} = H$ \\
+  $\subtypingglb{H}{\Top} = H$ \\
+  $\subtypingglb{(\Fun{H_1}{H_2})}{(\Fun{H'_1}{H'_2})} = \Fun{(\subtypinglub{H_1}{H'_1})}{(\subtypingglb{H_2}{H'_2})}$ \\
+  $\subtypingglb{(\Prod{H_1}{H_2})}{(\Prod{H'_1}{H'_2})} = \Prod{(\subtypingglb{H_1}{H'_1})}{(\subtypingglb{H_2}{H'_2})}$ \\
+  $\subtypingglb{(\Sum{H_1}{H_2})}{(\Sum{H'_1}{H'_2})} = \Sum{(\subtypingglb{H_1}{H'_1})}{(\subtypingglb{H_2}{H'_2})}$
+\end{center}
+
+\end{frame}
+
+\begin{frame}{Terms and judgements}
+
+Terms: \\
+$e ::=$ \\
+\qquad $x \pipe \annot{e}{A} \pipe$ \\
+\qquad $\fun{x}{e} \pipe \app{e_1}{e_2} \pipe$ \\
+\qquad $\pair{e_1}{e_2} \pipe \outl{e} \pipe \outr{e} \pipe$ \\
+\qquad $\inl{e} \pipe \inr{e} \pipe \case{e}{e_1}{e_2} \pipe$ \\
+\qquad $\unit \pipe \exfalso{e}$
+
+\vspace{2em}
+
+Note: terms are the same as in Bidirectional STLC, i.e. annotations are types, not hints.
+
+\vspace{2em}
+
+Judgements: \\
+$\fullhinting{\Gamma}{e}{A}{B}$ -- in context $\Gamma$, term $e$ checks with type $A$ as hint and infers type $B$
+
+\end{frame}
+
+\begin{frame}{Declarative typing -- basics}
+
+\begin{center}
+  $\infrule[Var]{\sidecond{(x : A) \in \Gamma}}{\typing{x}{A}}$
+
+  \vspace{2em}
+
+  $\infrule[Annot]{\typing{e}{A}}{\typing{\annot{e}{A}}{A}}$
+
+  \vspace{2em}
+
+  $\infrule[Sub]{\typing{e}{A} \quad \sidecond{\subtyping{A}{B}}}{\typing{e}{B}}$
+\end{center}
+
+\end{frame}
+
+\begin{frame}{Algorithmic typing -- basic rules}
+
+\begin{center}
+  $\infrule[Var]{\sidecond{(x : B) \in \Gamma} \quad \sidecond{\subtyping{B}{A}}}{\hinting{x}{A}{B}}$
+
+  \vspace{2em}
+
+  $\infrule[Annot]{\hinting{e}{B}{C} \quad \sidecond{\subtyping{B}{A}}}{\hinting{\annot{e}{B}}{A}{C}}$
+
+  \vspace{2em}
+
+  $\infrule[Hole]{\hinting{e}{\hintfor{e}}{A} \quad \sidecond{e\ \texttt{constructor}}}{\hinting{e}{\Top}{A}}$
+\end{center}
+
+\vspace{2em}
+
+Note that the rule $\rulename{Hole}$ can only be applied once, because $\hintfor{e}$ can never be $\Hole$. After applying $\rulename{Hole}$, the only applicable rules are the type-directed ones.
+
+\end{frame}
+
+\begin{frame}{Algorithmic typing -- type-directed rules}
+
+\begin{center}
+  $\infrule{\fullhinting{\extend{\Gamma}{x}{A}}{e}{H}{B}}{\hinting{\fun{x}{e}}{\Fun{A}{H}}{\Fun{A}{B}}}$
+
+  \vspace{1em}
+
+  $\infrule{\hinting{f}{\Fun{\Hole}{H}}{\Fun{A}{B}} \quad \hinting{a}{A}{A}}{\hinting{\app{f}{a}}{H}{B}}$
+
+  \vspace{1em}
+
+  $\infrule{\hinting{a}{H_1}{A} \quad \hinting{b}{H_2}{B}}{\hinting{\pair{a}{b}}{\Prod{H_1}{H_2}}{\Prod{A}{B}}}$
+
+  \vspace{1em}
+
+  $\infrule{\hinting{e}{\Prod{H}{\Hole}}{\Prod{A}{B}}}{\hinting{\outl{e}}{H}{A}}$ \quad
+  $\infrule{\hinting{e}{\Prod{H}{\Hole}}{\Prod{A}{B}}}{\hinting{\outr{e}}{H}{B}}$
+\end{center}
+
+\end{frame}
+
+\begin{frame}{Algorithmic typing -- type-directed rules}
+
+\begin{center}
+  $\infrule{\hinting{e}{H}{A}}{\hinting{\inl{e}}{\Sum{H}{B}}{\Sum{A}{B}}}$
+
+  \vspace{2em}
+
+  $\infrule{\hinting{e}{H}{B}}{\hinting{\inr{e}}{\Sum{A}{H}}{\Sum{A}{B}}}$
+
+  \vspace{2em}
+
+  $\infrule{\hinting{e}{\Sum{\Hole}{\Hole}}{\Sum{A}{B}} \quad \begin{array}{c} \hinting{f}{\Fun{A}{H}}{\Fun{A}{C}} \\ \hinting{g}{\Fun{B}{C}}{\Fun{B}{C}} \end{array}}{\hinting{\case{e}{f}{g}}{H}{C}}$
+
+  \vspace{2em}
+
+  $\infrule{}{\hinting{\unit}{\Unit}{\Unit}}$ \quad
+  $\infrule{\hinting{e}{\Empty}{\Empty}}{\hinting{\exfalso{e}}{A}{A}}$
+\end{center}
+
+\end{frame}
+
+\end{document}

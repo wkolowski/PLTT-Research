@@ -79,3 +79,11 @@
 \newcommand{\fulloutctx}[5]{#1 \vdash #2 \mathcolor{blue}{\Leftarrow} #3 \mathcolor{red}{\Rightarrow} #4 \dashv #5}
 \newcommand{\outctx}[3]{\fulloutctx{\Gamma}{#1}{#2}{#3}{\Gamma'}}
 \newcommand{\shortoutctx}[3]{#1 \mathcolor{blue}{\Leftarrow} #2 \mathcolor{red}{\Rightarrow} #3}
+
+% Subtyping.
+\newcommand{\Top}{\top}
+\newcommand{\Bot}{\bot}
+
+\newcommand{\subtyping}[2]{#1 <: #2}
+\newcommand{\subtypinglub}[2]{#1 \sqcup #2}
+\newcommand{\subtypingglb}[2]{#1 \sqcap #2}

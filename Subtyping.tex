@@ -162,6 +162,17 @@ We no longer need holes -- because of $\Top$ and $\Bot$, types suffice. We also 
 
 \end{frame}
 
+\begin{frame}{Hints for term constructors}
+
+\begin{center}
+  $\hintfor{\fun{x}{e}} = \Fun{\Bot}{\Top}$ \\
+  $\hintfor{\pair{e_1}{e_2}} = \Prod{\Top}{\Top}$ \\
+  $\hintfor{\inl{e}} = \Sum{\Top}{\Top}$ \\
+  $\hintfor{\inr{e}} = \Sum{\Top}{\Top}$
+\end{center}
+
+\end{frame}
+
 \begin{frame}{Terms and judgements}
 
 Terms: \\
@@ -215,27 +226,27 @@ $\fullhinting{\Gamma}{e}{A}{B}$ -- in context $\Gamma$, term $e$ checks with typ
 
 \vspace{2em}
 
-Note that the rule $\rulename{Hole}$ can only be applied once, because $\hintfor{e}$ can never be $\Hole$. After applying $\rulename{Hole}$, the only applicable rules are the type-directed ones.
+Note that the rule $\rulename{Hole}$ can only be applied once, because $\hintfor{e}$ can never be $\Top$. After applying $\rulename{Hole}$, the only applicable rules are the type-directed ones.
 
 \end{frame}
 
 \begin{frame}{Algorithmic typing -- type-directed rules}
 
 \begin{center}
-  $\infrule{\fullhinting{\extend{\Gamma}{x}{A}}{e}{H}{B}}{\hinting{\fun{x}{e}}{\Fun{A}{H}}{\Fun{A}{B}}}$
+  $\infrule{\fullhinting{\extend{\Gamma}{x}{A}}{e}{B}{B'}}{\hinting{\fun{x}{e}}{\Fun{A}{B}}{\Fun{A}{B'}}}$
 
   \vspace{1em}
 
-  $\infrule{\hinting{f}{\Fun{\Hole}{H}}{\Fun{A}{B}} \quad \hinting{a}{A}{A}}{\hinting{\app{f}{a}}{H}{B}}$
+  $\infrule{\hinting{f}{\Fun{\Bot}{B}}{\Fun{A}{B'}} \quad \hinting{a}{A}{A'}}{\hinting{\app{f}{a}}{B}{B'}}$
 
   \vspace{1em}
 
-  $\infrule{\hinting{a}{H_1}{A} \quad \hinting{b}{H_2}{B}}{\hinting{\pair{a}{b}}{\Prod{H_1}{H_2}}{\Prod{A}{B}}}$
+  $\infrule{\hinting{a}{A}{A'} \quad \hinting{b}{B}{B'}}{\hinting{\pair{a}{b}}{\Prod{A}{B}}{\Prod{A'}{B'}}}$
 
   \vspace{1em}
 
-  $\infrule{\hinting{e}{\Prod{H}{\Hole}}{\Prod{A}{B}}}{\hinting{\outl{e}}{H}{A}}$ \quad
-  $\infrule{\hinting{e}{\Prod{H}{\Hole}}{\Prod{A}{B}}}{\hinting{\outr{e}}{H}{B}}$
+  $\infrule{\hinting{e}{\Prod{A}{\Top}}{\Prod{A'}{B}}}{\hinting{\outl{e}}{A}{A'}}$ \quad
+  $\infrule{\hinting{e}{\Prod{\Top}{B}}{\Prod{A}{B'}}}{\hinting{\outr{e}}{B}{B'}}$
 \end{center}
 
 \end{frame}
@@ -243,21 +254,29 @@ Note that the rule $\rulename{Hole}$ can only be applied once, because $\hintfor
 \begin{frame}{Algorithmic typing -- type-directed rules}
 
 \begin{center}
-  $\infrule{\hinting{e}{H}{A}}{\hinting{\inl{e}}{\Sum{H}{B}}{\Sum{A}{B}}}$
+  $\infrule{\hinting{e}{A}{A'}}{\hinting{\inl{e}}{\Sum{A}{B}}{\Sum{A'}{B}}}$
 
   \vspace{2em}
 
-  $\infrule{\hinting{e}{H}{B}}{\hinting{\inr{e}}{\Sum{A}{H}}{\Sum{A}{B}}}$
+  $\infrule{\hinting{e}{B}{B'}}{\hinting{\inr{e}}{\Sum{A}{B}}{\Sum{A}{B'}}}$
 
   \vspace{2em}
 
-  $\infrule{\hinting{e}{\Sum{\Hole}{\Hole}}{\Sum{A}{B}} \quad \begin{array}{c} \hinting{f}{\Fun{A}{H}}{\Fun{A}{C}} \\ \hinting{g}{\Fun{B}{C}}{\Fun{B}{C}} \end{array}}{\hinting{\case{e}{f}{g}}{H}{C}}$
+  $\infrule{\hinting{e}{\Sum{\Top}{\Top}}{\Sum{A}{B}} \quad \begin{array}{c} \hinting{f}{\Fun{A}{C_1}}{\Fun{A'}{C_2}} \\ \hinting{g}{\Fun{B}{C_2}}{\Fun{B'}{C_3}} \end{array}}{\hinting{\case{e}{f}{g}}{C_1}{C_3}}$
 
   \vspace{2em}
 
-  $\infrule{}{\hinting{\unit}{\Unit}{\Unit}}$ \quad
-  $\infrule{\hinting{e}{\Empty}{\Empty}}{\hinting{\exfalso{e}}{A}{A}}$
+  $\infrule{}{\hinting{\unit}{\Top}{\Top}}$ \quad
+  $\infrule{\hinting{e}{\Bot}{\Bot}}{\hinting{\exfalso{e}}{A}{A}}$
 \end{center}
+
+\end{frame}
+
+\begin{frame}{Metatheory}
+
+\begin{itemize}
+  \item If $\hinting{e}{A}{A'}$, then $\subtyping{A'}{A}$
+\end{itemize}
 
 \end{frame}
 

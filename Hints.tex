@@ -2,11 +2,19 @@
 \usepackage[utf8]{inputenc}
 \usepackage{babel}
 \usepackage{xcolor}
+\usepackage{hyperref}
+\hypersetup{
+  colorlinks = true,
+  linkcolor = blue,
+  urlcolor  = blue,
+  citecolor = blue,
+  anchorcolor = blue
+}
 \usepackage{Commands}
 
 \usetheme{Darmstadt}
 
-\title{STLC with Hints\\A nice presentation of algorithmic typing}
+\title{Hinting\\A nice presentation of algorithmic typing}
 \author{Wojciech Kołowski}
 
 \begin{document}
@@ -15,9 +23,65 @@
 
 \section{Intro}
 
-\begin{frame}{Intro}
+\begin{frame}{Extrinsic vs Intrinsic}
 
-In these slides, we will discover a nice presentation of an algorithm for type checking and (incomplete) type inference in the Simply Typed Lambda Calculus (STLC). But before we get the cake, STLC with Hints, we will taste four more variants of STLC to learn where our presentation is coming from:
+There are two kinds of lambda calculi, intrinsically typed also called (Church-style) and extrinsically typed (also called Curry-style).
+
+\end{frame}
+
+\begin{frame}{Intrinsic calculi -- examples}
+
+\begin{itemize}
+  \item $\ifun{x}{\Int}{x}$ -- the identity function at type $\Int$.
+  \item $\ifun{x}{\String}{x}$ -- the identity function at type $\String$. This is a different term from the above.
+  \item $\fun{x}{x}$ -- not a term, because it cannot be assigned a unique type.
+  \item $\app{(\ifun{x}{\String}{x})}{5}$ -- not a term, as it cannot be assigned a type because of a type error.
+\end{itemize}
+
+\end{frame}
+
+\begin{frame}{Intrinsic calculi}
+
+In intrinsic calculi, terms are inseparable from their types. From the user's point of view, all terms are well-typed and have a unique type. Ill-typed ``terms'' are not terms, but abominations forbidden by the type checker. Types are disjoint, so terms that could possibly be assigned two different types must be banished from existence. If a term is needed at two different types, there are two distinct copies of it.
+
+\vspace{2em}
+
+Of course, from the language designer's point of view, ill-typed ``terms'' still exist (they are usually called preterms) and need to be dealt with, it's just that the users don't care.
+
+\end{frame}
+
+\begin{frame}{Extrinsic calculi -- examples}
+
+\begin{itemize}
+  \item $\fun{x}{x}$ -- the identity function. It can be assigned many types, like $\Fun{\Int}{\Int}$ or $\Fun{\String}{\String}$, so there's no need to have many identity functions for different types.
+  \item $\app{(\ifun{x}{\String}{x})}{5}$ -- this is a term, but it cannot be assigned a type because of a type-error.
+\end{itemize}
+
+\end{frame}
+
+\begin{frame}{Extrinsic calculi}
+
+In extrinsic calculi, terms and types are separate beings and the relationship between them is established by the typing judgement. Ill-typed terms are terms, they just happen to be dangerous, so they're forbidden by the type checker. Terms that can be assigned many types are ok and are not forbidden, but cherished, so in some sense types are not disjoint.
+
+\end{frame}
+
+\begin{frame}{In practice}
+
+In practice, purely intrinsic languages become hard to use as soon as they have polymorphism, because the amount of type annotations becomes unwieldy.
+
+\vspace{1em}
+
+In practice, purely extrinsic languages do not have decidable type inference (and thus also type checking) as soon as they have polymorphism, because there are not enough type annotations.
+
+\vspace{1em}
+
+In practice, most languages are a hybrid of both approaches. Proof assistants are more intrinsic, with features like implicit arguments which mimic extrinsic language constructs. Programming languages are more extrinsic, with more or less optional type annotations in various places, which make type checking and inference tractable.
+
+\end{frame}
+
+\begin{frame}{Plan}
+
+Since practical languages are hybrids driven by practical needs, we will devote the rest of this talk to the study of (some) type checking and type inference algorithms, culminating in the description of hint-based typing, or hinting, as I call it. To keep things simple, we will only look at the Simply Typed Lambda Calculus (STLC). But before we see the final boss, STLC with Hints, we will take a look at four more variants of STLC to learn where our presentation is coming from:
 
 \begin{itemize}
   \item Extrinsic STLC -- the most basic variant of STLC.
@@ -260,8 +324,17 @@ Similarly to Extrinsic STLC, typing is not unique in Bidirectional STLC. This is
 
 \end{frame}
 
-\section{Intrinsic}
+\begin{frame}{Bidirectional typing -- how the sausage is made}
 
+We did not describe how to derive the algorithmic rules of Bidirectional STLC from the declarative rules of Extrinsic STLC. This ``bidirectional recipe'' can be found in the paper \href{https://arxiv.org/pdf/1908.05839}{Bidirectional Typing}, section 4. Sections 1-4 provide a nice introduction to the topic of bidirectional typing.
+
+\vspace{2em}
+
+\href{http://davidchristiansen.dk/tutorials/bidirectional.pdf}{Bidirectional Typing Rules: A Tutorial} is a nice tutorial paper which shows how to implement a bidirectional typechecker for STLC with booleans (but no products or sums).
+
+\end{frame}
+
+\section{Intrinsic}
 
 \begin{frame}{Intrinsic STLC}
 
@@ -638,11 +711,11 @@ Note that the rule $\rulename{Hole}$ can only be applied once, because $\hintfor
 \begin{frame}{Hinting -- alternative rules}
 
 \begin{center}
-  $\infrule[AltApp]{\hinting{a}{?}{A} \quad \hinting{f}{\Fun{A}{H}}{\Fun{A}{B}}}{\hinting{\app{f}{a}}{H}{B}}$
+  $\infrule[AltApp]{\hinting{a}{\Hole}{A} \quad \hinting{f}{\Fun{A}{H}}{\Fun{A}{B}}}{\hinting{\app{f}{a}}{H}{B}}$
 
   \vspace{2em}
 
-  $\infrule[AltCase]{\begin{array}{c} \hinting{f}{\Fun{?}{H}}{\Fun{A}{C}} \\ \hinting{g}{\Fun{?}{C}}{\Fun{B}{C}} \end{array} \quad \hinting{e}{\Sum{A}{B}}{\Sum{A}{B}}}{\hinting{\case{e}{f}{g}}{H}{C}}$
+  $\infrule[AltCase]{\begin{array}{c} \hinting{f}{\Fun{\Hole}{H}}{\Fun{A}{C}} \\ \hinting{g}{\Fun{\Hole}{C}}{\Fun{B}{C}} \end{array} \quad \hinting{e}{\Sum{A}{B}}{\Sum{A}{B}}}{\hinting{\case{e}{f}{g}}{H}{C}}$
 \end{center}
 
 \vspace{2em}

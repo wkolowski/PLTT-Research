@@ -10,9 +10,13 @@
 \newcommand{\Unit}{\textbf{1}}
 \newcommand{\Empty}{\textbf{0}}
 
+% Base types.
+\newcommand{\Int}{\texttt{Int}}
+\newcommand{\String}{\texttt{String}}
+
 % Terms.
 \newcommand{\annot}[2]{(#1 : #2)}
-\newcommand{\fun}[2]{\lambda #1. #2}
+\newcommand{\fun}[2]{\lambda #1.\, #2}
 \newcommand{\app}[2]{#1\ #2}
 \newcommand{\pair}[2]{(#1, #2)}
 \newcommand{\outl}[1]{\texttt{outl}\ #1}
@@ -24,10 +28,17 @@
 \newcommand{\exfalso}[1]{\texttt{exfalso}\ #1}
 
 % Intrinsic terms.
-\newcommand{\ifun}[3]{\lambda #1 : #2. #3}
+\newcommand{\ifun}[3]{\lambda #1 : #2.\, #3}
 \newcommand{\iinl}[2]{\texttt{inl}_{#1}\ #2}
 \newcommand{\iinr}[2]{\texttt{inr}_{#1}\ #2}
 \newcommand{\iexfalso}[2]{\texttt{exfalso}_{#1}\ #2}
+
+% Computation.
+\newcommand{\subst}[3]{#1\left[#2 := #3\right]}
+\newcommand{\val}[1]{#1\ \texttt{value}}
+\newcommand{\compstep}[2]{#1 \longrightarrow #2}
+\newcommand{\compsteps}[2]{#1 \longrightarrow^* #2}
+\newcommand{\result}[2]{#1 \Downarrow #2}
 
 % Dual Intrinsic terms.
 \newcommand{\iapp}[3]{\texttt{app}_{#1}\ #2\ #3}

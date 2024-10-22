@@ -9,6 +9,7 @@
 \newcommand{\Sum}[2]{#1 + #2}
 \newcommand{\Unit}{\textbf{1}}
 \newcommand{\Empty}{\textbf{0}}
+\newcommand{\ForallT}[2]{\forall #1.\, #2}
 
 % Base types.
 \newcommand{\Int}{\texttt{Int}}
@@ -33,18 +34,22 @@
 \newcommand{\iinr}[2]{\texttt{inr}_{#1}\ #2}
 \newcommand{\iexfalso}[2]{\texttt{exfalso}_{#1}\ #2}
 
+% Dual Intrinsic terms.
+\newcommand{\iapp}[3]{\texttt{app}_{#1}\ #2\ #3}
+\newcommand{\ioutl}[2]{\texttt{outl}_{#1}\ #2}
+\newcommand{\ioutr}[2]{\texttt{outr}_{#1}\ #2}
+\newcommand{\icase}[5]{\texttt{case}_{#1, #2}\ #3\ \texttt{of}\ (#4, #5)}
+
+% Polymorphic terms.
+\newcommand{\tfun}[2]{\Lambda #1.\, #2}
+\newcommand{\tapp}[2]{#1\ \texttt{@}#2}
+
 % Computation.
 \newcommand{\subst}[3]{#1\left[#2 := #3\right]}
 \newcommand{\val}[1]{#1\ \texttt{value}}
 \newcommand{\compstep}[2]{#1 \longrightarrow #2}
 \newcommand{\compsteps}[2]{#1 \longrightarrow^* #2}
 \newcommand{\result}[2]{#1 \Downarrow #2}
-
-% Dual Intrinsic terms.
-\newcommand{\iapp}[3]{\texttt{app}_{#1}\ #2\ #3}
-\newcommand{\ioutl}[2]{\texttt{outl}_{#1}\ #2}
-\newcommand{\ioutr}[2]{\texttt{outr}_{#1}\ #2}
-\newcommand{\icase}[5]{\texttt{case}_{#1, #2}\ #3\ \texttt{of}\ (#4, #5)}
 
 % Commands for coloring differences in terms syntax between calculi.
 \newcommand{\newterm}[1]{\mathcolor{green}{#1}}
@@ -60,6 +65,7 @@
 \newcommand{\emptytypingctx}{\cdot}
 \newcommand{\extend}[3]{#1, #2 : #3}
 \newcommand{\extenddef}[4]{#1, #2 : #3 := #4}
+\newcommand{\extendtype}[2]{#1, #2}
 
 % Side conditions - this command semantically marks side conditions in inference rules, but otherwise does nothing.
 \newcommand{\sidecond}[1]{#1}
@@ -90,6 +96,10 @@
 \newcommand{\fulloutctx}[5]{#1 \vdash #2 \mathcolor{blue}{\Leftarrow} #3 \mathcolor{red}{\Rightarrow} #4 \dashv #5}
 \newcommand{\outctx}[3]{\fulloutctx{\Gamma}{#1}{#2}{#3}{\Gamma'}}
 \newcommand{\shortoutctx}[3]{#1 \mathcolor{blue}{\Leftarrow} #2 \mathcolor{red}{\Rightarrow} #3}
+
+% Valid type.
+\newcommand{\fulltype}[2]{#1 \vdash #2\ \texttt{type}}
+\newcommand{\type}[1]{\fulltype{\Gamma}{#1}}
 
 % Subtyping.
 \newcommand{\Top}{\top}

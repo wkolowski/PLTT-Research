@@ -1,0 +1,83 @@
+\documentclass{beamer}
+\usepackage[utf8]{inputenc}
+\usepackage{babel}
+\usepackage{xcolor}
+\usepackage{Commands}
+
+\usetheme{Darmstadt}
+
+\title{Hint-based typing for polymorphism}
+
+\begin{document}
+
+\frame{\titlepage}
+
+\section{Intrinsic System F}
+
+\begin{frame}{Terms, contexts and judgements}
+
+Types: \\
+$A, B ::= \alpha \pipe \ForallT{\alpha}{A} \pipe \Fun{A}{B}$
+
+\vspace{1em}
+
+Terms: \\
+$e ::=$ \\
+\qquad $x \pipe $ \\
+\qquad $\ifun{x}{A}{e} \pipe \app{e_1}{e_2} \pipe$ \\
+\qquad $\tfun{\alpha}{e} \pipe \tapp{e}{A}$
+
+\vspace{1em}
+
+Contexts: \\
+$\Gamma ::= \emptytypingctx \pipe \extend{\Gamma}{x}{A} \pipe \extendtype{\Gamma}{\alpha}$
+
+\vspace{1em}
+
+Judgements: \\
+$\typing{e}{A}$, $\type{A}$
+
+\end{frame}
+
+\begin{frame}{Valid type judgement}
+
+\begin{center}
+  $\infrule[TyVar]{\sidecond{\alpha \in \Gamma}}{\type{\alpha}}$
+
+  \vspace{2em}
+
+  $\infrule[All]{\fulltype{\extendtype{\Gamma}{\alpha}}{A}}{\type{\ForallT{\alpha}{A}}}$
+
+  \vspace{2em}
+
+  $\infrule[Fun]{\type{A} \quad \type{B}}{\type{\Fun{A}{B}}}$
+\end{center}
+
+\end{frame}
+
+\begin{frame}{Declarative typing -- basics}
+
+\begin{center}
+  $\infrule[Var]{\sidecond{(x : A) \in \Gamma}}{\typing{x}{A}}$
+\end{center}
+
+\end{frame}
+
+\begin{frame}{Declarative typing -- type-directed rules}
+
+\begin{center}
+  $\infrule{\fulltyping{\extend{\Gamma}{x}{A}}{e}{B}}{\typing{\ifun{x}{A}{e}}{\Fun{A}{B}}}$ \quad
+  $\infrule{\typing{f}{\Fun{A}{B}} \quad \typing{a}{A}}{\typing{\app{f}{a}}{B}}$
+
+  \vspace{2em}
+
+  $\infrule{\fulltyping{\extendtype{\Gamma}{\alpha}}{e}{A}}{\typing{\tfun{\alpha}{e}}{\ForallT{\alpha}{A}}}$
+
+  \vspace{2em}
+
+  $\infrule{\typing{e}{\ForallT{\alpha}{A}}}{\typing{\tapp{e}{B}}{\subst{A}{\alpha}{B}}}$
+\end{center}
+
+\end{frame}
+
+\end{document}

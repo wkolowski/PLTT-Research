@@ -7,25 +7,18 @@
 \usetheme{Darmstadt}
 
 \title{Hint-based typing for polymorphism}
+\date{}
 
 \begin{document}
 
 \frame{\titlepage}
 
-\section{Intrinsic System F}
+\section{Intro}
 
-\begin{frame}{Terms, contexts and judgements}
+\begin{frame}{Types and judgements}
 
 Types: \\
 $A, B ::= \alpha \pipe \ForallT{\alpha}{A} \pipe \Fun{A}{B}$
-
-\vspace{1em}
-
-Terms: \\
-$e ::=$ \\
-\qquad $x \pipe $ \\
-\qquad $\ifun{x}{A}{e} \pipe \app{e_1}{e_2} \pipe$ \\
-\qquad $\tfun{\alpha}{e} \pipe \tapp{e}{A}$
 
 \vspace{1em}
 
@@ -55,17 +48,25 @@ $\typing{e}{A}$, $\type{A}$
 
 \end{frame}
 
-\begin{frame}{Declarative typing -- basics}
+\section{Intrinsic System F}
 
-\begin{center}
-  $\infrule[Var]{\sidecond{(x : A) \in \Gamma}}{\typing{x}{A}}$
-\end{center}
+\begin{frame}{Terms}
+
+Terms: \\
+$e ::=$ \\
+\qquad $x \pipe $ \\
+\qquad $\ifun{x}{A}{e} \pipe \app{e_1}{e_2} \pipe$ \\
+\qquad $\tfun{\alpha}{e} \pipe \tapp{e}{A}$
 
 \end{frame}
 
-\begin{frame}{Declarative typing -- type-directed rules}
+\begin{frame}{Declarative typing}
 
 \begin{center}
+  $\infrule[Var]{\sidecond{(x : A) \in \Gamma}}{\typing{x}{A}}$
+
+  \vspace{2em}
+
   $\infrule{\fulltyping{\extend{\Gamma}{x}{A}}{e}{B}}{\typing{\ifun{x}{A}{e}}{\Fun{A}{B}}}$ \quad
   $\infrule{\typing{f}{\Fun{A}{B}} \quad \typing{a}{A}}{\typing{\app{f}{a}}{B}}$
 
@@ -79,5 +80,60 @@ $\typing{e}{A}$, $\type{A}$
 \end{center}
 
 \end{frame}
+
+\begin{frame}{Algorithmic typing}
+
+\begin{center}
+  $\infrule[Var]{\sidecond{(x : A) \in \Gamma}}{\infer{x}{A}}$
+
+  \vspace{2em}
+
+  $\infrule{\fullinfer{\extend{\Gamma}{x}{A}}{e}{B}}{\infer{\ifun{x}{A}{e}}{\Fun{A}{B}}}$ \quad
+  $\infrule{\infer{f}{\Fun{A}{B}} \quad \infer{a}{A}}{\infer{\app{f}{a}}{B}}$
+
+  \vspace{2em}
+
+  $\infrule{\fullinfer{\extendtype{\Gamma}{\alpha}}{e}{A}}{\infer{\tfun{\alpha}{e}}{\ForallT{\alpha}{A}}}$
+
+  \vspace{2em}
+
+  $\infrule{\infer{e}{\ForallT{\alpha}{A}}}{\infer{\tapp{e}{B}}{\subst{A}{\alpha}{B}}}$
+\end{center}
+
+\end{frame}
+
+\section{Extrinsic System F}
+
+\begin{frame}{Terms}
+
+Terms: \\
+$e ::=$ \\
+\qquad $x \pipe $ \\
+\qquad $\fun{x}{e} \pipe \app{e_1}{e_2} \pipe$
+
+\end{frame}
+
+\begin{frame}{Declarative typing}
+
+\begin{center}
+  $\infrule[Var]{\sidecond{(x : A) \in \Gamma}}{\typing{x}{A}}$
+
+  \vspace{2em}
+
+  $\infrule{\fulltyping{\extend{\Gamma}{x}{A}}{e}{B}}{\typing{\fun{x}{e}}{\Fun{A}{B}}}$ \quad
+  $\infrule{\typing{f}{\Fun{A}{B}} \quad \typing{a}{A}}{\typing{\app{f}{a}}{B}}$
+
+  \vspace{2em}
+
+  $\infrule{\fulltyping{\extendtype{\Gamma}{\alpha}}{e}{A}}{\typing{e}{\ForallT{\alpha}{A}}}$
+
+  \vspace{2em}
+
+  $\infrule{\typing{e}{\ForallT{\alpha}{A}}}{\typing{e}{\subst{A}{\alpha}{B}}}$
+\end{center}
+
+\end{frame}
+
+
 
 \end{document}

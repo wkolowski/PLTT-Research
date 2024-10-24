@@ -102,6 +102,60 @@ $e ::=$ \\
 
 \end{frame}
 
+\section{Dual Intrinsic System F}
+
+\begin{frame}{Terms}
+
+Terms: \\
+$e ::=$ \\
+\qquad $x \pipe $ \\
+\qquad $\fun{x}{e} \pipe \iapp{A}{e_1}{e_2} \pipe$ \\
+\qquad $\tapp{e}{A}$
+
+\end{frame}
+
+\begin{frame}{Declarative typing}
+
+\begin{center}
+  $\infrule[Var]{\sidecond{(x : A) \in \Gamma}}{\typing{x}{A}}$
+
+  \vspace{2em}
+
+  $\infrule{\fulltyping{\extend{\Gamma}{x}{A}}{e}{B}}{\typing{\fun{x}{e}}{\Fun{A}{B}}}$ \quad
+  $\infrule{\typing{f}{\Fun{A}{B}} \quad \typing{a}{A}}{\typing{\iapp{A}{f}{a}}{B}}$
+
+  \vspace{2em}
+
+  $\infrule{\fulltyping{\extendtype{\Gamma}{\alpha}}{e}{A}}{\typing{e}{\ForallT{\alpha}{A}}}$
+
+  \vspace{2em}
+
+  $\infrule{\typing{e}{\ForallT{\alpha}{A}}}{\typing{\tapp{e}{B}}{\subst{A}{\alpha}{B}}}$
+\end{center}
+
+\end{frame}
+
+\begin{frame}{Algorithmic typing}
+
+\begin{center}
+  $\infrule[Var]{\sidecond{(x : A) \in \Gamma}}{\check{x}{A}}$
+
+  \vspace{2em}
+
+  $\infrule{\fullcheck{\extend{\Gamma}{x}{A}}{e}{B}}{\check{\fun{x}{e}}{\Fun{A}{B}}}$ \quad
+  $\infrule{\check{f}{\Fun{A}{B}} \quad \check{a}{A}}{\check{\iapp{A}{f}{a}}{B}}$
+
+  \vspace{2em}
+
+  $\infrule{\fullcheck{\extendtype{\Gamma}{\alpha}}{e}{A}}{\check{e}{\ForallT{\alpha}{A}}}$
+
+  \vspace{2em}
+
+  $\infrule{\check{e}{\ForallT{\alpha}{A}}}{\check{\tapp{e}{B}}{\subst{A}{\alpha}{B}}}$
+\end{center}
+
+\end{frame}
+
 \section{Extrinsic System F}
 
 \begin{frame}{Terms}

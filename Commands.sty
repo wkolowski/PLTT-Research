@@ -97,6 +97,9 @@
 \newcommand{\outctx}[3]{\fulloutctx{\Gamma}{#1}{#2}{#3}{\Gamma'}}
 \newcommand{\shortoutctx}[3]{#1 \mathcolor{blue}{\Leftarrow} #2 \mathcolor{red}{\Rightarrow} #3}
 
+% Valid context.
+\newcommand{\tyctx}[1]{#1\ \texttt{ctx}}
+
 % Valid type.
 \newcommand{\fulltype}[2]{#1 \vdash #2\ \texttt{type}}
 \newcommand{\type}[1]{\fulltype{\Gamma}{#1}}

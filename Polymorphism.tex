@@ -214,4 +214,157 @@ $e ::=$ \\
 
 \end{frame}
 
+\section{System F with Hints}
+
+\newcommand{\fullvalidhint}[2]{#1 \vdash #2\ \texttt{hint}}
+\newcommand{\validhint}[1]{\fullvalidhint{\Gamma}{#1}}
+
+\begin{frame}{Hints}
+
+Hints: \\
+$H ::= \Hole \pipe \Fun{H_1}{H_2} \pipe \ForallT{\alpha}{H} \pipe \alpha$
+
+\end{frame}
+
+\begin{frame}{Valid hint judgement}
+
+\begin{center}
+  $\infrule[Hint-Hole]{\tyctx{\Gamma}}{\validhint{\Hole}}$
+
+  \vspace{2em}
+
+  $\infrule[Hint-TyVar]{\tyctx{\Gamma} \quad \sidecond{\alpha \in \Gamma}}{\validhint{\alpha}}$
+
+  \vspace{2em}
+
+  $\infrule[Hint-All]{\fullvalidhint{\extendtype{\Gamma}{\alpha}}{H}}{\validhint{\ForallT{\alpha}{H}}}$
+
+  \vspace{2em}
+
+  $\infrule[Hint-Fun]{\validhint{H_1} \quad \validhint{H_2}}{\validhint{\Fun{H_1}{H_2}}}$
+\end{center}
+
+\end{frame}
+
+\newcommand{\fullhintorderinctx}[3]{#1 \vdash \hintorder{#2}{#3}}
+\newcommand{\hintorderinctx}[2]{\fullhintorderinctx{\Gamma}{#1}{#2}}
+
+\begin{frame}{Order on hints}
+
+\begin{center}
+  $\infrule{\validhint{H}}{\hintorderinctx{\Hole}{H}}$
+
+  \vspace{2em}
+
+  $\infrule{\tyctx{\Gamma}}{\hintorderinctx{\alpha}{\alpha}}$
+
+  \vspace{2em}
+
+  $\infrule{\fullhintorderinctx{\extendtype{\Gamma}{\alpha}}{H_1}{H_2}}{\hintorderinctx{\ForallT{\alpha}{H_1}}{\ForallT{\alpha}{H_2}}}$
+
+  \vspace{2em}
+
+  $\infrule{\hintorderinctx{H_1}{H_1'} \quad \hintorderinctx{H_2}{H_2'}}{\hintorderinctx{\Fun{H_1}{H_2}}{\Fun{H'_1}{H'_2}}}$
+
+\end{center}
+
+\end{frame}
+
+\begin{frame}{Combining hints}
+
+\begin{center}
+  $\combinehints{\Hole}{H} = H$ \\
+  $\combinehints{H}{\Hole} = H$ \\
+  $\combinehints{(\Fun{H_1}{H_2})}{(\Fun{H'_1}{H'_2})} = \Fun{(\combinehints{H_1}{H'_1})}{(\combinehints{H_2}{H'_2})}$ \\
+  $\combinehints{(\ForallT{\alpha}{H_1})}{(\ForallT{\alpha}{H_2})} = \ForallT{\alpha}{\combinehints{H_1}{H_2}}$ \\
+  $\combinehints{\alpha}{\alpha} = \alpha$
+\end{center}
+
+\end{frame}
+
+\begin{frame}{Hints for term constructors}
+
+\begin{center}
+  $\hintfor{\fun{x}{e}} = \Fun{\Hole}{\Hole}$ \\
+\end{center}
+
+\end{frame}
+
+\begin{frame}{Terms}
+
+Terms: \\
+$e ::=$ \\
+\qquad $x \pipe \annot{e}{H} \pipe $ \\
+\qquad $\fun{x}{e} \pipe \app{e_1}{e_2} \pipe$
+
+\end{frame}
+
+\begin{frame}{Declarative typing}
+
+\begin{center}
+  $\infrule[Var]{\tyctx{\Gamma} \quad \sidecond{(x : A) \in \Gamma}}{\typing{x}{A}}$
+
+  \vspace{2em}
+
+  $\infrule{\typing{e}{A} \quad \sidecond{\hintorderinctx{H}{A}}}{\typing{\annot{e}{H}}{A}}$
+
+  \vspace{2em}
+
+  $\infrule{\fulltyping{\extend{\Gamma}{x}{A}}{e}{B}}{\typing{\fun{x}{e}}{\Fun{A}{B}}}$ \quad
+  $\infrule{\typing{f}{\Fun{A}{B}} \quad \typing{a}{A}}{\typing{\app{f}{a}}{B}}$
+
+  \vspace{2em}
+
+  $\infrule{\fulltyping{\extendtype{\Gamma}{\alpha}}{e}{A}}{\typing{e}{\ForallT{\alpha}{A}}}$
+
+  \vspace{2em}
+
+  $\infrule{\typing{e}{\ForallT{\alpha}{A}} \quad \type{B}}{\typing{e}{\subst{A}{\alpha}{B}}}$
+\end{center}
+
+\end{frame}
+
+\begin{frame}{Algorithmic typing -- basic rules}
+
+\begin{center}
+  $\infrule[Var]{\tyctx{\Gamma} \quad \sidecond{(x : A) \in \Gamma} \quad \sidecond{\hintorderinctx{H}{A}}}{\hinting{x}{H}{A}}$
+
+  \vspace{2em}
+
+  $\infrule[Annot]{\hinting{e}{\combinehints{H_1}{H_2}}{A}}{\hinting{\annot{e}{H_1}}{H_2}{A}}$
+
+  \vspace{2em}
+
+  $\infrule[Hole]{\hinting{e}{\hintfor{e}}{A} \quad \sidecond{e\ \texttt{constructor}}}{\hinting{e}{\Hole}{A}}$
+\end{center}
+
+\end{frame}
+
+\begin{frame}{Algorithmic typing -- other rules}
+
+\begin{center}
+  $\infrule{\fullhinting{\extend{\Gamma}{x}{A}}{e}{H}{B}}{\hinting{\fun{x}{e}}{\Fun{A}{H}}{\Fun{A}{B}}}$
+
+  \vspace{2em}
+
+  $\infrule{\hinting{f}{\Fun{\Hole}{H}}{\Fun{A}{B}} \quad \hinting{a}{A}{A}}{\hinting{\app{f}{a}}{H}{B}}$
+
+  \vspace{2em}
+
+  $\infrule{\fullhinting{\extendtype{\Gamma}{\alpha}}{e}{H}{A}}{\hinting{e}{\ForallT{\alpha}{H}}{\ForallT{\alpha}{A}}}$
+\end{center}
+
+\end{frame}
+
+\begin{frame}{Embedding}
+
+\begin{itemize}
+  \item $\ifun{x}{A}{e} :\equiv \annot{\fun{x}{e}}{\Fun{A}{\Hole}}$ \\
+  \item $\iapp{A}{f}{a} :\equiv \app{\annot{f}{\Fun{A}{\Hole}}}{a}$
+  \item $\tfun{\alpha}{e} :\equiv \annot{e}{\ForallT{\alpha}{\Hole}}$
+  \item $\tapp{e}{A} :\equiv \qquad ???$
+\end{itemize}
+
+\end{frame}
+
 \end{document}

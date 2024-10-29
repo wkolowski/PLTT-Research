@@ -1,0 +1,191 @@
+\documentclass{beamer}
+\usepackage[utf8]{inputenc}
+\usepackage{babel}
+\usepackage{xcolor}
+\usepackage{hyperref}
+\hypersetup{
+  colorlinks = true,
+  linkcolor = blue,
+  urlcolor  = blue,
+  citecolor = blue,
+  anchorcolor = blue
+}
+\usepackage{Commands}
+
+\usetheme{Darmstadt}
+
+\title{Functional hinting}
+\date{}
+
+\begin{document}
+
+\newcommand{\funpair}{\texttt{pair}}
+\newcommand{\funoutl}{\texttt{outl}}
+\newcommand{\funoutr}{\texttt{outr}}
+\newcommand{\funinl}{\texttt{inl}}
+\newcommand{\funinr}{\texttt{inr}}
+\newcommand{\funcase}{\texttt{case}}
+\newcommand{\funexfalso}{\texttt{exfalso}}
+
+\frame{\titlepage}
+
+\section{Functional hinting}
+
+\begin{frame}{Terms}
+
+Terms: \\
+$e ::=$ \\
+\qquad $x \pipe \annot{e}{H} \pipe $ \\
+\qquad $\fun{x}{e} \pipe \app{e_1}{e_2} \pipe$ \\
+\qquad $\funpair \pipe \funoutl \pipe \funoutr \pipe$ \\
+\qquad $\funinl \pipe \funinr \pipe \funcase \pipe$ \\
+\qquad $\unit \pipe \funexfalso$
+
+\vspace{2em}
+
+Judgements: \\
+$\fullhinting{\Gamma}{e}{H}{A}$ -- in context $\Gamma$, term $e$ checks with hint $H$ and infers type $A$
+
+\end{frame}
+
+\begin{frame}{Declarative typing -- basics}
+
+\begin{center}
+  $\infrule[Var]{\sidecond{(x : A) \in \Gamma}}{\typing{x}{A}}$
+
+  \vspace{2em}
+
+  $\infrule[Annot]{\typing{e}{A} \quad \sidecond{\hintorder{H}{A}}}{\typing{\annot{e}{H}}{A}}$
+\end{center}
+
+\end{frame}
+
+\begin{frame}{Declarative typing -- type-directed rules}
+
+\begin{center}
+  $\infrule{\fulltyping{\extend{\Gamma}{x}{A}}{e}{B}}{\typing{\fun{x}{e}}{\Fun{A}{B}}}$ \quad
+  $\infrule{\typing{a}{A} \quad \typing{f}{\Fun{A}{B}}}{\typing{\app{f}{a}}{B}}$
+
+  \vspace{2em}
+
+  $\infrule{}{\typing{\funpair}{\Fun{A}{\Fun{B}{\Prod{A}{B}}}}}$
+
+  \vspace{1em}
+
+  $\infrule{}{\typing{\funoutl}{\Fun{\Prod{A}{B}}{A}}}$ \quad
+  $\infrule{}{\typing{\funoutr}{\Fun{\Prod{A}{B}}{B}}}$
+
+  \vspace{2em}
+
+  $\infrule{}{\typing{\funinl}{\Fun{A}{\Sum{A}{B}}}}$ \quad
+  $\infrule{}{\typing{\funinr}{\Fun{B}{\Sum{A}{B}}}}$
+
+  \vspace{2em}
+
+  $\infrule{}{\typing{\funcase}{\Fun{(\Fun{A}{C})}{\Fun{(\Fun{B}{C})}{\Fun{\Sum{A}{B}}{C}}}}}$
+
+  \vspace{2em}
+
+  $\infrule{}{\typing{\unit}{\Unit}}$ \quad
+  $\infrule{}{\typing{\funexfalso}{\Fun{\Empty}{A}}}$
+\end{center}
+
+\end{frame}
+
+\begin{frame}{Hints for term constructors}
+
+\begin{center}
+  $\hintfor{\fun{x}{e}} = \Fun{\Hole}{\Hole}$ \\
+  $\hintfor{\funpair} = \Fun{\Hole}{\Fun{\Hole}{\Prod{\Hole}{\Hole}}}$ \\
+  $\hintfor{\funoutl} = \Fun{\Prod{\Hole}{\Hole}}{\Hole}$ \\
+  $\hintfor{\funoutr} = \Fun{\Prod{\Hole}{\Hole}}{\Hole}$ \\
+  $\hintfor{\funinl} = \Fun{\Hole}{\Sum{\Hole}{\Hole}}$ \\
+  $\hintfor{\funinr} = \Fun{\Hole}{\Sum{\Hole}{\Hole}}$ \\
+  $\hintfor{\funcase} = \Fun{(\Fun{\Hole}{\Hole})}{\Fun{(\Fun{\Hole}{\Hole})}{\Fun{\Sum{\Hole}{\Hole}}{\Hole}}}$ \\
+  $\hintfor{\funexfalso} = \Fun{\Empty}{\Hole}$ \\
+  $\hintfor{\unit} = \Unit$
+\end{center}
+
+\end{frame}
+
+\begin{frame}{Combining a hint with a term}
+
+\begin{center}
+  $\combinehints{e}{\Hole} = \hintfor{e}$ \\
+  $\combinehints{\fun{x}{e}}{\Fun{H_1}{H_2}} = \Fun{H_1}{H_2}$ \\
+  $\combinehints{\funpair}{\Fun{H_1}{\Fun{H_2}{\Prod{H_3}{H_4}}}} = \Fun{\combinehints{H_1}{H_3}}{\Fun{\combinehints{H_2}{H_4}}{\Prod{(\combinehints{H_1}{H_3})}{(\combinehints{H_2}{H_4})}}}$ \\
+  $\combinehints{\funoutl}{\Fun{\Prod{H_1}{H_2}}{H_3}} = \Fun{\Prod{(\combinehints{H_1}{H_3})}{H_2}}{\combinehints{H_1}{H_3}}$ \\
+  $\combinehints{\funoutr}{\Fun{(\Prod{H_1}{H_2})}{H_3}} = \Fun{\Prod{H_1}{(\combinehints{H_2}{H_3})}}{\combinehints{H_2}{H_3}}$ \\
+  $\combinehints{\funinl}{\Fun{H_1}{\Sum{H_2}{H_3}}} = \Fun{\combinehints{H_1}{H_2}}{\Sum{(\combinehints{H_1}{H_2})}{H_3}}$ \\
+  $\combinehints{\funinr}{\Fun{H_1}{\Sum{H_2}{H_3}}} = \Fun{\combinehints{H_1}{H_3}}{\Sum{H_2}{(\combinehints{H_1}{H_3})}}$ \\
+  $\combinehints{\funcase}{\Fun{(\Fun{H_1}{H_2})}{\Fun{(\Fun{H_3}{H_4})}{\Fun{\Sum{H_5}{H_6}}{H_7}}}} = \Fun{(\Fun{\combinehints{H_1}{H_5}}{H_2})}{\Fun{(\Fun{\combinehints{H_3}{H_6}}{H_4})}{\Fun{\Sum{(\combinehints{H_1}{H_5})}{(\combinehints{H_3}{H_6})}}{H_7}}}$ \\
+  $\combinehints{\funexfalso}{\Fun{H_1}{H_2}} = \Fun{\combinehints{H_1}{\Empty}}{H_2}$ \\
+  $\combinehints{\unit}{\Unit} = \Unit$
+\end{center}
+
+\end{frame}
+
+\begin{frame}{Hinting -- basic rules}
+
+\begin{center}
+  $\infrule[Var]{\sidecond{(x : A) \in \Gamma} \quad \sidecond{\hintorder{H}{A}}}{\hinting{x}{H}{A}}$
+
+  \vspace{2em}
+
+  $\infrule[Annot]{\hinting{e}{\combinehints{H_1}{H_2}}{A}}{\hinting{\annot{e}{H_1}}{H_2}{A}}$
+
+  \vspace{2em}
+
+  $\infrule[Hole]{\hinting{e}{\combinehints{e}{H}}{A} \quad \sidecond{\combinehints{e}{H}\ \texttt{defined}} \quad \sidecond{\combinehints{e}{H} \neq H}}{\hinting{e}{H}{A}}$
+\end{center}
+
+\vspace{2em}
+
+\end{frame}
+
+\begin{frame}{Hinting -- type-directed rules}
+
+\begin{center}
+  $\infrule{\fullhinting{\extend{\Gamma}{x}{A}}{e}{H}{B}}{\hinting{\fun{x}{e}}{\Fun{A}{H}}{\Fun{A}{B}}}$
+
+  \vspace{2em}
+
+  $\infrule{\hinting{a}{\Hole}{A} \quad \hinting{f}{\Fun{A}{H}}{\Fun{A}{B}}}{\hinting{\app{f}{a}}{H}{B}}$
+
+  \vspace{2em}
+
+  $\infrule{}{\hinting{\funpair}{\Fun{A}{\Fun{B}{\Prod{A}{B}}}}{\Fun{A}{\Fun{B}{\Prod{A}{B}}}}}$
+
+  \vspace{2em}
+
+  $\infrule{}{\hinting{\funoutl}{\Fun{\Prod{A}{B}}{A}}{\Fun{\Prod{A}{B}}{A}}}$
+
+  \vspace{2em}
+
+  $\infrule{}{\hinting{\funoutr}{\Fun{\Prod{A}{B}}{B}}{\Fun{\Prod{A}{B}}{B}}}$
+\end{center}
+
+\end{frame}
+
+\begin{frame}{Hinting -- type-directed rules}
+
+\begin{center}
+  $\infrule{}{\hinting{\funinl}{\Fun{A}{\Sum{A}{B}}}{\Fun{A}{\Sum{A}{B}}}}$
+
+  \vspace{2em}
+
+  $\infrule{}{\hinting{\funinr}{\Fun{B}{\Sum{A}{B}}}{\Fun{B}{\Sum{A}{B}}}}$
+
+  \vspace{2em}
+
+  $\infrule{}{\hinting{\funcase}{\Fun{(\Fun{A}{C})}{\Fun{(\Fun{B}{C})}{\Fun{\Sum{A}{B}}{C}}}}{{\Fun{(\Fun{A}{C})}{\Fun{(\Fun{B}{C})}{\Fun{\Sum{A}{B}}{C}}}}}}$
+
+  \vspace{2em}
+
+  $\infrule{}{\hinting{\unit}{\Unit}{\Unit}}$ \quad
+  $\infrule{}{\hinting{\funexfalso}{\Fun{\Empty}{A}}{\Fun{\Empty}{A}}}$
+\end{center}
+
+\end{frame}
+
+\end{document}

@@ -1,0 +1,152 @@
+\documentclass{beamer}
+\usepackage[utf8]{inputenc}
+\usepackage{babel}
+\usepackage{xcolor}
+\usepackage{hyperref}
+\hypersetup{
+  colorlinks = true,
+  linkcolor = blue,
+  urlcolor  = blue,
+  citecolor = blue,
+  anchorcolor = blue
+}
+\usepackage{Commands}
+
+\usetheme{Darmstadt}
+
+\title{Zipper Contexts}
+\author{Wojciech Kołowski}
+\date{}
+
+\begin{document}
+
+\frame{\titlepage}
+
+\section{Zipper Contexts}
+
+\begin{frame}{Intro}
+
+What we do here is explore an interesting idea. In some algorithms for bidirectional typechecking of polymorphic lambda calculus, there appears a special thing called a mark. The idea is that the mark designates the place in the contextup until which type variables can be generalized when forming universally quantified types.
+
+\vspace{2em}
+
+Since such a mark is just another way of extending the context, besides $\extend{\Gamma}{x}{A}$ (which corresponds to $\ifun{x}{A}{e}$) and $\extendtype{\Gamma}{\alpha}$ which corresponds to $\tfun{\alpha}{e}$, it might be worthwile to explore what would happen if we had more ways of extending the context that correspond to terms?
+
+\vspace{2em}
+
+The answer is interesting: contexts would turn into zippers!
+
+\end{frame}
+
+\newcommand{\ctxmark}{\circ}
+\newcommand{\extendfun}[3]{#1, \fun{#2}{\ctxmark}, #2 : #3}
+\newcommand{\extendfundef}[4]{#1, \fun{#2}{\ctxmark}, #2 : #3 := #4}
+\newcommand{\extendappl}[2]{#1, \app{\ctxmark}{#2}}
+\newcommand{\extendappr}[2]{#1, \app{#2}{\ctxmark}}
+\newcommand{\extendpairl}[2]{#1, \pair{\ctxmark}{#2}}
+\newcommand{\extendpairr}[2]{#1, \pair{#2}{\ctxmark}}
+\newcommand{\extendoutl}[1]{#1, \outl{\ctxmark}}
+\newcommand{\extendoutr}[1]{#1, \outr{\ctxmark}}
+\newcommand{\extendinl}[1]{#1, \inl{\ctxmark}}
+\newcommand{\extendinr}[1]{#1, \inr{\ctxmark}}
+\newcommand{\extendcasearg}[3]{#1, \case{\ctxmark}{#2}{#3}}
+\newcommand{\extendcasel}[5]{#1, \case{#2}{#3.\, \ctxmark}{#5}, #3 : #4}
+\newcommand{\extendcaseldef}[6]{#1, \case{#2}{#4.\, \ctxmark}{#3}, #4 : #5 := #6}
+\newcommand{\extendcaser}[5]{#1, \case{#2}{#3}{#4.\, \ctxmark}, #4 : #5}
+\newcommand{\extendcaserdef}[6]{#1, \case{#2}{#3}{#4.\, \ctxmark}, #4 : #5 := #6}
+\newcommand{\extendexfalso}[1]{#1, \exfalso{\ctxmark}}
+
+\begin{frame}{Contexts as zippers}
+
+Contexts: \\
+$\Gamma ::=$ \\
+\qquad $\emptytypingctx \pipe$ \\
+\qquad $\extendfun{\Gamma}{x}{A} \pipe \extendappl{\Gamma}{e_2} \pipe \extendappr{\Gamma}{e_1} \pipe$ \\
+\qquad $\extendpairl{\Gamma}{e_2} \pipe \extendpairr{\Gamma}{e_1} \pipe \extendoutl{\Gamma} \pipe \extendoutr{\Gamma} \pipe$ \\
+\qquad $\extendinl{\Gamma} \pipe \extendinr{\Gamma} \pipe \extendcasearg{\Gamma}{f}{g} \pipe$ \\
+\qquad $\extendcasel{\Gamma}{e}{x}{A}{g} \pipe \extendcaser{\Gamma}{e}{f}{x}{A} \pipe$ \\
+\qquad $\extendexfalso{\Gamma}$
+
+\end{frame}
+
+\begin{frame}{Contexts}
+
+To be clear, $(x : A) \in \Gamma$ if and only if either $\Gamma = \extendfun{\Gamma_L}{x}{A}, \Gamma_R$, or $\Gamma = \extendfundef{\Gamma_L}{x}{A}{e}, \Gamma_R$, or $\Gamma = \extendcasel{\Gamma}{e}{x}{A}{y.\, e_2}$
+
+\end{frame}
+
+\begin{frame}{Terms}
+
+Terms: \\
+$e ::=$ \\
+\qquad $x \pipe$ \\
+\qquad $\fun{x}{e} \pipe \app{e_1}{e_2} \pipe$ \\
+\qquad $\pair{e_1}{e_2} \pipe \outl{e} \pipe \outr{e} \pipe$ \\
+\qquad $\inl{e} \pipe \inr{e} \pipe \case{e}{e_1}{e_2} \pipe$ \\
+\qquad $\unit \pipe \exfalso{e}$
+
+\end{frame}
+
+\begin{frame}{Declarative typing -- basics}
+
+\begin{center}
+  $\infrule[Var]{\sidecond{(x : A) \in \Gamma}}{\typing{x}{A}}$
+\end{center}
+
+\end{frame}
+
+\begin{frame}{Declarative typing -- type-directed rules}
+
+\begin{center}
+  $\infrule{\fulltyping{\extendfun{\Gamma}{x}{A}}{e}{B}}{\typing{\fun{x}{e}}{\Fun{A}{B}}}$ \quad
+  $\infrule{\fulltyping{\extendappl{\Gamma}{a}}{f}{\Fun{A}{B}} \quad \fulltyping{\extendappr{\Gamma}{f}}{a}{A}}{\typing{\app{f}{a}}{B}}$
+
+  \vspace{2em}
+
+  $\infrule{\fulltyping{\extendpairl{\Gamma}{b}}{a}{A} \quad \fulltyping{\extendpairr{\Gamma}{a}}{b}{B}}{\typing{\pair{a}{b}}{\Prod{A}{B}}}$
+
+  \vspace{2em}
+
+  $\infrule{\fulltyping{\extendoutl{\Gamma}}{e}{\Prod{A}{B}}}{\typing{\outl{e}}{A}}$ \quad
+  $\infrule{\fulltyping{\extendoutr{\Gamma}}{e}{\Prod{A}{B}}}{\typing{\outr{e}}{B}}$
+
+  \vspace{2em}
+
+  $\infrule{\fulltyping{\extendinl{\Gamma}}{e}{A}}{\typing{\inl{e}}{\Sum{A}{B}}}$ \quad
+  $\infrule{\fulltyping{\extendinr{\Gamma}}{e}{B}}{\typing{\inr{e}}{\Sum{A}{B}}}$
+\end{center}
+
+\end{frame}
+
+\begin{frame}{Declarative typing -- type-directed rules}
+
+\begin{center}
+  $\infrule{\begin{array}{c} \fulltyping{\extendcasearg{\Gamma}{x.\, e_1}{y.\, e_2}}{e}{\Sum{A}{B}} \\ \fulltyping{\extendcasel{\Gamma}{e}{x}{A}{y.\, e_2}}{e_1}{C} \\ \fulltyping{\extendcaser{\Gamma}{e}{x.\, e_1}{y}{B}}{e_2}{C} \end{array}}{\typing{\case{e}{x.\, e_1}{y.\, e_2}}{C}}$
+
+  \vspace{2em}
+
+  $\infrule{}{\typing{\unit}{\Unit}}$ \quad
+  $\infrule{\fulltyping{\extendexfalso{\Gamma}}{e}{\Empty}}{\typing{\exfalso{e}}{A}}$
+\end{center}
+
+\end{frame}
+
+\begin{frame}{What's the point?}
+
+What is the point of it? By now I don't really remember, but I think it was that we add definitions to the context, i.e. $\extenddef{\Gamma}{x}{A}{e}$, and then we turn the term-related context extensions into smart constructors, which can turn ordinary variable bindings into definitions.
+
+\vspace{1em}
+
+$\extendfun{\extendappl{\Gamma}{e}}{x}{A} \leadsto \extendfundef{\extendappl{\Gamma}{e}}{x}{A}{e}$ \\
+
+\vspace{1em}
+
+$\extendcasel{\Gamma}{(\inl{e})}{x}{A}{y.\, e_2} \leadsto \extendcaseldef{\Gamma}{(\inl{e})}{y.\, e_2}{x}{A}{e}$ \\
+
+\vspace{1em}
+
+$\extendcaser{\Gamma}{(\inr{e})}{x.\, e_1}{y}{B} \leadsto \extendcaserdef{\Gamma}{(\inr{e})}{x.\, e_1}{y}{B}{e}$ \\
+
+\end{frame}
+
+\end{document}

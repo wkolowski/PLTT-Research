@@ -6,7 +6,9 @@
 
 \usetheme{Darmstadt}
 
-\title{Unification for STLC}
+\title{Hint-based unification for STLC}
+\author{Wojciech Kołowski}
+\date{}
 
 \begin{document}
 
@@ -29,11 +31,7 @@ $e ::=$ \\
 Contexts: \\
 $\Gamma ::= \emptytypingctx \pipe \extend{\Gamma}{x}{H}$
 
-\vspace{1em}
-
-Note: the terms are the same as in STLC with Hints, but variables in context are now annotated with a hint, not necessarily a type.
-
-\vspace{1em}
+\vspace{2em}
 
 Judgements: \\
 $\fulloutctx{\Gamma}{e}{H}{H'}{\Gamma'}$ -- in context $\Gamma$, term $e$ checks with hint $H$ and infers hint $H'$ in output context $\Gamma'$

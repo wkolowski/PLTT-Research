@@ -672,15 +672,15 @@ Note that the rule $\rulename{Hole}$ can only be applied once, because $\hintfor
 \begin{center}
   $\infrule{\fullhinting{\extend{\Gamma}{x}{A}}{e}{H}{B}}{\hinting{\fun{x}{e}}{\Fun{A}{H}}{\Fun{A}{B}}}$
 
-  \vspace{1em}
+  \vspace{2em}
 
   $\infrule{\hinting{f}{\Fun{\Hole}{H}}{\Fun{A}{B}} \quad \hinting{a}{A}{A}}{\hinting{\app{f}{a}}{H}{B}}$
 
-  \vspace{1em}
+  \vspace{2em}
 
-  $\infrule{\hinting{a}{H_1}{A} \quad \hinting{b}{H_2}{B}}{\hinting{\pair{a}{b}}{\Prod{H_1}{H_2}}{\Prod{A}{B}}}$
+  $\infrule{\hinting{a}{H_A}{A} \quad \hinting{b}{H_B}{B}}{\hinting{\pair{a}{b}}{\Prod{H_A}{H_B}}{\Prod{A}{B}}}$
 
-  \vspace{1em}
+  \vspace{2em}
 
   $\infrule{\hinting{e}{\Prod{H}{\Hole}}{\Prod{A}{B}}}{\hinting{\outl{e}}{H}{A}}$ \quad
   $\infrule{\hinting{e}{\Prod{\Hole}{H}}{\Prod{A}{B}}}{\hinting{\outr{e}}{H}{B}}$
@@ -712,11 +712,11 @@ Note that the rule $\rulename{Hole}$ can only be applied once, because $\hintfor
 \begin{frame}{Hinting -- alternative rules}
 
 \begin{center}
-  $\infrule[AltApp]{\hinting{a}{\Hole}{A} \quad \hinting{f}{\Fun{A}{H}}{\Fun{A}{B}}}{\hinting{\app{f}{a}}{H}{B}}$
+  $\infrule[AltApp]{\hinting{a}{\Hole}{H_A} \quad \hinting{f}{\Fun{H_A}{H_B}}{\Fun{A}{B}}}{\hinting{\app{f}{a}}{H_B}{B}}$
 
   \vspace{2em}
 
-  $\infrule[AltCase]{\begin{array}{c} \hinting{f}{\Fun{\Hole}{H}}{\Fun{A}{C}} \\ \hinting{g}{\Fun{\Hole}{C}}{\Fun{B}{C}} \end{array} \quad \hinting{e}{\Sum{A}{B}}{\Sum{A}{B}}}{\hinting{\case{e}{f}{g}}{H}{C}}$
+  $\infrule[AltCase]{\begin{array}{c} \hinting{f}{\Fun{\Hole}{H_C}}{\Fun{H_A}{H_C'}} \\ \hinting{g}{\Fun{\Hole}{H_C'}}{\Fun{H_B}{C}} \end{array} \quad \hinting{e}{\Sum{H_A}{H_B}}{\Sum{A}{B}}}{\hinting{\case{e}{f}{g}}{H_C}{C}}$
 \end{center}
 
 \vspace{2em}
@@ -778,6 +778,79 @@ We can also embed Dual Intrinsic STLC terms:
 
   $\infrule{\infer{e}{\Empty}}{\infer{\iexfalso{A}{e}}{A}}$
 \end{center}
+
+\end{frame}
+
+\newcommand{\fulltermorder}[3]{#1 \vdash #2 \sqsubseteq #3}
+%\newcommand{\termorder}[2]{\fulltermorder{\Gamma}{#1}{#2}}
+\newcommand{\termorder}[2]{#1 \sqsubseteq #2}
+
+\begin{frame}{Information order on terms}
+
+The order on hints induces an order on terms: it is the smallest relation which preserves term constructors and subsumes hint ordering on annotated terms.
+
+\vspace{2em}
+
+\begin{center}
+  $\infrule{\termorder{e_1}{e_2} \quad \hintorder{H_1}{H_2}}{\termorder{\annot{e_1}{H_1}}{\annot{e_2}{H_2}}}$
+\end{center}
+
+\end{frame}
+
+\begin{frame}{Information order on terms}
+
+\begin{center}
+  $\infrule{}{\termorder{x}{x}}$ \quad
+  $\infrule{\termorder{e_1}{e_2}}{\termorder{\fun{x}{e_1}}{\fun{x}{e_2}}}$ \quad
+  $\infrule{\termorder{f_1}{f_2} \quad \termorder{a_1}{a_2}}{\termorder{\app{f_1}{a_1}}{\app{f_2}{a_2}}}$
+
+  \vspace{2em}
+
+  $\infrule{\termorder{a_1}{a_2} \quad \termorder{b_1}{b_2}}{\termorder{\pair{a_1}{b_1}}{\pair{a_2}{b_2}}}$ \quad
+  $\infrule{\termorder{e_1}{e_2}}{\termorder{\outl{e_1}}{\outl{e_2}}}$ \quad
+  $\infrule{\termorder{e_1}{e_2}}{\termorder{\outl{e_1}}{\outr{e_2}}}$
+
+  \vspace{2em}
+
+  $\infrule{\termorder{e_1}{e_2}}{\termorder{\inl{e_1}}{\inl{e_2}}}$ \quad
+  $\infrule{\termorder{e_1}{e_2}}{\termorder{\inr{e_1}}{\inr{e_2}}}$
+
+  \vspace{2em}
+
+  $\infrule{\termorder{e_1}{e_2} \quad \termorder{f_1}{f_2} \quad \termorder{g_1}{g_2}}{\termorder{\case{e_1}{f_1}{g_1}}{\case{e_2}{f_2}{g_2}}}$
+
+  \vspace{2em}
+
+  $\infrule{}{\termorder{\unit}{\unit}}$ \quad
+  $\infrule{\termorder{e_1}{e_2}}{\termorder{\exfalso{e_1}}{\exfalso{e_2}}}$
+\end{center}
+
+\end{frame}
+
+\begin{frame}{Metatheory 1}
+
+If $\fullhinting{\Gamma}{e}{H}{A}$ then:
+
+\begin{itemize}
+  \item (Soundness) $\fulltyping{\Gamma}{e}{A}$ (proof: induction)
+  \item (Compatibility) $\hintorder{H}{A}$ (proof: induction)
+  \item (Squeeze) If $\hintorder{H}{H'}$ and $\hintorder{H'}{A}$, then $\fullhinting{\Gamma}{e}{H'}{A}$ (proof: induction)
+  \item (Upper bound) If $\fullhinting{\Gamma}{e}{H'}{A}$, then $\fullhinting{\Gamma}{e}{\combinehints{H}{H'}}{A}$ (proof: follows from the above)
+  \item (Decidability) For $\Gamma, e, H$ it is decidable whether there exists $A$ such that $\fullhinting{\Gamma}{e}{H}{A}$ (proof: the rules are literally the algorithm)
+  \item (Minimality) There exists $\hintorder{H'}{H}$ such that $\fullhinting{\Gamma}{e}{H'}{A}$ and for all $H'' \sqsubset H'$ it is not the case that $\fullhinting{\Gamma}{e}{H''}{A}$.
+\end{itemize}
+
+\end{frame}
+
+\begin{frame}{Metatheory 2}
+
+If $\fulltyping{\Gamma}{e}{A}$, then:
+
+\begin{itemize}
+  \item (Annotability) There exists $e'$ such that $\termorder{e}{e'}$ and $\fullhinting{\Gamma}{e'}{A}{A}$
+  \item (Minimal annotability) There exists $e'$ such that $\termorder{e}{e'}$ and $\fullhinting{\Gamma}{e'}{A}{A}$ and for all $e''$ such that $\termorder{e}{e''}$ and $\termorder{e''}{e'}$ it is not the case that $\fullhinting{\Gamma}{e''}{A}{A}$
+  \item There exist $\termorder{e}{e_1}$ and $\hintorder{H_1}{A}$ such that $\fullhinting{\Gamma}{e_1}{H_1}{A}$ and for all $e \sqsubseteq e_2 \sqsubseteq e_1$ and $H \sqsubseteq H' \sqsubseteq A$ it is not the case that $\fullhinting{\Gamma}{e_2}{H_2}{A}$
+\end{itemize}
 
 \end{frame}
 

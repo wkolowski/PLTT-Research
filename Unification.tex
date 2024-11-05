@@ -52,10 +52,6 @@ $\fulloutctx{\Gamma}{e}{H}{H'}{\Gamma'}$ -- in context $\Gamma$, term $e$ checks
   $\infrule[Hole]{\outctx{e}{\hintfor{e}}{A} \quad \sidecond{e\ \texttt{constructor}}}{\outctx{e}{\Hole}{A}}$
 \end{center}
 
-\vspace{2em}
-
-Note that the rule $\rulename{Hole}$ can only be applied once, because $\hintfor{e}$ can never be $\Hole$. After applying $\rulename{Hole}$, the only applicable rules are the type-directed ones.
-
 \end{frame}
 
 \begin{frame}{Output contexts -- type-directed rules}
@@ -102,6 +98,31 @@ Note that the rule $\rulename{Hole}$ can only be applied once, because $\hintfor
 
 \end{frame}
 
+\newcommand{\ctxorder}[2]{#1 \sqsubseteq #2}
+
+\begin{frame}{Information increase in contexts}
+
+\begin{center}
+  $\infrule{}{\ctxorder{\emptytypingctx}{\emptytypingctx}}$
+
+  \vspace{2em}
+
+  $\infrule{\ctxorder{\Gamma_1}{\Gamma_2} \quad \hintorder{A}{B}}{\ctxorder{\extend{\Gamma_1}{x}{A}}{\extend{\Gamma_2}{x}{B}}}$
+\end{center}
+
+\end{frame}
+
+\begin{frame}{Metatheory}
+
+If $\fulloutctx{\Gamma}{e}{A}{B}{\Gamma'}$, then:
+
+\begin{itemize}
+  \item $\hintorder{A}{B}$ (proof: induction)
+  \item $\ctxorder{\Gamma}{\Gamma'}$ (proof: induction)
+\end{itemize}
+
+\end{frame}
+
 \begin{frame}{Output contexts -- abridged basic rules}
 
 \begin{center}
@@ -116,11 +137,9 @@ Note that the rule $\rulename{Hole}$ can only be applied once, because $\hintfor
   $\infrule[Hole]{\shortoutctx{e}{\hintfor{e}}{A} \quad \sidecond{e\ \texttt{constructor}}}{\shortoutctx{e}{\Hole}{A}}$
 \end{center}
 
-\vspace{2em}
-
-Note that the rule $\rulename{Hole}$ can only be applied once, because $\hintfor{e}$ can never be $\Hole$. After applying $\rulename{Hole}$, the only applicable rules are the type-directed ones.
-
 \end{frame}
+
+\section{Abridged rules for output contexts}
 
 \begin{frame}{Output contexts -- abridged type-directed rules}
 

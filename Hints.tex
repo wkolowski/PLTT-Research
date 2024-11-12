@@ -22,13 +22,15 @@
 
 \frame{\titlepage}
 
-\section{Hinting}
+\section{Intro}
 
 \begin{frame}{STLC with Hints}
 
 STLC with Hints is a flavour of STLC inspired by Bidirectional STLC. The main insight behind it is that in Bidirectional STLC, we have a hard time deciding whether a rule should be in checking mode or in inference mode, so why not both? This way, we would have some input type that guides us, but also produce an output type, which is in some sense ``better''. This is a bit silly if we already have the correct type as input, but we can make this idea work by introducing hints, which are types with holes, and insisting that the input is not a type, but merely a hint.
 
 \end{frame}
+
+\section{Hints}
 
 \begin{frame}{Hints}
 
@@ -120,6 +122,8 @@ If $\combinehints{}{}$ were not partial, $(H, \combinehints{}{}, \Hole)$ would b
 
 \end{frame}
 
+\section{Declarative typing}
+
 \begin{frame}{Terms}
 
 Terms: \\
@@ -149,7 +153,9 @@ $\fullhinting{\Gamma}{e}{H}{A}$ -- in context $\Gamma$, term $e$ checks with hin
 
 \end{frame}
 
-\begin{frame}{Hinting -- basic rules}
+\section{Algorithmic typing}
+
+\begin{frame}{Algorithmic typing -- basic rules}
 
 \begin{center}
   $\infrule[Var]{\sidecond{(x : A) \in \Gamma} \quad \sidecond{\hintorder{H}{A}}}{\hinting{x}{H}{A}}$
@@ -169,7 +175,7 @@ Note that the rule $\rulename{Hole}$ can only be applied once, because $\hintfor
 
 \end{frame}
 
-\begin{frame}{Hinting -- type-directed rules}
+\begin{frame}{Algorithmic typing -- type-directed rules}
 
 \begin{center}
   $\infrule{\fullhinting{\extend{\Gamma}{x}{A}}{e}{H}{B}}{\hinting{\fun{x}{e}}{\Fun{A}{H}}{\Fun{A}{B}}}$
@@ -190,7 +196,7 @@ Note that the rule $\rulename{Hole}$ can only be applied once, because $\hintfor
 
 \end{frame}
 
-\begin{frame}{Hinting -- type-directed rules}
+\begin{frame}{Algorithmic typing -- type-directed rules}
 
 \begin{center}
   $\infrule{\hinting{e}{H}{A}}{\hinting{\inl{e}}{\Sum{H}{B}}{\Sum{A}{B}}}$
@@ -211,14 +217,14 @@ Note that the rule $\rulename{Hole}$ can only be applied once, because $\hintfor
 
 \end{frame}
 
-\begin{frame}{Hinting -- alternative rules}
+\begin{frame}{Algorithmic typing -- alternative rules}
 
 \begin{center}
-  $\infrule[AltApp]{\hinting{a}{\Hole}{H_A} \quad \hinting{f}{\Fun{H_A}{H_B}}{\Fun{A}{B}}}{\hinting{\app{f}{a}}{H_B}{B}}$
+  $\infrule[AltApp]{\hinting{a}{\Hole}{A} \quad \hinting{f}{\Fun{A}{H}}{\Fun{A}{B}}}{\hinting{\app{f}{a}}{H}{B}}$
 
   \vspace{2em}
 
-  $\infrule[AltCase]{\begin{array}{c} \hinting{f}{\Fun{\Hole}{H_C}}{\Fun{H_A}{H_C'}} \\ \hinting{g}{\Fun{\Hole}{H_C'}}{\Fun{H_B}{C}} \end{array} \quad \hinting{e}{\Sum{H_A}{H_B}}{\Sum{A}{B}}}{\hinting{\case{e}{f}{g}}{H_C}{C}}$
+  $\infrule[AltCase]{\begin{array}{c} \hinting{f}{\Fun{\Hole}{H}}{\Fun{A}{C}} \\ \hinting{g}{\Fun{\Hole}{C}}{\Fun{B}{C}} \end{array} \quad \hinting{e}{\Sum{A}{B}}{\Sum{A}{B}}}{\hinting{\case{e}{f}{g}}{H}{C}}$
 \end{center}
 
 \vspace{2em}
@@ -227,14 +233,151 @@ We could have made some different choices. For application, we could try to infe
 
 \end{frame}
 
-\begin{frame}{Notations and derived terms}
+\section{Metatheory}
 
-We can introduce some handy notations:
+\begin{frame}{Metatheory -- basics}
+
+If $\fullhinting{\Gamma}{e}{H}{A}$ then:
 
 \begin{itemize}
-  \item $\check{e}{A} :\equiv \hinting{e}{A}{A}$
-  \item $\infer{e}{A} :\equiv \hinting{e}{\Hole}{A}$
+  \item (Soundness) $\fulltyping{\Gamma}{e}{A}$ (proof: induction)
+  \item (Compatibility) $\hintorder{H}{A}$ (proof: induction)
+  \item (Squeeze) If $\hintorder{H}{H'}$ and $\hintorder{H'}{A}$, then $\fullhinting{\Gamma}{e}{H'}{A}$ (proof: induction)
+  \item (Upper bound) If $\fullhinting{\Gamma}{e}{H'}{A}$, then $\fullhinting{\Gamma}{e}{\combinehints{H}{H'}}{A}$ (proof: follows from the above)
+  \item (Decidability) For $\Gamma, e, H$ it is decidable whether there exists $A$ such that $\fullhinting{\Gamma}{e}{H}{A}$ (proof: the rules are literally the algorithm)
 \end{itemize}
+
+\end{frame}
+
+\newcommand{\subtracthints}[2]{#1 \setminus #2}
+
+\begin{frame}{Hint subtraction}
+
+\begin{center}
+  $\subtracthints{\Hole}{H} = \Hole$ \\
+  $\subtracthints{H}{\Hole} = H$ \\
+  $\subtracthints{H}{H} = \Hole$ \\
+  $\subtracthints{(\Fun{H_1}{H_2})}{(\Fun{H'_1}{H'_2})} = \Fun{(\subtracthints{H_1}{H'_1})}{(\subtracthints{H_2}{H'_2})}$ \\
+  $\subtracthints{(\Prod{H_1}{H_2})}{(\Prod{H'_1}{H'_2})} = \Prod{(\subtracthints{H_1}{H'_1})}{(\subtracthints{H_2}{H'_2})}$ \\
+  $\subtracthints{(\Sum{H_1}{H_2})}{(\Sum{H'_1}{H'_2})} = \Sum{(\subtracthints{H_1}{H'_1})}{(\subtracthints{H_2}{H'_2})}$
+\end{center}
+
+\vspace{2em}
+
+Hint subtraction is a partial operation which we'll need when proving minimality. When subtracting a hint from itself or from $\Hole$, the result is $\Hole$, and subtracting $\Hole$ changes nothing. In the remaining cases, when the hints are not equal but have the same structure, the subtraction proceeds recursively.
+
+\end{frame}
+
+\begin{frame}{Hint subtraction -- properties}
+
+\begin{itemize}
+  \item If $\hintorder{H_1}{H_2}$, then $\hintorder{\subtracthints{H_1}{H}}{\subtracthints{H_2}{H}}$
+\end{itemize}
+
+\end{frame}
+
+\begin{frame}{Metatheory -- minimality}
+
+(Minimality) There exists $\hintorder{H'}{H}$ such that $\fullhinting{\Gamma}{e}{H'}{A}$ and for all $\stricthintorder{H''}{H'}$ it is not the case that $\fullhinting{\Gamma}{e}{H''}{A}$ (proof: induction, the only hard case is $\rulename{Annot}$)
+
+\vspace{1em}
+
+Proof: we need $\hinting{\annot{e}{H_1}}{H'}{A}$ for minimal $H'$. From the induction hypothesis we have minimal $\hintorder{H'}{\combinehints{H_1}{H_2}}$ such that $\hinting{e}{H'}{A}$. Our minimal hint will be $\subtracthints{H'}{H_1}$, so we need $\hinting{\annot{e}{H_1}}{\subtracthints{H'}{H_1}}{A}$. Since $\combinehints{H_1}{(\subtracthints{H'}{H_1})} = \combinehints{H_1}{H'}$, it suffices to show $\hinting{e}{\combinehints{H_1}{H'}}{A}$, which follows from squeezing and IH, because $\triplehintorder{H'}{\combinehints{H_1}{H'}}{\combinehints{H_1}{H_2}}$. Of course we also have $\triplehintorder{\subtracthints{H'}{H_1}}{\subtracthints{H_2}{H_1}}{H_2}$.
+
+\end{frame}
+
+\begin{frame}{Metatheory -- minimality, cont.}
+
+Now assume $\stricthintorder{H''}{\subtracthints{H'}{H_1}}$ and $\hinting{\annot{e}{H_1}}{H''}{A}$. We have $\stricthintorder{H''}{H'}$ and so $\stricthintorder{H''}{H_2}$.
+
+\end{frame}
+
+\begin{frame}{Metatheory -- minimality v2}
+
+\end{frame}
+
+\begin{frame}{Information order on terms}
+
+The order on hints induces an order on terms: it is the smallest relation which preserves term constructors and subsumes hint ordering on annotated terms.
+
+\vspace{2em}
+
+\begin{center}
+  $\infrule{\termorder{e_1}{e_2} \quad \hintorder{H_1}{H_2}}{\termorder{\annot{e_1}{H_1}}{\annot{e_2}{H_2}}}$
+\end{center}
+
+\vspace{2em}
+
+Intuitively, $\termorder{e_1}{e_2}$ holds when $e_2$ has more informative hints than $e_1$.
+
+\end{frame}
+
+\begin{frame}{Information order on terms -- rules}
+
+\begin{center}
+  $\infrule{}{\termorder{x}{x}}$ \quad
+  $\infrule{\termorder{e_1}{e_2}}{\termorder{\fun{x}{e_1}}{\fun{x}{e_2}}}$ \quad
+  $\infrule{\termorder{f_1}{f_2} \quad \termorder{a_1}{a_2}}{\termorder{\app{f_1}{a_1}}{\app{f_2}{a_2}}}$
+
+  \vspace{2em}
+
+  $\infrule{\termorder{a_1}{a_2} \quad \termorder{b_1}{b_2}}{\termorder{\pair{a_1}{b_1}}{\pair{a_2}{b_2}}}$ \quad
+  $\infrule{\termorder{e_1}{e_2}}{\termorder{\outl{e_1}}{\outl{e_2}}}$ \quad
+  $\infrule{\termorder{e_1}{e_2}}{\termorder{\outl{e_1}}{\outr{e_2}}}$
+
+  \vspace{2em}
+
+  $\infrule{\termorder{e_1}{e_2}}{\termorder{\inl{e_1}}{\inl{e_2}}}$ \quad
+  $\infrule{\termorder{e_1}{e_2}}{\termorder{\inr{e_1}}{\inr{e_2}}}$
+
+  \vspace{2em}
+
+  $\infrule{\termorder{e_1}{e_2} \quad \termorder{f_1}{f_2} \quad \termorder{g_1}{g_2}}{\termorder{\case{e_1}{f_1}{g_1}}{\case{e_2}{f_2}{g_2}}}$
+
+  \vspace{2em}
+
+  $\infrule{}{\termorder{\unit}{\unit}}$ \quad
+  $\infrule{\termorder{e_1}{e_2}}{\termorder{\exfalso{e_1}}{\exfalso{e_2}}}$
+\end{center}
+
+\end{frame}
+
+\begin{frame}{Metatheory 2}
+
+If $\fulltyping{\Gamma}{e}{A}$, then:
+
+\begin{itemize}
+  \item (Annotability) There exists $e'$ such that $\termorder{e}{e'}$ and $\fullhinting{\Gamma}{e'}{A}{A}$
+  \item (Minimal annotability) There exists $e'$ such that $\termorder{e}{e'}$ and $\fullhinting{\Gamma}{e'}{A}{A}$ and for all $e''$ such that $\termorder{e}{e''}$ and $\termorder{e''}{e'}$ it is not the case that $\fullhinting{\Gamma}{e''}{A}{A}$
+  \item There exist $\termorder{e}{e_1}$ and $\hintorder{H_1}{A}$ such that $\fullhinting{\Gamma}{e_1}{H_1}{A}$ and for all $\tripletermorder{e}{e_2}{e_1}$ and $\triplehintorder{H}{H'}{A}$ it is not the case that $\fullhinting{\Gamma}{e_2}{H_2}{A}$
+\end{itemize}
+
+\end{frame}
+
+\begin{frame}{(Non)uniqueness of typing}
+
+Similarly to Extrinsic STLC, STLC with Hints does not enjoy uniqueness of typing. This is because we still can have terms like $\fun{x}{x}$ with hint $\Hole$, which can be typed with any type of the form $\Fun{A}{A}$. However, if the hint is informative enough, then the type is unique. Moreover, every typable term can be given a hint which makes its type unique.
+
+\end{frame}
+
+\section{Embedding}
+
+\begin{frame}{Checking and inference mode}
+
+With our hint-based approach, checking and inference modes, familiar from Bidirectional STLC, are easily definable:
+
+\begin{itemize}
+  \item $\check{e}{A}$ is defined as $\hinting{e}{A}{A}$
+  \item $\infer{e}{A}$ is defined as $\hinting{e}{\Hole}{A}$
+\end{itemize}
+
+\end{frame}
+
+\begin{frame}{Embedding Bidirectional STLC}
+
+\end{frame}
+
+\begin{frame}{Embedding Intrinsic STLC}
 
 We can embed Intrinsic STLC terms:
 
@@ -244,6 +387,10 @@ We can embed Intrinsic STLC terms:
   \item $\iinr{A}{e} :\equiv \annot{\inr{e}}{\Sum{A}{\Hole}}$ \\
   \item $\iexfalso{A}{e} :\equiv \annot{\exfalso{e}}{A}$
 \end{itemize}
+
+\end{frame}
+
+\begin{frame}{Embedding Dual Intrinsic STLC}
 
 We can also embed Dual Intrinsic STLC terms:
 
@@ -280,85 +427,6 @@ We can also embed Dual Intrinsic STLC terms:
 
   $\infrule{\infer{e}{\Empty}}{\infer{\iexfalso{A}{e}}{A}}$
 \end{center}
-
-\end{frame}
-
-\newcommand{\fulltermorder}[3]{#1 \vdash #2 \sqsubseteq #3}
-%\newcommand{\termorder}[2]{\fulltermorder{\Gamma}{#1}{#2}}
-\newcommand{\termorder}[2]{#1 \sqsubseteq #2}
-
-\begin{frame}{Information order on terms}
-
-The order on hints induces an order on terms: it is the smallest relation which preserves term constructors and subsumes hint ordering on annotated terms.
-
-\vspace{2em}
-
-\begin{center}
-  $\infrule{\termorder{e_1}{e_2} \quad \hintorder{H_1}{H_2}}{\termorder{\annot{e_1}{H_1}}{\annot{e_2}{H_2}}}$
-\end{center}
-
-\end{frame}
-
-\begin{frame}{Information order on terms}
-
-\begin{center}
-  $\infrule{}{\termorder{x}{x}}$ \quad
-  $\infrule{\termorder{e_1}{e_2}}{\termorder{\fun{x}{e_1}}{\fun{x}{e_2}}}$ \quad
-  $\infrule{\termorder{f_1}{f_2} \quad \termorder{a_1}{a_2}}{\termorder{\app{f_1}{a_1}}{\app{f_2}{a_2}}}$
-
-  \vspace{2em}
-
-  $\infrule{\termorder{a_1}{a_2} \quad \termorder{b_1}{b_2}}{\termorder{\pair{a_1}{b_1}}{\pair{a_2}{b_2}}}$ \quad
-  $\infrule{\termorder{e_1}{e_2}}{\termorder{\outl{e_1}}{\outl{e_2}}}$ \quad
-  $\infrule{\termorder{e_1}{e_2}}{\termorder{\outl{e_1}}{\outr{e_2}}}$
-
-  \vspace{2em}
-
-  $\infrule{\termorder{e_1}{e_2}}{\termorder{\inl{e_1}}{\inl{e_2}}}$ \quad
-  $\infrule{\termorder{e_1}{e_2}}{\termorder{\inr{e_1}}{\inr{e_2}}}$
-
-  \vspace{2em}
-
-  $\infrule{\termorder{e_1}{e_2} \quad \termorder{f_1}{f_2} \quad \termorder{g_1}{g_2}}{\termorder{\case{e_1}{f_1}{g_1}}{\case{e_2}{f_2}{g_2}}}$
-
-  \vspace{2em}
-
-  $\infrule{}{\termorder{\unit}{\unit}}$ \quad
-  $\infrule{\termorder{e_1}{e_2}}{\termorder{\exfalso{e_1}}{\exfalso{e_2}}}$
-\end{center}
-
-\end{frame}
-
-\begin{frame}{Metatheory 1}
-
-If $\fullhinting{\Gamma}{e}{H}{A}$ then:
-
-\begin{itemize}
-  \item (Soundness) $\fulltyping{\Gamma}{e}{A}$ (proof: induction)
-  \item (Compatibility) $\hintorder{H}{A}$ (proof: induction)
-  \item (Squeeze) If $\hintorder{H}{H'}$ and $\hintorder{H'}{A}$, then $\fullhinting{\Gamma}{e}{H'}{A}$ (proof: induction)
-  \item (Upper bound) If $\fullhinting{\Gamma}{e}{H'}{A}$, then $\fullhinting{\Gamma}{e}{\combinehints{H}{H'}}{A}$ (proof: follows from the above)
-  \item (Decidability) For $\Gamma, e, H$ it is decidable whether there exists $A$ such that $\fullhinting{\Gamma}{e}{H}{A}$ (proof: the rules are literally the algorithm)
-  \item (Minimality) There exists $\hintorder{H'}{H}$ such that $\fullhinting{\Gamma}{e}{H'}{A}$ and for all $H'' \sqsubset H'$ it is not the case that $\fullhinting{\Gamma}{e}{H''}{A}$.
-\end{itemize}
-
-\end{frame}
-
-\begin{frame}{Metatheory 2}
-
-If $\fulltyping{\Gamma}{e}{A}$, then:
-
-\begin{itemize}
-  \item (Annotability) There exists $e'$ such that $\termorder{e}{e'}$ and $\fullhinting{\Gamma}{e'}{A}{A}$
-  \item (Minimal annotability) There exists $e'$ such that $\termorder{e}{e'}$ and $\fullhinting{\Gamma}{e'}{A}{A}$ and for all $e''$ such that $\termorder{e}{e''}$ and $\termorder{e''}{e'}$ it is not the case that $\fullhinting{\Gamma}{e''}{A}{A}$
-  \item There exist $\termorder{e}{e_1}$ and $\hintorder{H_1}{A}$ such that $\fullhinting{\Gamma}{e_1}{H_1}{A}$ and for all $e \sqsubseteq e_2 \sqsubseteq e_1$ and $H \sqsubseteq H' \sqsubseteq A$ it is not the case that $\fullhinting{\Gamma}{e_2}{H_2}{A}$
-\end{itemize}
-
-\end{frame}
-
-\begin{frame}{(Non)uniqueness of typing}
-
-Similarly to Extrinsic STLC, STLC with Hints does not enjoy uniqueness of typing. This is because we still can have terms like $\fun{x}{x}$ with hint $\Hole$, which can be typed with any type of the form $\Fun{A}{A}$. However, if the hint is informative enough, then the type is unique. Moreover, every typable term can be given a hint which makes its type unique.
 
 \end{frame}
 

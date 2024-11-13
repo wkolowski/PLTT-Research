@@ -77,36 +77,140 @@ The order can be intuitively interpreted as information increase: $\hintorder{H_
 
 \end{frame}
 
-\begin{frame}{Combining hints}
+\begin{frame}{Least upper bound of hints}
 
 \begin{center}
-  $\combinehints{\Hole}{H} = H$ \\
-  $\combinehints{H}{\Hole} = H$ \\
-  $\combinehints{(\Fun{H_1}{H_2})}{(\Fun{H'_1}{H'_2})} = \Fun{(\combinehints{H_1}{H'_1})}{(\combinehints{H_2}{H'_2})}$ \\
-  $\combinehints{(\Prod{H_1}{H_2})}{(\Prod{H'_1}{H'_2})} = \Prod{(\combinehints{H_1}{H'_1})}{(\combinehints{H_2}{H'_2})}$ \\
-  $\combinehints{(\Sum{H_1}{H_2})}{(\Sum{H'_1}{H'_2})} = \Sum{(\combinehints{H_1}{H'_1})}{(\combinehints{H_2}{H'_2})}$ \\
-  $\combinehints{\Unit}{\Unit} = \Unit$ \\
-  $\combinehints{\Empty}{\Empty} = \Empty$
+  $\hintlub{\Hole}{H} = H$ \\
+  $\hintlub{H}{\Hole} = H$ \\
+  $\hintlub{(\Fun{H_1}{H_2})}{(\Fun{H'_1}{H'_2})} = \Fun{(\hintlub{H_1}{H'_1})}{(\hintlub{H_2}{H'_2})}$ \\
+  $\hintlub{(\Prod{H_1}{H_2})}{(\Prod{H'_1}{H'_2})} = \Prod{(\hintlub{H_1}{H'_1})}{(\hintlub{H_2}{H'_2})}$ \\
+  $\hintlub{(\Sum{H_1}{H_2})}{(\Sum{H'_1}{H'_2})} = \Sum{(\hintlub{H_1}{H'_1})}{(\hintlub{H_2}{H'_2})}$ \\
+  $\hintlub{\Unit}{\Unit} = \Unit$ \\
+  $\hintlub{\Empty}{\Empty} = \Empty$
 \end{center}
 
-The order on hints induces a partial operation $\combinehints{}{}$, which computes the least upper bound of two hints when it exists. Intuitively, $\combinehints{}{}$ combines two hints which share the same structure, filling the $\Hole$s in the leaves with something more informative coming from the other argument. For hints with incompatible structure the result is undefined.
+The order on hints induces a partial operation $\hintlub{}{}$, which computes the least upper bound of two hints when it exists. Intuitively, $\hintlub{}{}$ combines two hints which share the same structure, filling the $\Hole$s in the leaves with something more informative coming from the other argument. For hints with incompatible structure the result is undefined.
 
 \end{frame}
 
-\begin{frame}{Combining hints -- properties}
+\begin{frame}{Least upper bound of hints -- properties}
 
 If all relevant results are defined, then:
 
 \begin{itemize}
-  \item $\combinehints{(\combinehints{H_1}{H_2})}{H_3} = \combinehints{H_1}{(\combinehints{H_2}{H_3})}$
-  \item $\combinehints{H_1}{H_2} = \combinehints{H_2}{H_1}$
-  \item $\combinehints{\Hole}{H} = H = \combinehints{H}{\Hole}$
-  \item $\combinehints{H}{H} = H$
+  \item $\hintlub{(\hintlub{H_1}{H_2})}{H_3} = \hintlub{H_1}{(\hintlub{H_2}{H_3})}$
+  \item $\hintlub{H_1}{H_2} = \hintlub{H_2}{H_1}$
+  \item $\hintlub{\Hole}{H} = H = \hintlub{H}{\Hole}$
+  \item $\hintlub{H}{H} = H$
 \end{itemize}
 
 \vspace{2em}
 
-If $\combinehints{}{}$ were not partial, $(H, \combinehints{}{}, \Hole)$ would be a commutative idempotent monoid. But since it is partial, meh...
+If $\hintlub{}{}$ were not partial, $(H, \hintlub{}{}, \Hole)$ would be a commutative idempotent monoid. But since it is partial, meh...
+
+\end{frame}
+
+\begin{frame}{Greatest lower bound of hints}
+
+\begin{center}
+  $\hintglb{\Hole}{H} = \Hole$ \\
+  $\hintglb{H}{\Hole} = \Hole$ \\
+  $\hintglb{(\Fun{H_1}{H_2})}{(\Fun{H'_1}{H'_2})} = \Fun{(\hintglb{H_1}{H'_1})}{(\hintglb{H_2}{H'_2})}$ \\
+  $\hintglb{(\Prod{H_1}{H_2})}{(\Prod{H'_1}{H'_2})} = \Prod{(\hintglb{H_1}{H'_1})}{(\hintglb{H_2}{H'_2})}$ \\
+  $\hintglb{(\Sum{H_1}{H_2})}{(\Sum{H'_1}{H'_2})} = \Sum{(\hintglb{H_1}{H'_1})}{(\hintglb{H_2}{H'_2})}$ \\
+  $\hintglb{\Unit}{\Unit} = \Unit$ \\
+  $\hintglb{\Empty}{\Empty} = \Empty$
+\end{center}
+
+The order on hints induces a partial operation $\hintglb{}{}$, which computes the greatest lower bound of two hints when it exists. Intuitively, $\hintglb{}{}$ combines two hints which share the same structure, replacing any subhints with the $\Hole$s if it appears in the other argument. For hints with incompatible structure the result is undefined.
+
+\end{frame}
+
+\begin{frame}{Greatest lower bound of hints -- properties}
+
+If all relevant results are defined, then:
+
+\begin{itemize}
+  \item $\hintglb{(\hintglb{H_1}{H_2})}{H_3} = \hintglb{H_1}{(\hintglb{H_2}{H_3})}$
+  \item $\hintglb{H_1}{H_2} = \hintglb{H_2}{H_1}$
+  \item $\hintglb{\Hole}{H} = \Hole = \hintglb{H}{\Hole}$
+  \item $\hintglb{H}{H} = H$
+\end{itemize}
+
+\vspace{2em}
+
+If $\hintglb{}{}$ were not partial, $(H, \hintglb{}{}, \Hole)$ would be a commutative idempotent monoid. But since it is partial, meh...
+
+\end{frame}
+
+\begin{frame}{Hint subtraction}
+
+\begin{center}
+  $\hintdiff{\Hole}{H} = \Hole$ \\
+  $\hintdiff{H}{\Hole} = H$ \\
+  $\hintdiff{H}{H} = \Hole$ \\
+  $\hintdiff{(\Fun{H_1}{H_2})}{(\Fun{H'_1}{H'_2})} = \Fun{(\hintdiff{H_1}{H'_1})}{(\hintdiff{H_2}{H'_2})}$ \\
+  $\hintdiff{(\Prod{H_1}{H_2})}{(\Prod{H'_1}{H'_2})} = \Prod{(\hintdiff{H_1}{H'_1})}{(\hintdiff{H_2}{H'_2})}$ \\
+  $\hintdiff{(\Sum{H_1}{H_2})}{(\Sum{H'_1}{H'_2})} = \Sum{(\hintdiff{H_1}{H'_1})}{(\hintdiff{H_2}{H'_2})}$
+\end{center}
+
+\vspace{2em}
+
+Hint subtraction is a partial operation which we'll need when proving minimality. When subtracting a hint from itself or from $\Hole$, the result is $\Hole$, and subtracting $\Hole$ changes nothing. In the remaining cases, when the hints are not equal but have the same structure, the subtraction proceeds recursively.
+
+\end{frame}
+
+\begin{frame}{Hint subtraction -- properties}
+
+\begin{itemize}
+  \item If $\hintorder{H_1}{H_2}$, then $\hintorder{\hintdiff{H_1}{H}}{\hintdiff{H_2}{H}}$
+\end{itemize}
+
+\end{frame}
+
+\begin{frame}{Information order on terms}
+
+The order on hints induces an order on terms: it is the smallest relation which preserves term constructors and subsumes hint ordering on annotated terms.
+
+\vspace{2em}
+
+\begin{center}
+  $\infrule{\termorder{e_1}{e_2} \quad \hintorder{H_1}{H_2}}{\termorder{\annot{e_1}{H_1}}{\annot{e_2}{H_2}}}$
+\end{center}
+
+\vspace{2em}
+
+Intuitively, $\termorder{e_1}{e_2}$ holds when $e_2$ has more informative hints than $e_1$.
+
+\end{frame}
+
+\begin{frame}{Information order on terms -- rules}
+
+\begin{center}
+  $\infrule{}{\termorder{x}{x}}$ \quad
+  $\infrule{\termorder{e_1}{e_2}}{\termorder{\fun{x}{e_1}}{\fun{x}{e_2}}}$ \quad
+  $\infrule{\termorder{f_1}{f_2} \quad \termorder{a_1}{a_2}}{\termorder{\app{f_1}{a_1}}{\app{f_2}{a_2}}}$
+
+  \vspace{2em}
+
+  $\infrule{\termorder{a_1}{a_2} \quad \termorder{b_1}{b_2}}{\termorder{\pair{a_1}{b_1}}{\pair{a_2}{b_2}}}$ \quad
+  $\infrule{\termorder{e_1}{e_2}}{\termorder{\outl{e_1}}{\outl{e_2}}}$ \quad
+  $\infrule{\termorder{e_1}{e_2}}{\termorder{\outl{e_1}}{\outr{e_2}}}$
+
+  \vspace{2em}
+
+  $\infrule{\termorder{e_1}{e_2}}{\termorder{\inl{e_1}}{\inl{e_2}}}$ \quad
+  $\infrule{\termorder{e_1}{e_2}}{\termorder{\inr{e_1}}{\inr{e_2}}}$
+
+  \vspace{2em}
+
+  $\infrule{\termorder{e_1}{e_2} \quad \termorder{f_1}{f_2} \quad \termorder{g_1}{g_2}}{\termorder{\case{e_1}{f_1}{g_1}}{\case{e_2}{f_2}{g_2}}}$
+
+  \vspace{2em}
+
+  $\infrule{}{\termorder{\unit}{\unit}}$ \quad
+  $\infrule{\termorder{e_1}{e_2}}{\termorder{\exfalso{e_1}}{\exfalso{e_2}}}$
+\end{center}
 
 \end{frame}
 
@@ -162,7 +266,7 @@ $\fullhinting{\Gamma}{e}{H}{A}$ -- in context $\Gamma$, term $e$ checks with hin
 
   \vspace{2em}
 
-  $\infrule[Annot]{\hinting{e}{\combinehints{H_1}{H_2}}{A}}{\hinting{\annot{e}{H_1}}{H_2}{A}}$
+  $\infrule[Annot]{\hinting{e}{\hintlub{H_1}{H_2}}{A}}{\hinting{\annot{e}{H_1}}{H_2}{A}}$
 
   \vspace{2em}
 
@@ -243,36 +347,15 @@ If $\fullhinting{\Gamma}{e}{H}{A}$ then:
   \item (Soundness) $\fulltyping{\Gamma}{e}{A}$ (proof: induction)
   \item (Compatibility) $\hintorder{H}{A}$ (proof: induction)
   \item (Squeeze) If $\hintorder{H}{H'}$ and $\hintorder{H'}{A}$, then $\fullhinting{\Gamma}{e}{H'}{A}$ (proof: induction)
-  \item (Upper bound) If $\fullhinting{\Gamma}{e}{H'}{A}$, then $\fullhinting{\Gamma}{e}{\combinehints{H}{H'}}{A}$ (proof: follows from the above)
   \item (Decidability) For $\Gamma, e, H$ it is decidable whether there exists $A$ such that $\fullhinting{\Gamma}{e}{H}{A}$ (proof: the rules are literally the algorithm)
+  \item (Determinism) If $\hinting{e}{H}{A}$ and $\hinting{e}{H}{B}$, then $A = B$.
 \end{itemize}
 
 \end{frame}
 
-\newcommand{\subtracthints}[2]{#1 \setminus #2}
+\begin{frame}{Metatheory -- greatest lower bound}
 
-\begin{frame}{Hint subtraction}
-
-\begin{center}
-  $\subtracthints{\Hole}{H} = \Hole$ \\
-  $\subtracthints{H}{\Hole} = H$ \\
-  $\subtracthints{H}{H} = \Hole$ \\
-  $\subtracthints{(\Fun{H_1}{H_2})}{(\Fun{H'_1}{H'_2})} = \Fun{(\subtracthints{H_1}{H'_1})}{(\subtracthints{H_2}{H'_2})}$ \\
-  $\subtracthints{(\Prod{H_1}{H_2})}{(\Prod{H'_1}{H'_2})} = \Prod{(\subtracthints{H_1}{H'_1})}{(\subtracthints{H_2}{H'_2})}$ \\
-  $\subtracthints{(\Sum{H_1}{H_2})}{(\Sum{H'_1}{H'_2})} = \Sum{(\subtracthints{H_1}{H'_1})}{(\subtracthints{H_2}{H'_2})}$
-\end{center}
-
-\vspace{2em}
-
-Hint subtraction is a partial operation which we'll need when proving minimality. When subtracting a hint from itself or from $\Hole$, the result is $\Hole$, and subtracting $\Hole$ changes nothing. In the remaining cases, when the hints are not equal but have the same structure, the subtraction proceeds recursively.
-
-\end{frame}
-
-\begin{frame}{Hint subtraction -- properties}
-
-\begin{itemize}
-  \item If $\hintorder{H_1}{H_2}$, then $\hintorder{\subtracthints{H_1}{H}}{\subtracthints{H_2}{H}}$
-\end{itemize}
+If $\hinting{e}{H_1}{A}$ and $\hinting{e}{H_2}{A}$, then $\hinting{e}{\hintglb{H_1}{H_2}}{A}$ (TODO: not proven, probably not true; fails for $\rulename{App}$, but works for $\rulename{AltApp}$; also fails for $\rulename{Outl}$ and $\rulename{Outr}$)
 
 \end{frame}
 
@@ -282,63 +365,25 @@ Hint subtraction is a partial operation which we'll need when proving minimality
 
 \vspace{1em}
 
-Proof: we need $\hinting{\annot{e}{H_1}}{H'}{A}$ for minimal $H'$. From the induction hypothesis we have minimal $\hintorder{H'}{\combinehints{H_1}{H_2}}$ such that $\hinting{e}{H'}{A}$. Our minimal hint will be $\subtracthints{H'}{H_1}$, so we need $\hinting{\annot{e}{H_1}}{\subtracthints{H'}{H_1}}{A}$. Since $\combinehints{H_1}{(\subtracthints{H'}{H_1})} = \combinehints{H_1}{H'}$, it suffices to show $\hinting{e}{\combinehints{H_1}{H'}}{A}$, which follows from squeezing and IH, because $\triplehintorder{H'}{\combinehints{H_1}{H'}}{\combinehints{H_1}{H_2}}$. Of course we also have $\triplehintorder{\subtracthints{H'}{H_1}}{\subtracthints{H_2}{H_1}}{H_2}$.
+Proof: we need $\hinting{\annot{e}{H_1}}{H'}{A}$ for minimal $H'$. From the induction hypothesis we have minimal $\hintorder{H'}{\hintlub{H_1}{H_2}}$ such that $\hinting{e}{H'}{A}$. Our minimal hint will be $\hintdiff{H'}{H_1}$, so we need $\hinting{\annot{e}{H_1}}{\hintdiff{H'}{H_1}}{A}$. Since $\hintlub{H_1}{(\hintdiff{H'}{H_1})} = \hintlub{H_1}{H'}$, it suffices to show $\hinting{e}{\hintlub{H_1}{H'}}{A}$, which follows from squeezing and IH, because $\triplehintorder{H'}{\hintlub{H_1}{H'}}{\hintlub{H_1}{H_2}}$. Of course we also have $\triplehintorder{\hintdiff{H'}{H_1}}{\hintdiff{H_2}{H_1}}{H_2}$.
 
 \end{frame}
 
 \begin{frame}{Metatheory -- minimality, cont.}
 
-Now assume $\stricthintorder{H''}{\subtracthints{H'}{H_1}}$ and $\hinting{\annot{e}{H_1}}{H''}{A}$. We have $\stricthintorder{H''}{H'}$ and so $\stricthintorder{H''}{H_2}$.
+Now assume $\stricthintorder{H''}{\hintdiff{H'}{H_1}}$ and $\hinting{\annot{e}{H_1}}{H''}{A}$. We have $\stricthintorder{H''}{H'}$ and so $\stricthintorder{H''}{H_2}$.
+
+\vspace{2em}
+
+TODO
 
 \end{frame}
 
 \begin{frame}{Metatheory -- minimality v2}
 
-\end{frame}
+(Minimality v2) There exists $\hintorder{M}{H}$ such that $\fullhinting{\Gamma}{e}{M}{A}$ and for all $\hintorder{M'}{M}$ such that $\fullhinting{\Gamma}{e}{M'}{A}$ we have $M' = M$ (proof: TODO)
 
-\begin{frame}{Information order on terms}
-
-The order on hints induces an order on terms: it is the smallest relation which preserves term constructors and subsumes hint ordering on annotated terms.
-
-\vspace{2em}
-
-\begin{center}
-  $\infrule{\termorder{e_1}{e_2} \quad \hintorder{H_1}{H_2}}{\termorder{\annot{e_1}{H_1}}{\annot{e_2}{H_2}}}$
-\end{center}
-
-\vspace{2em}
-
-Intuitively, $\termorder{e_1}{e_2}$ holds when $e_2$ has more informative hints than $e_1$.
-
-\end{frame}
-
-\begin{frame}{Information order on terms -- rules}
-
-\begin{center}
-  $\infrule{}{\termorder{x}{x}}$ \quad
-  $\infrule{\termorder{e_1}{e_2}}{\termorder{\fun{x}{e_1}}{\fun{x}{e_2}}}$ \quad
-  $\infrule{\termorder{f_1}{f_2} \quad \termorder{a_1}{a_2}}{\termorder{\app{f_1}{a_1}}{\app{f_2}{a_2}}}$
-
-  \vspace{2em}
-
-  $\infrule{\termorder{a_1}{a_2} \quad \termorder{b_1}{b_2}}{\termorder{\pair{a_1}{b_1}}{\pair{a_2}{b_2}}}$ \quad
-  $\infrule{\termorder{e_1}{e_2}}{\termorder{\outl{e_1}}{\outl{e_2}}}$ \quad
-  $\infrule{\termorder{e_1}{e_2}}{\termorder{\outl{e_1}}{\outr{e_2}}}$
-
-  \vspace{2em}
-
-  $\infrule{\termorder{e_1}{e_2}}{\termorder{\inl{e_1}}{\inl{e_2}}}$ \quad
-  $\infrule{\termorder{e_1}{e_2}}{\termorder{\inr{e_1}}{\inr{e_2}}}$
-
-  \vspace{2em}
-
-  $\infrule{\termorder{e_1}{e_2} \quad \termorder{f_1}{f_2} \quad \termorder{g_1}{g_2}}{\termorder{\case{e_1}{f_1}{g_1}}{\case{e_2}{f_2}{g_2}}}$
-
-  \vspace{2em}
-
-  $\infrule{}{\termorder{\unit}{\unit}}$ \quad
-  $\infrule{\termorder{e_1}{e_2}}{\termorder{\exfalso{e_1}}{\exfalso{e_2}}}$
-\end{center}
+\vspace{1em}
 
 \end{frame}
 
@@ -347,7 +392,8 @@ Intuitively, $\termorder{e_1}{e_2}$ holds when $e_2$ has more informative hints 
 If $\fulltyping{\Gamma}{e}{A}$, then:
 
 \begin{itemize}
-  \item (Annotability) There exists $e'$ such that $\termorder{e}{e'}$ and $\fullhinting{\Gamma}{e'}{A}{A}$
+  \item (Annotability, checking) There exists $e'$ such that $\termorder{e}{e'}$ and $\fullhinting{\Gamma}{e'}{A}{A}$ (proof: induction; annotations need to be put on eliminators, like in Dual Intrinsic STLC)
+  \item (Annotability, inference) There exists $e'$ such that $\termorder{e}{e'}$ and $\fullhinting{\Gamma}{e'}{\Hole}{A}$ (proof: induction; annotations need to be put on constructors, like in Intrinsic STLC)
   \item (Minimal annotability) There exists $e'$ such that $\termorder{e}{e'}$ and $\fullhinting{\Gamma}{e'}{A}{A}$ and for all $e''$ such that $\termorder{e}{e''}$ and $\termorder{e''}{e'}$ it is not the case that $\fullhinting{\Gamma}{e''}{A}{A}$
   \item There exist $\termorder{e}{e_1}$ and $\hintorder{H_1}{A}$ such that $\fullhinting{\Gamma}{e_1}{H_1}{A}$ and for all $\tripletermorder{e}{e_2}{e_1}$ and $\triplehintorder{H}{H'}{A}$ it is not the case that $\fullhinting{\Gamma}{e_2}{H_2}{A}$
 \end{itemize}

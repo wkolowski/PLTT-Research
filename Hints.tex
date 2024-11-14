@@ -408,24 +408,123 @@ Similarly to Extrinsic STLC, STLC with Hints does not enjoy uniqueness of typing
 
 \section{Embedding}
 
-\begin{frame}{Checking and inference mode}
+\begin{frame}{Embedding Bidirectional STLC}
 
-With our hint-based approach, checking and inference modes, familiar from Bidirectional STLC, are easily definable:
+We will now turn our attention towards showing that Bidirectional STLC can be in some sense ``embedded'' into our hint-based system.
+
+\vspace{2em}
+
+First, checking and inference modes are definable:
 
 \begin{itemize}
   \item $\check{e}{A}$ is defined as $\hinting{e}{A}{A}$
   \item $\infer{e}{A}$ is defined as $\hinting{e}{\Hole}{A}$
 \end{itemize}
 
+\vspace{2em}
+
+Second, we will show that bidirectional typing rules are admissible in the hint-based system.
+
 \end{frame}
 
-\begin{frame}{Embedding Bidirectional STLC}
+\begin{frame}{Embedding Bidirectional STLC -- variables and annotations}
+
+\begin{center}
+  $\infrule[Var]{\sidecond{(x : A) \in \Gamma}}{\infer{x}{A}}$
+
+  \vspace{2em}
+
+  $\infrule[Annot]{\check{e}{A}}{\infer{\annot{e}{A}}{A}}$
+\end{center}
+
+\vspace{2em}
+
+Thanks to our definitions, the bidirectional rules $\rulename{Var}$ and $\rulename{Annot}$ are special cases of our hint-based $\rulename{Var}$ and $\rulename{Annot}$.
 
 \end{frame}
 
-\begin{frame}{Embedding Intrinsic STLC}
+\begin{frame}{Embedding Bidirectional STLC -- subsumption}
 
-We can embed Intrinsic STLC terms:
+\begin{center}
+  $\infrule[Sub]{\infer{e}{B} \quad \sidecond{A = B}}{\check{e}{A}}$
+\end{center}
+
+\vspace{2em}
+
+Subsumption is a bit harder to prove, but it boils down to our squeeze theorem. After rewriting $A = B$, we have $\hinting{e}{\Hole}{A}$ and we need to show $\hinting{e}{A}{A}$, but this follows from squeeze theorem because $\triplehintorder{\Hole}{A}{A}$.
+
+\end{frame}
+
+\begin{frame}{Embedding Bidirectional STLC -- checked rules}
+
+\begin{center}
+  $\infrule{\fullcheck{\extend{\Gamma}{x}{A}}{e}{B}}{\check{\fun{x}{e}}{\Fun{A}{B}}}$
+
+  \vspace{2em}
+
+  $\infrule{\check{a}{A} \quad \check{b}{B}}{\check{\pair{a}{b}}{\Prod{A}{B}}}$
+
+  \vspace{2em}
+
+  $\infrule{\check{e}{A}}{\check{\inl{e}}{\Sum{A}{B}}}$ \quad
+  $\infrule{\check{e}{B}}{\check{\inr{e}}{\Sum{A}{B}}}$
+
+  \vspace{2em}
+
+  $\infrule{}{\check{\unit}{\Unit}}$ \quad
+  $\infrule{\check{e}{\Empty}}{\check{\exfalso{e}}{A}}$
+\end{center}
+
+\vspace{1em}
+
+Checked rules are special cases of the corresponding hint-based rules.
+
+\end{frame}
+
+\begin{frame}{Embedding Bidirectional STLC -- rules with inference}
+
+\begin{center}
+  $\infrule{\infer{f}{\Fun{A}{B}} \quad \check{a}{A}}{\infer{\app{f}{a}}{B}}$
+
+  \vspace{2em}
+
+  $\infrule{\infer{e}{\Prod{A}{B}}}{\infer{\outl{e}}{A}}$ \quad
+  $\infrule{\infer{e}{\Prod{A}{B}}}{\infer{\outr{e}}{B}}$
+
+  \vspace{2em}
+
+  $\infrule{\infer{e}{\Sum{A}{B}} \quad \check{f}{\Fun{A}{C}} \quad \check{g}{\Fun{B}{C}}}{\check{\case{e}{f}{g}}{C}}$
+\end{center}
+
+\vspace{1em}
+
+To prove rules which make use of inference mode, we need to use the squeeze theorem. For example, assume $\hinting{f}{\Hole}{\Fun{A}{B}}$ and $\hinting{a}{A}{A}$. From squeeze theorem, we also have $\hinting{f}{\Fun{\Hole}{\Hole}}{\Fun{A}{B}}$, so that $\hinting{\app{f}{a}}{\Hole}{B}$ follows from hint-based rule $\rulename{App}$.
+
+\end{frame}
+
+\begin{frame}{Embedding Bidirectional STLC -- additional rules}
+
+\begin{center}
+  $\infrule{\infer{e}{\Sum{A}{B}} \quad \infer{f}{\Fun{A}{C}} \quad \infer{g}{\Fun{B}{C}}}{\infer{\case{e}{f}{g}}{C}}$
+
+  \vspace{2em}
+
+  $\infrule{}{\infer{\unit}{\Unit}}$
+
+  \vspace{2em}
+
+  $\infrule{\infer{a}{A} \quad \infer{b}{B}}{\infer{\pair{a}{b}}{\Prod{A}{B}}}$
+\end{center}
+
+\vspace{1em}
+
+The inferred rule for case also requires using the squeeze theorem, but this time we need to do it three times, once for each premise. As for the inferred rules for unit and pairs, they follow from the corresponding hint-based rules, but first we need to use the rule $\rulename{Hole}$ to adjust the hint.
+
+\end{frame}
+
+\begin{frame}{Embedding Intrinsic STLC -- terms}
+
+We can also embed Intrinsic STLC. First, we define the missing terms using partial annotations:
 
 \begin{itemize}
   \item $\ifun{x}{A}{e} :\equiv \annot{\fun{x}{e}}{\Fun{A}{\Hole}}$ \\
@@ -434,11 +533,36 @@ We can embed Intrinsic STLC terms:
   \item $\iexfalso{A}{e} :\equiv \annot{\exfalso{e}}{A}$
 \end{itemize}
 
+\vspace{2em}
+
+Second, we will show that the typing rules are admissible in the hint-based system.
+
 \end{frame}
 
-\begin{frame}{Embedding Dual Intrinsic STLC}
+\begin{frame}{Embedding Intrinsic STLC -- rules}
 
-We can also embed Dual Intrinsic STLC terms:
+\begin{center}
+  $\infrule{\fullinfer{\extend{\Gamma}{x}{A}}{e}{B}}{\infer{\ifun{x}{A}{e}}{\Fun{A}{B}}}$
+
+  \vspace{2em}
+
+  $\infrule{\infer{e}{A}}{\infer{\iinl{B}{e}}{\Sum{A}{B}}}$ \quad
+  $\infrule{\infer{e}{B}}{\infer{\iinr{A}{e}}{\Sum{A}{B}}}$
+
+  \vspace{2em}
+
+  $\infrule{\infer{e}{\Empty}}{\infer{\iexfalso{A}{e}}{A}}$
+\end{center}
+
+\vspace{2em}
+
+Rules for lambdas and sum constructors can be derived by first using the rule for annotations and then the corresponding hint-based rule. For $\exfalso{}$ we also need to use the squeeze theorem on the premise.
+
+\end{frame}
+
+\begin{frame}{Embedding Dual Intrinsic STLC -- terms}
+
+We can also embed Dual Intrinsic STLC. First, we define the missing terms using partial annotations:
 
 \begin{itemize}
   \item $\iapp{A}{f}{a} :\equiv \app{\annot{f}{\Fun{A}{\Hole}}}{a}$
@@ -447,12 +571,15 @@ We can also embed Dual Intrinsic STLC terms:
   \item $\icase{A}{B}{e}{f}{g} :\equiv \case{\annot{e}{\Sum{A}{B}}}{f}{g}$
 \end{itemize}
 
+\vspace{2em}
+
+Second, we will show that the typing rules are admissible in the hint-based system.
+
 \end{frame}
 
-\begin{frame}{Rules for derived terms}
+\begin{frame}{Embedding Dual Intrinsic STLC -- rules}
 
 \begin{center}
-  $\infrule{\fullinfer{\extend{\Gamma}{x}{A}}{e}{B}}{\infer{\ifun{x}{A}{e}}{\Fun{A}{B}}}$ \quad
   $\infrule{\check{f}{\Fun{A}{B}} \quad \check{a}{A}}{\check{\iapp{A}{f}{a}}{B}}$
 
   \vspace{2em}
@@ -462,17 +589,12 @@ We can also embed Dual Intrinsic STLC terms:
 
   \vspace{2em}
 
-  $\infrule{\infer{e}{A}}{\infer{\iinl{B}{e}}{\Sum{A}{B}}}$ \quad
-  $\infrule{\infer{e}{B}}{\infer{\iinr{A}{e}}{\Sum{A}{B}}}$
-
-  \vspace{2em}
-
   $\infrule{\check{e}{\Sum{A}{B}} \quad \check{f}{\Fun{A}{C}} \quad \check{g}{\Fun{B}{C}}}{\check{\icase{A}{B}{e}{f}{g}}{C}}$
-
-  \vspace{2em}
-
-  $\infrule{\infer{e}{\Empty}}{\infer{\iexfalso{A}{e}}{A}}$
 \end{center}
+
+\vspace{2em}
+
+To prove the rules, we first need to use the corresponding hint-based rule and then the annotation rule in one of the premises.
 
 \end{frame}
 

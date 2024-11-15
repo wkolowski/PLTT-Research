@@ -112,16 +112,16 @@ $\fullhinting{\Gamma}{e}{H}{A}$ -- in context $\Gamma$, term $e$ checks with hin
 \begin{frame}{Combining a hint with a term}
 
 \begin{center}
-  $\combinehints{e}{\Hole} = \hintfor{e}$ \\
-  $\combinehints{\fun{x}{e}}{\Fun{H_1}{H_2}} = \Fun{H_1}{H_2}$ \\
-  $\combinehints{\funpair}{\Fun{H_1}{\Fun{H_2}{\Prod{H_3}{H_4}}}} = \Fun{\combinehints{H_1}{H_3}}{\Fun{\combinehints{H_2}{H_4}}{\Prod{(\combinehints{H_1}{H_3})}{(\combinehints{H_2}{H_4})}}}$ \\
-  $\combinehints{\funoutl}{\Fun{\Prod{H_1}{H_2}}{H_3}} = \Fun{\Prod{(\combinehints{H_1}{H_3})}{H_2}}{\combinehints{H_1}{H_3}}$ \\
-  $\combinehints{\funoutr}{\Fun{(\Prod{H_1}{H_2})}{H_3}} = \Fun{\Prod{H_1}{(\combinehints{H_2}{H_3})}}{\combinehints{H_2}{H_3}}$ \\
-  $\combinehints{\funinl}{\Fun{H_1}{\Sum{H_2}{H_3}}} = \Fun{\combinehints{H_1}{H_2}}{\Sum{(\combinehints{H_1}{H_2})}{H_3}}$ \\
-  $\combinehints{\funinr}{\Fun{H_1}{\Sum{H_2}{H_3}}} = \Fun{\combinehints{H_1}{H_3}}{\Sum{H_2}{(\combinehints{H_1}{H_3})}}$ \\
-  $\combinehints{\funcase}{\Fun{(\Fun{H_1}{H_2})}{\Fun{(\Fun{H_3}{H_4})}{\Fun{\Sum{H_5}{H_6}}{H_7}}}} = \Fun{(\Fun{\combinehints{H_1}{H_5}}{H_2})}{\Fun{(\Fun{\combinehints{H_3}{H_6}}{H_4})}{\Fun{\Sum{(\combinehints{H_1}{H_5})}{(\combinehints{H_3}{H_6})}}{H_7}}}$ \\
-  $\combinehints{\funexfalso}{\Fun{H_1}{H_2}} = \Fun{\combinehints{H_1}{\Empty}}{H_2}$ \\
-  $\combinehints{\unit}{\Unit} = \Unit$
+  $\hintlub{e}{\Hole} = \hintfor{e}$ \\
+  $\hintlub{\fun{x}{e}}{\Fun{H_1}{H_2}} = \Fun{H_1}{H_2}$ \\
+  $\hintlub{\funpair}{\Fun{H_1}{\Fun{H_2}{\Prod{H_3}{H_4}}}} = \Fun{\hintlub{H_1}{H_3}}{\Fun{\hintlub{H_2}{H_4}}{\Prod{(\hintlub{H_1}{H_3})}{(\hintlub{H_2}{H_4})}}}$ \\
+  $\hintlub{\funoutl}{\Fun{\Prod{H_1}{H_2}}{H_3}} = \Fun{\Prod{(\hintlub{H_1}{H_3})}{H_2}}{\hintlub{H_1}{H_3}}$ \\
+  $\hintlub{\funoutr}{\Fun{(\Prod{H_1}{H_2})}{H_3}} = \Fun{\Prod{H_1}{(\hintlub{H_2}{H_3})}}{\hintlub{H_2}{H_3}}$ \\
+  $\hintlub{\funinl}{\Fun{H_1}{\Sum{H_2}{H_3}}} = \Fun{\hintlub{H_1}{H_2}}{\Sum{(\hintlub{H_1}{H_2})}{H_3}}$ \\
+  $\hintlub{\funinr}{\Fun{H_1}{\Sum{H_2}{H_3}}} = \Fun{\hintlub{H_1}{H_3}}{\Sum{H_2}{(\hintlub{H_1}{H_3})}}$ \\
+  $\hintlub{\funcase}{\Fun{(\Fun{H_1}{H_2})}{\Fun{(\Fun{H_3}{H_4})}{\Fun{\Sum{H_5}{H_6}}{H_7}}}} = \Fun{(\Fun{\hintlub{H_1}{H_5}}{H_2})}{\Fun{(\Fun{\hintlub{H_3}{H_6}}{H_4})}{\Fun{\Sum{(\hintlub{H_1}{H_5})}{(\hintlub{H_3}{H_6})}}{H_7}}}$ \\
+  $\hintlub{\funexfalso}{\Fun{H_1}{H_2}} = \Fun{\hintlub{H_1}{\Empty}}{H_2}$ \\
+  $\hintlub{\unit}{\Unit} = \Unit$
 \end{center}
 
 \end{frame}
@@ -133,11 +133,11 @@ $\fullhinting{\Gamma}{e}{H}{A}$ -- in context $\Gamma$, term $e$ checks with hin
 
   \vspace{2em}
 
-  $\infrule[Annot]{\hinting{e}{\combinehints{H_1}{H_2}}{A}}{\hinting{\annot{e}{H_1}}{H_2}{A}}$
+  $\infrule[Annot]{\hinting{e}{\hintlub{H_1}{H_2}}{A}}{\hinting{\annot{e}{H_1}}{H_2}{A}}$
 
   \vspace{2em}
 
-  $\infrule[Hole]{\hinting{e}{\combinehints{e}{H}}{A} \quad \sidecond{\combinehints{e}{H}\ \texttt{defined}} \quad \sidecond{\combinehints{e}{H} \neq H}}{\hinting{e}{H}{A}}$
+  $\infrule[Hole]{\hinting{e}{\hintlub{e}{H}}{A} \quad \sidecond{\hintlub{e}{H}\ \texttt{defined}} \quad \sidecond{\hintlub{e}{H} \neq H}}{\hinting{e}{H}{A}}$
 \end{center}
 
 \vspace{2em}

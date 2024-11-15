@@ -274,11 +274,11 @@ $H ::= \Hole \pipe \Fun{H_1}{H_2} \pipe \ForallT{\alpha}{H} \pipe \alpha$
 \begin{frame}{Combining hints}
 
 \begin{center}
-  $\combinehints{\Hole}{H} = H$ \\
-  $\combinehints{H}{\Hole} = H$ \\
-  $\combinehints{(\Fun{H_1}{H_2})}{(\Fun{H'_1}{H'_2})} = \Fun{(\combinehints{H_1}{H'_1})}{(\combinehints{H_2}{H'_2})}$ \\
-  $\combinehints{(\ForallT{\alpha}{H_1})}{(\ForallT{\alpha}{H_2})} = \ForallT{\alpha}{\combinehints{H_1}{H_2}}$ \\
-  $\combinehints{\alpha}{\alpha} = \alpha$
+  $\hintlub{\Hole}{H} = H$ \\
+  $\hintlub{H}{\Hole} = H$ \\
+  $\hintlub{(\Fun{H_1}{H_2})}{(\Fun{H'_1}{H'_2})} = \Fun{(\hintlub{H_1}{H'_1})}{(\hintlub{H_2}{H'_2})}$ \\
+  $\hintlub{(\ForallT{\alpha}{H_1})}{(\ForallT{\alpha}{H_2})} = \ForallT{\alpha}{\hintlub{H_1}{H_2}}$ \\
+  $\hintlub{\alpha}{\alpha} = \alpha$
 \end{center}
 
 \end{frame}
@@ -332,7 +332,7 @@ $e ::=$ \\
 
   \vspace{2em}
 
-  $\infrule[Annot]{\hinting{e}{\combinehints{H_1}{H_2}}{A}}{\hinting{\annot{e}{H_1}}{H_2}{A}}$
+  $\infrule[Annot]{\hinting{e}{\hintlub{H_1}{H_2}}{A}}{\hinting{\annot{e}{H_1}}{H_2}{A}}$
 
   \vspace{2em}
 

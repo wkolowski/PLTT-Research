@@ -41,11 +41,11 @@ $\fulloutctx{\Gamma}{e}{H}{H'}{\Gamma'}$ -- in context $\Gamma$, term $e$ checks
 \begin{frame}{Output contexts -- basic rules}
 
 \begin{center}
-  $\infrule[Var]{}{\fulloutctx{\Gamma_1, x : A, \Gamma_2}{x}{B}{\combinehints{A}{B}}{\Gamma_1, x : \combinehints{A}{B}, \Gamma_2}}$
+  $\infrule[Var]{}{\fulloutctx{\Gamma_1, x : A, \Gamma_2}{x}{B}{\hintlub{A}{B}}{\Gamma_1, x : \hintlub{A}{B}, \Gamma_2}}$
 
   \vspace{2em}
 
-  $\infrule[Annot]{\outctx{e}{\combinehints{A}{B}}{C}}{\outctx{\annot{e}{A}}{B}{C}}$
+  $\infrule[Annot]{\outctx{e}{\hintlub{A}{B}}{C}}{\outctx{\annot{e}{A}}{B}{C}}$
 
   \vspace{2em}
 
@@ -126,11 +126,11 @@ If $\fulloutctx{\Gamma}{e}{A}{B}{\Gamma'}$, then:
 \begin{frame}{Output contexts -- abridged basic rules}
 
 \begin{center}
-  $\infrule[Var]{}{\fulloutctx{\Gamma_1, x : A, \Gamma_2}{x}{B}{\combinehints{A}{B}}{\Gamma_1, x : \combinehints{A}{B}, \Gamma_2}}$
+  $\infrule[Var]{}{\fulloutctx{\Gamma_1, x : A, \Gamma_2}{x}{B}{\hintlub{A}{B}}{\Gamma_1, x : \hintlub{A}{B}, \Gamma_2}}$
 
   \vspace{2em}
 
-  $\infrule[Annot]{\shortoutctx{e}{\combinehints{A}{B}}{C}}{\shortoutctx{\annot{e}{A}}{B}{C}}$
+  $\infrule[Annot]{\shortoutctx{e}{\hintlub{A}{B}}{C}}{\shortoutctx{\annot{e}{A}}{B}{C}}$
 
   \vspace{2em}
 

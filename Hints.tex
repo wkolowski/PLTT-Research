@@ -498,7 +498,7 @@ Checked rules are special cases of the corresponding hint-based rules.
 
 \vspace{1em}
 
-To prove rules which make use of inference mode, we need to use the squeeze theorem. For example, assume $\hinting{f}{\Hole}{\Fun{A}{B}}$ and $\hinting{a}{A}{A}$. From squeeze theorem, we also have $\hinting{f}{\Fun{\Hole}{\Hole}}{\Fun{A}{B}}$, so that $\hinting{\app{f}{a}}{\Hole}{B}$ follows from hint-based rule $\rulename{App}$.
+To prove rules which make use of inference mode, we need to use the squeeze theorem. For example, assume $\hinting{f}{\Hole}{\Fun{A}{B}}$ and $\hinting{a}{A}{A}$. From the squeeze theorem, we also have $\hinting{f}{\Fun{\Hole}{\Hole}}{\Fun{A}{B}}$, so that $\hinting{\app{f}{a}}{\Hole}{B}$ follows from hint-based rule $\rulename{App}$.
 
 \end{frame}
 

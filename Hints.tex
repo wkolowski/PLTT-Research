@@ -77,6 +77,19 @@ The order can be intuitively interpreted as information increase: $\hintorder{H_
 
 \end{frame}
 
+\begin{frame}{Order on hints -- properties}
+
+$\hintorder{}{}$ is a partial order with a least element.
+
+\begin{itemize}
+  \item Reflexivity: $\hintorder{H}{H}$
+  \item Transitivity: $\hintorder{H_1}{H_2} \implies \hintorder{H_2}{H_3} \implies \hintorder{H_1}{H_3}$
+  \item Weak antisymmetry: $\hintorder{H_1}{H_2} \implies \hintorder{H_2}{H_1} \implies H_1 = H_2$
+  \item Least element: $\hintorder{\Hole}{H}$
+\end{itemize}
+
+\end{frame}
+
 \begin{frame}{Least upper bound of hints}
 
 \begin{center}
@@ -347,11 +360,15 @@ If $\fullhinting{\Gamma}{e}{H}{A}$ then:
   \item (Soundness) $\fulltyping{\Gamma}{e}{A}$ (proof: induction)
   \item (Compatibility) $\hintorder{H}{A}$ (proof: induction)
   \item (Squeeze) If $\hintorder{H}{H'}$ and $\hintorder{H'}{A}$, then $\fullhinting{\Gamma}{e}{H'}{A}$ (proof: induction)
-  \item (Decidability) For $\Gamma, e, H$ it is decidable whether there exists $A$ such that $\fullhinting{\Gamma}{e}{H}{A}$ (proof: the rules are literally the algorithm)
-  \item (Determinism) If $\hinting{e}{H}{A}$ and $\hinting{e}{H}{B}$, then $A = B$.
+  \item (Determinism) If $\hinting{e}{H}{B}$, then $A = B$.
 \end{itemize}
 
+\vspace{2em}
+
+(Decidability) For $\Gamma, e, H$ it is decidable whether there exists $A$ such that $\fullhinting{\Gamma}{e}{H}{A}$ (proof: the rules are literally the algorithm)
+
 \end{frame}
+
 
 \begin{frame}{Metatheory -- greatest lower bound}
 

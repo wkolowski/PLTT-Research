@@ -91,16 +91,14 @@ $\fulloutctx{\Gamma}{e}{H}{H'}{\Gamma'}$ -- in context $\Gamma$, term $e$ checks
 
   \vspace{2em}
 
-  $\infrule{}{\outctx{\unit}{\Unit}{\Unit}}$
+  $\infrule{}{\fulloutctx{\Gamma}{\unit}{\Unit}{\Unit}{\Gamma}}$
   \quad
   $\infrule{\outctx{e}{\Empty}{\Empty}}{\outctx{\exfalso{e}}{A}{A}}$
 \end{center}
 
 \end{frame}
 
-\newcommand{\ctxorder}[2]{#1 \sqsubseteq #2}
-
-\begin{frame}{Information increase in contexts}
+\begin{frame}{Order on contexts}
 
 \begin{center}
   $\infrule{}{\ctxorder{\emptytypingctx}{\emptytypingctx}}$
@@ -112,16 +110,47 @@ $\fulloutctx{\Gamma}{e}{H}{H'}{\Gamma'}$ -- in context $\Gamma$, term $e$ checks
 
 \end{frame}
 
+\begin{frame}{Order on contexts -- properties}
+
+$\ctxorder{}{}$ is a partial order, whose structure is inherited from the order on hints.
+
+\begin{itemize}
+  \item Reflexivity: $\ctxorder{\Gamma}{\Gamma}$
+  \item Transitivity: $\ctxorder{\Gamma_1}{\Gamma_2} \implies \ctxorder{\Gamma_2}{\Gamma_3} \implies \ctxorder{\Gamma_1}{\Gamma_3}$
+  \item Weak antisymmetry: $\ctxorder{\Gamma_1}{\Gamma_2} \implies \ctxorder{\Gamma_2}{\Gamma_1} \implies \Gamma_1 = \Gamma_2$
+\end{itemize}
+
+\end{frame}
+
 \begin{frame}{Metatheory}
 
 If $\fulloutctx{\Gamma}{e}{A}{B}{\Gamma'}$, then:
 
 \begin{itemize}
-  \item $\hintorder{A}{B}$ (proof: induction)
-  \item $\ctxorder{\Gamma}{\Gamma'}$ (proof: induction)
+  \item (Information increase) $\ctxorder{\Gamma}{\Gamma'}$ (proof: induction)
+  \item (Information increase) $\hintorder{A}{B}$ (proof: induction)
+  \item (Context squeeze) If $\triplectxorder{\Gamma}{\Delta}{\Gamma'}$, then $\fulloutctx{\Delta}{e}{A}{B}{\Gamma'}$ (proof: induction)
+  \item (Hint squeeze) If $\hintorder{A}{A'}$ and $\hintorder{A'}{B}$, then $\fulloutctx{\Gamma}{e}{A'}{B}{\Gamma'}$ (proof: induction)
 \end{itemize}
 
 \end{frame}
+
+\begin{frame}{Metatheory -- decidability and determinism}
+
+\begin{itemize}
+  \item (Decidability) For $\Gamma, e, A$ it is decidable whether there exist $B$ and $\Gamma'$ such that $\fulloutctx{\Gamma}{e}{A}{B}{\Gamma'}$ (proof: the rules are literally the algorithm)
+  \item (Determinism) If $\fulloutctx{\Gamma}{e}{A}{B_1}{\Gamma_1}$ and $\fulloutctx{\Gamma}{e}{A}{B_2}{\Gamma_2}$, then $B_1 = B_2$ and $\Gamma_1 = \Gamma_2$ (proof: induction)
+\end{itemize}
+
+\end{frame}
+
+\begin{frame}{Metatheory -- soundness}
+
+(Soundness) If $\fulloutctx{\Gamma}{e}{A}{B}{\Gamma'}$, $B$ is a type and $\Gamma'$ only contains types, then $\fulltyping{\Gamma'}{e}{B}$.
+
+\end{frame}
+
+\section{Abridged rules for output contexts}
 
 \begin{frame}{Output contexts -- abridged basic rules}
 
@@ -139,8 +168,6 @@ If $\fulloutctx{\Gamma}{e}{A}{B}{\Gamma'}$, then:
 
 \end{frame}
 
-\section{Abridged rules for output contexts}
-
 \begin{frame}{Output contexts -- abridged type-directed rules}
 
 \begin{center}
@@ -148,11 +175,11 @@ If $\fulloutctx{\Gamma}{e}{A}{B}{\Gamma'}$, then:
 
   \vspace{1em}
 
-  $\infrule{\fulloutctx{\Gamma}{f}{\Fun{\Hole}{B}}{\Fun{A}{B'}}{\Gamma'} \quad \fulloutctx{\Gamma'}{a}{A}{A'}{\Gamma''}}{\fulloutctx{\Gamma}{\app{f}{a}}{B}{B'}{\Gamma''}}$
+  $\infrule{\shortoutctx{f}{\Fun{\Hole}{B}}{\Fun{A}{B'}} \quad \shortoutctx{a}{A}{A'}}{\shortoutctx{\app{f}{a}}{B}{B'}}$
 
   \vspace{1em}
 
-  $\infrule{\fulloutctx{\Gamma}{a}{A}{A'}{\Gamma'} \quad \fulloutctx{\Gamma'}{b}{B}{B'}{\Gamma''}}{\fulloutctx{\Gamma}{\pair{a}{b}}{\Prod{A}{B}}{\Prod{A'}{B'}}{\Gamma''}}$
+  $\infrule{\shortoutctx{a}{A}{A'} \quad \shortoutctx{b}{B}{B'}}{\shortoutctx{\pair{a}{b}}{\Prod{A}{B}}{\Prod{A'}{B'}}}$
 
   \vspace{1em}
 
@@ -174,12 +201,11 @@ If $\fulloutctx{\Gamma}{e}{A}{B}{\Gamma'}$, then:
 
   \vspace{2em}
 
-  $\infrule{\fulloutctx{\Gamma}{e}{\Sum{\Hole}{\Hole}}{\Sum{A}{B}}{\Gamma_1} \quad \begin{array}{c} \fulloutctx{\Gamma_1}{f}{\Fun{A}{C_1}}{\Fun{A'}{C_2}}{\Gamma_2} \\ \fulloutctx{\Gamma_2}{g}{\Fun{B}{C_2}}{\Fun{B'}{C_3}}{\Gamma_3} \end{array}}{\fulloutctx{\Gamma}{\case{e}{f}{g}}{C_1}{C_3}{\Gamma_3}}$
+  $\infrule{\shortoutctx{e}{\Sum{\Hole}{\Hole}}{\Sum{A}{B}} \quad \begin{array}{c} \shortoutctx{f}{\Fun{A}{C_1}}{\Fun{A'}{C_2}} \\ \shortoutctx{g}{\Fun{B}{C_2}}{\Fun{B'}{C_3}} \end{array}}{\shortoutctx{\case{e}{f}{g}}{C_1}{C_3}}$
 
   \vspace{2em}
 
-  $\infrule{}{\shortoutctx{\unit}{\Unit}{\Unit}}$
-  \quad
+  $\infrule{}{\shortoutctx{\unit}{\Unit}{\Unit}}$ \quad
   $\infrule{\shortoutctx{e}{\Empty}{\Empty}}{\shortoutctx{\exfalso{e}}{A}{A}}$
 \end{center}
 

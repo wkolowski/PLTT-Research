@@ -230,10 +230,10 @@ Intuitively, $\termorder{e_1}{e_2}$ holds when $e_2$ has more informative hints 
 \begin{frame}{Hints for term constructors}
 
 \begin{center}
-  $\hintfor{\fun{x}{e}} = \Fun{\Hole}{\Hole}$ \\
+  %$\hintfor{\fun{x}{e}} = \Fun{\Hole}{\Hole}$ \\
   $\hintfor{\pair{e_1}{e_2}} = \Prod{\Hole}{\Hole}$ \\
-  $\hintfor{\inl{e}} = \Sum{\Hole}{\Hole}$ \\
-  $\hintfor{\inr{e}} = \Sum{\Hole}{\Hole}$ \\
+  %$\hintfor{\inl{e}} = \Sum{\Hole}{\Hole}$ \\
+  %$\hintfor{\inr{e}} = \Sum{\Hole}{\Hole}$ \\
   $\hintfor{\unit} = \Unit$
 \end{center}
 
@@ -280,15 +280,7 @@ $\fullhinting{\Gamma}{e}{H}{A}$ -- in context $\Gamma$, term $e$ checks with hin
   \vspace{2em}
 
   $\infrule[Annot]{\hinting{e}{\hintlub{H_1}{H_2}}{A}}{\hinting{\annot{e}{H_1}}{H_2}{A}}$
-
-  \vspace{2em}
-
-  $\infrule[Hole]{\hinting{e}{\hintfor{e}}{A} \quad \sidecond{e\ \texttt{constructor}}}{\hinting{e}{\Hole}{A}}$
 \end{center}
-
-\vspace{2em}
-
-Note that the rule $\rulename{Hole}$ can only be applied once, because $\hintfor{e}$ can never be $\Hole$. After applying $\rulename{Hole}$, the only applicable rules are the type-directed ones.
 
 \end{frame}
 
@@ -303,7 +295,7 @@ Note that the rule $\rulename{Hole}$ can only be applied once, because $\hintfor
 
   \vspace{2em}
 
-  $\infrule{\hinting{a}{H_A}{A} \quad \hinting{b}{H_B}{B}}{\hinting{\pair{a}{b}}{\Prod{H_A}{H_B}}{\Prod{A}{B}}}$
+  $\infrule{\sidecond{\hintlub{H}{\Prod{\Hole}{\Hole}} = \Prod{H_A}{H_B}} \quad \hinting{a}{H_A}{A} \quad \hinting{b}{H_B}{B}}{\hinting{\pair{a}{b}}{H}{\Prod{A}{B}}}$
 
   \vspace{2em}
 
@@ -328,7 +320,7 @@ Note that the rule $\rulename{Hole}$ can only be applied once, because $\hintfor
 
   \vspace{2em}
 
-  $\infrule{}{\hinting{\unit}{\Unit}{\Unit}}$ \quad
+  $\infrule{\sidecond{\hintorder{H}{\Unit}}}{\hinting{\unit}{H}{\Unit}}$ \quad
   $\infrule{\hinting{e}{\Empty}{\Empty}}{\hinting{\exfalso{e}}{A}{A}}$
 \end{center}
 

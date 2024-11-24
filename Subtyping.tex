@@ -115,7 +115,7 @@ The only difference between Extrinsic STLC with Subtyping and the original Extri
 
   \vspace{2em}
 
-  $\infrule[Sub]{\infer{e}{B} \quad \sidecond{\subtyping{A}{B}}}{\check{e}{A}}$
+  $\infrule[Sub]{\infer{e}{A} \quad \sidecond{\subtyping{A}{B}}}{\check{e}{B}}$
 \end{center}
 
 \end{frame}
@@ -169,8 +169,8 @@ We no longer need holes -- because of $\Top$ and $\Bot$, types suffice. We also 
 \begin{center}
   $\hintfor{\fun{x}{e}} = \Fun{\Bot}{\Top}$ \\
   $\hintfor{\pair{e_1}{e_2}} = \Prod{\Top}{\Top}$ \\
-  $\hintfor{\inl{e}} = \Sum{\Top}{\Top}$ \\
-  $\hintfor{\inr{e}} = \Sum{\Top}{\Top}$
+  $\hintfor{\inl{e}} = \Sum{\Top}{\Bot}$ \\
+  $\hintfor{\inr{e}} = \Sum{\Bot}{\Top}$
 \end{center}
 
 \end{frame}
@@ -192,7 +192,7 @@ Note: terms are the same as in Bidirectional STLC, i.e. annotations are types, n
 \vspace{2em}
 
 Judgements: \\
-$\fullhinting{\Gamma}{e}{A}{B}$ -- in context $\Gamma$, term $e$ checks with type $A$ as hint and infers type $B$
+$\fullhinting{\Gamma}{e}{A}{B}$ -- in context $\Gamma$, term $e$ checks with type $A$ and infers type $B$
 
 \end{frame}
 
@@ -237,15 +237,15 @@ Note that the rule $\rulename{Hole}$ can only be applied once, because $\hintfor
 \begin{center}
   $\infrule{\fullhinting{\extend{\Gamma}{x}{A}}{e}{B}{B'}}{\hinting{\fun{x}{e}}{\Fun{A}{B}}{\Fun{A}{B'}}}$
 
-  \vspace{1em}
+  \vspace{2em}
 
   $\infrule{\hinting{f}{\Fun{\Bot}{B}}{\Fun{A}{B'}} \quad \hinting{a}{A}{A'}}{\hinting{\app{f}{a}}{B}{B'}}$
 
-  \vspace{1em}
+  \vspace{2em}
 
   $\infrule{\hinting{a}{A}{A'} \quad \hinting{b}{B}{B'}}{\hinting{\pair{a}{b}}{\Prod{A}{B}}{\Prod{A'}{B'}}}$
 
-  \vspace{1em}
+  \vspace{2em}
 
   $\infrule{\hinting{e}{\Prod{A}{\Top}}{\Prod{A'}{B}}}{\hinting{\outl{e}}{A}{A'}}$ \quad
   $\infrule{\hinting{e}{\Prod{\Top}{B}}{\Prod{A}{B'}}}{\hinting{\outr{e}}{B}{B'}}$
@@ -270,6 +270,14 @@ Note that the rule $\rulename{Hole}$ can only be applied once, because $\hintfor
 
   $\infrule{}{\hinting{\unit}{\Top}{\Top}}$ \quad
   $\infrule{\hinting{e}{\Bot}{\Bot}}{\hinting{\exfalso{e}}{A}{A}}$
+\end{center}
+
+\end{frame}
+
+\begin{frame}{Algorithmic rules -- alternative rules}
+
+\begin{center}
+  $\infrule[AltApp]{\hinting{a}{\Top}{A} \quad \hinting{f}{\Fun{A}{B}}{\Fun{A'}{B'}} \quad }{\hinting{\app{f}{a}}{B}{B'}}$
 \end{center}
 
 \end{frame}

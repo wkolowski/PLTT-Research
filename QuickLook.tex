@@ -1,0 +1,73 @@
+\documentclass{beamer}
+\usepackage[utf8]{inputenc}
+\usepackage{babel}
+\usepackage{xcolor}
+\usepackage{hyperref}
+\hypersetup{
+  colorlinks = true,
+  linkcolor = blue,
+  urlcolor  = blue,
+  citecolor = blue,
+  anchorcolor = blue
+}
+\usepackage{Commands}
+
+
+
+\usetheme{Darmstadt}
+
+\title{QuickLook}
+\date{}
+
+\begin{document}
+
+\frame{\titlepage}
+
+\section{Reminder}
+
+\begin{frame}{Old rules}
+
+\begin{center}
+  $\infrule[Abs]{\fullhinting{\extend{\Gamma}{x}{A}}{e}{H}{B}}{\hinting{\fun{x}{e}}{\Fun{A}{H}}{\Fun{A}{B}}}$
+
+  \vspace{2em}
+
+  $\infrule[App]{\hinting{f}{\Fun{\Hole}{H}}{\Fun{A}{B}} \quad \hinting{a}{A}{A}}{\hinting{\app{f}{a}}{H}{B}}$
+
+  \vspace{2em}
+
+  $\infrule[AltApp]{\hinting{a}{\Hole}{A} \quad \hinting{f}{\Fun{A}{H}}{\Fun{A}{B}}}{\hinting{\app{f}{a}}{H}{B}}$
+\end{center}
+
+\end{frame}
+
+\section{Quick Look}
+
+\newcommand{\fullquicklook}[4]{#1 \vdash #2 \mathcolor{blue}{\Leftarrow} #3 \mathcolor{orange}{\Rightarrow} #4}
+\newcommand{\quicklook}[3]{\fullquicklook{\Gamma}{#1}{#2}{#3}}
+
+\begin{frame}{Quick Look}
+
+\begin{center}
+  $\infrule[QL-Var]{\sidecond{(x : A) \in \Gamma} \quad \sidecond{\hintorder{H}{A}}}{\quicklook{x}{H}{A}}$
+
+  \vspace{2em}
+
+  $\infrule[QL-Annot]{}{\quicklook{\annot{e}{H_1}}{H_2}{\hintlub{H_1}{H_2}}}$
+
+  \vspace{2em}
+
+  $\infrule[QL-Fail]{\sidecond{e \neq x} \quad \sidecond{e \neq \annot{e'}{H'}}}{\quicklook{e}{H}{H}}$
+\end{center}
+
+\end{frame}
+
+\begin{frame}{New rules}
+
+\begin{center}
+  $\infrule[QL-App]{\quicklook{f}{\Fun{\Hole}{H}}{\Fun{H_A}{H_B}} \quad \begin{array}{l} \hinting{a}{H_A}{A} \\ \hinting{f}{\Fun{A}{H_B}}{\Fun{A}{B}} \end{array}}{\hinting{\app{f}{a}}{H}{B}}$
+\end{center}
+
+\end{frame}
+
+\end{document}

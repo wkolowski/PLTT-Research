@@ -16,7 +16,7 @@
 
 \usetheme{Darmstadt}
 
-\title{QuickLook}
+\title{Quick Look}
 \date{}
 
 \begin{document}
@@ -41,23 +41,87 @@
 
 \end{frame}
 
+\newcommand{\funcase}{\texttt{case}}
+
+\begin{frame}{Wut}
+
+Easy for the original rule $\rulename{App}$, but hard for the alternative $\rulename{AltApp}$: $\app{f}{e_1}$, $\app{\app{f}{e_1}}{e_2}$, etc.
+
+\vspace{2em}
+
+Easy for the alternative rule $\rulename{AltApp}$, but hard for the original one $\rulename{App}$: $\app{(\fun{x}{e})}{y}$, $\app{\app{(\fun{x}{e})}{y}}{z}$
+
+\vspace{2em}
+
+Hard for both: $\app{\app{\app{\app{\funcase}{(\fun{a}{e_1})}}{(\fun{b}{e_2})}}{x}}{}$
+\end{frame}
+
 \section{Quick Look}
 
-\newcommand{\fullquicklook}[4]{#1 \vdash #2 \mathcolor{blue}{\Leftarrow} #3 \mathcolor{orange}{\Rightarrow} #4}
-\newcommand{\quicklook}[3]{\fullquicklook{\Gamma}{#1}{#2}{#3}}
+\newcommand{\fullquicklookinfer}[3]{#1 \vdash #2 \mathcolor{green}{\Rightarrow} #3}
+\newcommand{\quicklookinfer}[2]{\fullquicklookinfer{\Gamma}{#1}{#2}}
+
+\begin{frame}{Quick Look at the argument}
+
+\begin{center}
+  $\infrule[QL-Arg-Var]{\sidecond{(x : A) \in \Gamma}}{\quicklookinfer{x}{A}}$
+
+  \vspace{2em}
+
+  $\infrule[QL-Arg-Annot]{}{\quicklookinfer{\annot{e}{H}}{H}}$
+
+  \vspace{2em}
+
+  $\infrule[QL-Arg-Unit]{}{\quicklookinfer{\unit}{\Unit}}$
+
+  \vspace{2em}
+
+  $\infrule[QL-Arg-Fail]{\sidecond{e \neq x} \quad \sidecond{e \neq \annot{e'}{H'}} \quad \sidecond{e \neq \unit}}{\quicklookinfer{e}{\Hole}}$
+\end{center}
+
+\end{frame}
+
+\begin{frame}{Quick Look at the argument}
+
+\begin{center}
+  $\infrule[QL-Arg]{\quicklookinfer{a}{H_A} \quad \hinting{f}{\Fun{H_A}{H_B}}{\Fun{A}{B}} \quad \hinting{a}{A}{A}}{\hinting{\app{f}{a}}{H_B}{B}}$
+\end{center}
+
+\end{frame}
+
+\begin{frame}{Quick Look at the argument -- discussion}
+
+Taking a quick look at the argument before typing the function makes it possible to type some terms that would otherwise fail, like:
+
+\begin{itemize}
+  \item $\app{(\fun{f}{f})}{\unit}$ (but note that this example is easy for $\rulename{AltApp}$).
+\end{itemize}
+
+\end{frame}
+
+\begin{frame}{Quick Look at the function}
+
+\begin{center}
+  $\infrule[QL-Fun]{\quicklookinfer{f}{\Fun{H_A}{H_B'}} \quad \begin{array}{l} \hinting{a}{H_A}{A} \\ \hinting{f}{\Fun{A}{\hintlub{H_B}{H_B'}}}{\Fun{A}{B}} \end{array}}{\hinting{\app{f}{a}}{H_B}{B}}$
+\end{center}
+
+\end{frame}
+
+\newcommand{\fullquicklookhinting}[4]{#1 \vdash #2 \mathcolor{blue}{\Leftarrow} #3 \mathcolor{green}{\Rightarrow} #4}
+\newcommand{\quicklookhinting}[3]{\fullquicklookhinting{\Gamma}{#1}{#2}{#3}}
 
 \begin{frame}{Quick Look}
 
 \begin{center}
-  $\infrule[QL-Var]{\sidecond{(x : A) \in \Gamma} \quad \sidecond{\hintorder{H}{A}}}{\quicklook{x}{H}{A}}$
+  $\infrule[QL-Var]{\sidecond{(x : A) \in \Gamma} \quad \sidecond{\hintorder{H}{A}}}{\quicklookhinting{x}{H}{A}}$
 
   \vspace{2em}
 
-  $\infrule[QL-Annot]{}{\quicklook{\annot{e}{H_1}}{H_2}{\hintlub{H_1}{H_2}}}$
+  $\infrule[QL-Annot]{}{\quicklookhinting{\annot{e}{H_1}}{H_2}{\hintlub{H_1}{H_2}}}$
 
   \vspace{2em}
 
-  $\infrule[QL-Fail]{\sidecond{e \neq x} \quad \sidecond{e \neq \annot{e'}{H'}}}{\quicklook{e}{H}{H}}$
+  $\infrule[QL-Fail]{\sidecond{e \neq x} \quad \sidecond{e \neq \annot{e'}{H'}}}{\quicklookhinting{e}{H}{H}}$
 \end{center}
 
 \end{frame}
@@ -65,7 +129,33 @@
 \begin{frame}{New rules}
 
 \begin{center}
-  $\infrule[QL-App]{\quicklook{f}{\Fun{\Hole}{H}}{\Fun{H_A}{H_B}} \quad \begin{array}{l} \hinting{a}{H_A}{A} \\ \hinting{f}{\Fun{A}{H_B}}{\Fun{A}{B}} \end{array}}{\hinting{\app{f}{a}}{H}{B}}$
+  $\infrule[QL-App]{\quicklookhinting{f}{\Fun{\Hole}{H}}{\Fun{H_A}{H_B}} \quad \begin{array}{l} \hinting{a}{H_A}{A} \\ \hinting{f}{\Fun{A}{H_B}}{\Fun{A}{B}} \end{array}}{\hinting{\app{f}{a}}{H}{B}}$
+\end{center}
+
+\end{frame}
+
+\newcommand{\qldeep}[6]{#1 \vdash #2 \mathcolor{blue}{\Leftarrow} #3 \mathcolor{green}{\Rightarrow} #4\ ;\ #5\ ;\ #6}
+
+\begin{frame}{Wut}
+
+\begin{center}
+  $\infrule[QLD-App]{\quicklookhinting{e_2}{\Hole}{H_2} \quad \qldeep{\Gamma}{e_1}{H}{f}{\overline{e}}{H'}}{\qldeep{\Gamma}{\app{e_1}{e_2}}{H}{f}{\overline{e}}{H'}}$
+
+  \vspace{2em}
+
+  $\infrule[QLD-Var]{\sidecond{(x : A) \in \Gamma} \quad \sidecond{\hintorder{H}{A}}}{\qldeep{x}{H}{A}{}{}{}}$
+
+  \vspace{2em}
+
+  $\infrule[QL-Annot]{}{\quicklookhinting{\annot{e}{H_1}}{H_2}{\hintlub{H_1}{H_2}}}$
+
+  \vspace{2em}
+
+  $\infrule[QL-Fail]{\sidecond{e \neq x} \quad \sidecond{e \neq \annot{e'}{H'}}}{\quicklookhinting{e}{H}{H}}$
+
+  \vspace{2em}
+
+  $\infrule{\qldeep{\Gamma}{\app{e_1}{e_2}}{H}{f}{\overline{e}}{H'}}{\hinting{\app{e_1}{e_2}}{H}{B}}$
 \end{center}
 
 \end{frame}

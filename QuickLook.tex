@@ -12,11 +12,10 @@
 }
 \usepackage{Commands}
 
-
-
 \usetheme{Darmstadt}
 
 \title{Quick Look}
+\author{Wojciech Kołowski}
 \date{}
 
 \begin{document}
@@ -81,21 +80,11 @@ Hard for both: $\app{\app{\app{\app{\funcase}{(\fun{a}{e_1})}}{(\fun{b}{e_2})}}{
 
 \end{frame}
 
-\begin{frame}{Quick Look at the argument}
+\begin{frame}{The new rule}
 
 \begin{center}
-  $\infrule[QL-Arg]{\quicklookinfer{a}{H_A} \quad \hinting{f}{\Fun{H_A}{H_B}}{\Fun{A}{B}} \quad \hinting{a}{A}{A}}{\hinting{\app{f}{a}}{H_B}{B}}$
+  $\infrule[App-QL-Arg]{\quicklookinfer{a}{H_A} \quad \hinting{f}{\Fun{H_A}{H_B}}{\Fun{A}{B}} \quad \hinting{a}{A}{A}}{\hinting{\app{f}{a}}{H_B}{B}}$
 \end{center}
-
-\end{frame}
-
-\begin{frame}{Quick Look at the argument -- discussion}
-
-Taking a quick look at the argument before typing the function makes it possible to type some terms that would otherwise fail, like:
-
-\begin{itemize}
-  \item $\app{(\fun{f}{f})}{\unit}$ (but note that this example is easy for $\rulename{AltApp}$).
-\end{itemize}
 
 \end{frame}
 

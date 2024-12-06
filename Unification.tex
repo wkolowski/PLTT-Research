@@ -98,6 +98,8 @@ $\fulloutctx{\Gamma}{e}{H}{H'}{\Gamma'}$ -- in context $\Gamma$, term $e$ checks
 
 \end{frame}
 
+\section{Metatheory}
+
 \begin{frame}{Order on contexts}
 
 \begin{center}
@@ -254,6 +256,66 @@ We introduce unification variables, denoted with Greek letter ($\alpha, \beta, \
 
 Judgements: \\
 $\fulluniftyping{\Gamma}{e}{H}{H'}{\Gamma'}$ -- in context $\Gamma$, term $e$ checks with hint $H$ and infers hint $H'$ in output context $\Gamma'$
+
+\end{frame}
+
+\begin{frame}{Unification -- basic rules}
+
+\begin{center}
+  $\infrule[Var]{}{\fulluniftyping{\Gamma_1, x : A, \Gamma_2}{x}{B}{\hintlub{A}{B}}{\Gamma_1, x : \hintlub{A}{B}, \Gamma_2}}$
+
+  \vspace{2em}
+
+  $\infrule[Annot]{\uniftyping{e}{\hintlub{A}{B}}{C}}{\uniftyping{\annot{e}{A}}{B}{C}}$
+
+  \vspace{2em}
+
+  $\infrule[Hole]{\uniftyping{e}{\hintfor{e}}{A} \quad \sidecond{e\ \texttt{constructor}}}{\uniftyping{e}{\Hole}{A}}$
+\end{center}
+
+\end{frame}
+
+\begin{frame}{Unification -- type-directed rules}
+
+\begin{center}
+  $\infrule{\fulluniftyping{\extend{\Gamma}{x}{A}}{e}{B}{B'}{\extend{\Gamma'}{x}{A'}}}{\uniftyping{\fun{x}{e}}{\Fun{A}{B}}{\Fun{A'}{B'}}}$
+
+  \vspace{1em}
+
+  $\infrule{\fulluniftyping{\Gamma}{f}{\Fun{\Hole}{B}}{\Fun{A}{B'}}{\Gamma'} \quad \fulluniftyping{\Gamma'}{a}{A}{A'}{\Gamma''}}{\fulluniftyping{\Gamma}{\app{f}{a}}{B}{B'}{\Gamma''}}$
+
+  \vspace{1em}
+
+  $\infrule{\fulluniftyping{\Gamma}{a}{A}{A'}{\Gamma'} \quad \fulluniftyping{\Gamma'}{b}{B}{B'}{\Gamma''}}{\fulluniftyping{\Gamma}{\pair{a}{b}}{\Prod{A}{B}}{\Prod{A'}{B'}}{\Gamma''}}$
+
+  \vspace{1em}
+
+  $\infrule{\uniftyping{e}{\Prod{A}{\Hole}}{\Prod{A'}{B}}}{\uniftyping{\outl{e}}{A}{A'}}$
+  \quad
+  $\infrule{\uniftyping{e}{\Prod{\Hole}{B}}{\Prod{A}{B'}}}{\uniftyping{\outr{e}}{B}{B'}}$
+\end{center}
+
+\end{frame}
+
+\begin{frame}{Unification -- type-directed rules}
+
+\begin{center}
+  $\infrule{\uniftyping{e}{A}{A'}}{\uniftyping{\inl{e}}{\Sum{A}{B}}{\Sum{A'}{B}}}$
+
+  \vspace{2em}
+
+  $\infrule{\uniftyping{e}{B}{B'}}{\uniftyping{\inr{e}}{\Sum{A}{B}}{\Sum{A}{B'}}}$
+
+  \vspace{2em}
+
+  $\infrule{\fulluniftyping{\Gamma}{e}{\Sum{\Hole}{\Hole}}{\Sum{A}{B}}{\Gamma_1} \quad \begin{array}{c} \fulluniftyping{\Gamma_1}{f}{\Fun{A}{C_1}}{\Fun{A'}{C_2}}{\Gamma_2} \\ \fulluniftyping{\Gamma_2}{g}{\Fun{B}{C_2}}{\Fun{B'}{C_3}}{\Gamma_3} \end{array}}{\fulluniftyping{\Gamma}{\case{e}{f}{g}}{C_1}{C_3}{\Gamma_3}}$
+
+  \vspace{2em}
+
+  $\infrule{}{\fulluniftyping{\Gamma}{\unit}{\Unit}{\Unit}{\Gamma}}$
+  \quad
+  $\infrule{\uniftyping{e}{\Empty}{\Empty}}{\uniftyping{\exfalso{e}}{A}{A}}$
+\end{center}
 
 \end{frame}
 

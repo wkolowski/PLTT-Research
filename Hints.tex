@@ -334,11 +334,23 @@ $\fullhinting{\Gamma}{e}{H}{A}$ -- in context $\Gamma$, term $e$ checks with hin
   \vspace{2em}
 
   $\infrule[AltCase]{\begin{array}{c} \hinting{f}{\Fun{\Hole}{H}}{\Fun{A}{C}} \\ \hinting{g}{\Fun{\Hole}{C}}{\Fun{B}{C}} \end{array} \quad \hinting{e}{\Sum{A}{B}}{\Sum{A}{B}}}{\hinting{\case{e}{f}{g}}{H}{C}}$
+
+  \vspace{2em}
+
+  $\infrule[SymCase]{\hinting{e}{\Sum{\Hole}{\Hole}}{\Sum{A}{B}} \quad \begin{array}{c} \hinting{f}{\Fun{A}{H}}{\Fun{A}{C_1}} \\ \hinting{g}{\Fun{B}{H}}{\Fun{B}{C_2}} \end{array}}{\hinting{\case{e}{f}{g}}{H}{\hintlub{C_1}{C_2}}}$
 \end{center}
 
-\vspace{2em}
+\end{frame}
 
-We could have made some different choices. For application, we could try to infer the argument type first and then feed it to the function as a hint. For case, we could try to infer domains of the branches first, then feed these as hints when checking the discriminee.
+\begin{frame}{Algorithmic typing -- discussion of alternative rules}
+
+We could have made some different choices.
+
+\begin{itemize}
+  \item For application, we could try to infer the argument type first and then feed it to the function as a hint.
+  \item For case, we could try to infer domains of the branches first, then feed these as hints when checking the discriminee. This is what the rule $\rulename{AltCase}$ does.
+  \item But there's also a third possibility for case: we could treat the branches more symmetrically, checking both with the input hint $H$, and only combining the output types $C_1$ and $C_2$ at the end. This is what the rule $\rulename{SymCase}$ does.
+\end{itemize}
 
 \end{frame}
 

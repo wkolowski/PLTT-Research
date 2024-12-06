@@ -65,12 +65,12 @@ $\typing{e}{A}$, $\type{A}$
 
 \end{frame}
 
-\begin{frame}{Trivial theorems}
+\begin{frame}{Sanity checks}
 
 \begin{itemize}
   \item If $\type{A}$, then $\tyctx{\Gamma}$
   \item If $\tyctx{\Gamma}$ and $(x : A) \in \Gamma$, then $\type{A}$
-  \item We will set up all system so that if $\typing{e}{A}$, then $\type{A}$
+  \item We will set up the system so that if $\typing{e}{A}$, then $\type{A}$
 \end{itemize}
 
 \end{frame}
@@ -348,7 +348,7 @@ $e ::=$ \\
 
   \vspace{2em}
 
-  $\infrule{\hinting{f}{\Fun{\Hole}{H}}{\Fun{A}{B}} \quad \hinting{a}{A}{A}}{\hinting{\app{f}{a}}{H}{B}}$
+  $\infrule{\hinting{a}{\Hole}{A} \quad \hinting{f}{\Fun{A}{H}}{\Fun{A}{B}}}{\hinting{\app{f}{a}}{H}{B}}$
 
   \vspace{2em}
 

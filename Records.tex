@@ -1,0 +1,213 @@
+\documentclass{beamer}
+\usepackage[utf8]{inputenc}
+\usepackage{babel}
+\usepackage{xcolor}
+\usepackage{hyperref}
+\hypersetup{
+  colorlinks = true,
+  linkcolor = blue,
+  urlcolor  = blue,
+  citecolor = blue,
+  anchorcolor = blue
+}
+\usepackage{Commands}
+
+\usetheme{Darmstadt}
+
+\title{Hinting for records and variants}
+\author{Wojciech Kołowski}
+\date{}
+
+\begin{document}
+
+\frame{\titlepage}
+
+\section{Intro}
+
+\newcommand{\emptysig}{\emptyset}
+\newcommand{\extendsig}[3]{#1, #2 : #3}
+\newcommand{\funsig}[2]{#1 \to #2}
+
+\newcommand{\sigok}[1]{#1\ \texttt{ok}}
+
+\newcommand{\Record}[1]{\texttt{Record}\ #1}
+\newcommand{\Variant}[1]{\texttt{Variant}\ #1}
+
+\begin{frame}{Types, hints and signatures}
+
+Signatures: \\
+$\Sigma ::= \emptysig \pipe \extendsig{\Sigma}{\ell}{A}$
+
+\vspace{2em}
+
+Types: \\
+$A, B ::= \Fun{A}{B} \pipe \Record{\Sigma} \pipe \Variant{\Sigma}$
+
+\vspace{2em}
+
+Hints: \\
+$H ::= \Hole \pipe \Fun{H_1}{H_2} \pipe \Record{\Sigma} \pipe \Variant{\Sigma}$
+
+\end{frame}
+
+\newcommand{\emptyrecord}{\{\}}
+\newcommand{\extendrecord}[3]{\{#1, #2 := #3\}}
+\newcommand{\proj}[2]{#1.#2}
+
+\newcommand{\cons}[2]{#1\ #2}
+\newcommand{\vcase}[2]{\texttt{vcase}\ #1\ \texttt{of}\ #2}
+
+\newcommand{\recordtype}[1]{\{#1\}}
+\newcommand{\record}[1]{\{#1\}}
+
+\newcommand{\recordtypes}[4]{\recordtype{#1_{#3} : #2_{#3}}_{#3 \in #4}}
+\newcommand{\records}[4]{\record{#1_{#3} := #2_{#3}}_{#3 \in #4}}
+
+\newcommand{\varianttype}[1]{\left[#1\right]}
+\newcommand{\varianttypes}[4]{\varianttype{#1_{#3} : #2_{#3}}_{#3 \in #4}}
+
+\begin{frame}{Terms, records and variants}
+
+Terms: \\
+$e ::=$ \\
+\qquad $x \pipe \annot{e}{H} \pipe$ \\
+\qquad $\fun{x}{e} \pipe \app{e_1}{e_2} \pipe$ \\
+\qquad $r \pipe \proj{e}{\ell}$ \\
+\qquad $\cons{\texttt{c}}{e} \pipe \vcase{e_1}{e_2}$
+
+\vspace{2em}
+
+Records: \\
+$r ::= \emptyrecord \pipe \extendrecord{r}{\ell}{e}$ \\
+
+\vspace{2em}
+
+Note: the terms are, in order of appearance, variables, annotated terms, functions, applications, records, record projections, applied variant constructors and pattern matching expressions.
+
+\end{frame}
+
+\begin{frame}{Wut}
+
+\begin{center}
+  $\infrule[OK-Empty]{}{\sigok{\emptysig}}$
+
+  \vspace{2em}
+
+  $\infrule[OK-Extend]{\sigok{\Sigma} \quad \sidecond{\ell \notin \Sigma}}{\sigok{\extendsig{\Sigma}{\ell}{A}}}$
+\end{center}
+
+For now we will assume that signatures are finite partial maps from labels to types. A label may appear at most once.
+
+\end{frame}
+
+\begin{frame}{Signatures for pattern-matching}
+
+We define an operation on signatures which will be useful later.
+
+$\funsig{\emptysig}{B} = \emptysig$ \\
+$\funsig{(\extendsig{\Sigma}{\ell}{A})}{B} = (\extendsig{\funsig{\Sigma}{B}}{\ell}{\Fun{A}{B}})$
+
+\end{frame}
+
+\section{Declarative typing}
+
+\begin{frame}{Declarative typing -- basics}
+
+\begin{center}
+  $\infrule[Var]{\sidecond{(x : A) \in \Gamma}}{\typing{x}{A}}$
+
+  \vspace{2em}
+
+  $\infrule[Annot]{\typing{e}{A} \quad \sidecond{\hintorder{H}{A}}}{\typing{\annot{e}{H}}{A}}$
+\end{center}
+
+\end{frame}
+
+\begin{frame}{Declarative typing -- type-directed rules}
+
+\begin{center}
+  $\infrule{\fulltyping{\extend{\Gamma}{x}{A}}{e}{B}}{\typing{\fun{x}{e}}{\Fun{A}{B}}}$ \quad
+  $\infrule{\typing{f}{\Fun{A}{B}} \quad \typing{a}{A}}{\typing{\app{f}{a}}{B}}$
+
+  \vspace{2em}
+
+  $\infrule{}{\typing{\emptyrecord}{\Record{\emptysig}}}$ \quad
+  $\infrule{\typing{r}{\Record{\Sigma}} \quad \typing{e}{A}}{\typing{\extendrecord{r}{\ell}{e}}{\Record{(\extendsig{\Sigma}{\ell}{A})}}}$
+
+  \vspace{2em}
+
+  $\infrule{\typing{e}{\Record{\Sigma}} \quad \sidecond{(\ell : A) \in \Sigma}}{\typing{\proj{e}{\ell}}{A}}$
+
+  \vspace{2em}
+
+  $\infrule{\typing{e}{A} \quad \sidecond{(c : A) \in \Sigma}}{\typing{\cons{c}{e}}{\Variant{\Sigma}}}$
+
+  \vspace{2em}
+
+  $\infrule{\typing{e_1}{\Variant{\Sigma}} \quad \typing{e_2}{\Record{(\funsig{\Sigma}{A})}}}{\typing{\vcase{e_1}{e_2}}{A}}$
+\end{center}
+
+\end{frame}
+
+\section{Algorithmic typing}
+
+\begin{frame}{Algorithmic typing -- basic rules}
+
+\begin{center}
+  $\infrule[Var]{\sidecond{(x : A) \in \Gamma} \quad \sidecond{\hintorder{H}{A}}}{\hinting{x}{H}{A}}$
+
+  \vspace{2em}
+
+  $\infrule[Annot]{\hinting{e}{\hintlub{H_1}{H_2}}{A}}{\hinting{\annot{e}{H_1}}{H_2}{A}}$
+\end{center}
+
+\end{frame}
+
+\begin{frame}{Algorithmic typing -- functions}
+
+\begin{center}
+  $\infrule{\fullhinting{\extend{\Gamma}{x}{A}}{e}{H}{B}}{\hinting{\fun{x}{e}}{\Fun{A}{H}}{\Fun{A}{B}}}$
+
+  \vspace{2em}
+
+  $\infrule{\hinting{f}{\Fun{\Hole}{H}}{\Fun{A}{B}} \quad \hinting{a}{A}{A}}{\hinting{\app{f}{a}}{H}{B}}$
+\end{center}
+
+\end{frame}
+
+
+\begin{frame}{Algorithmic typing -- records}
+
+\begin{center}
+  $\infrule{\hintorder{H}{\Record{\emptysig}}}{\hinting{\emptyrecord}{H}{\Record{\emptysig}}}$
+
+  \vspace{2em}
+
+  %$\infrule{\sidecond{\hintlub{H}{\Record{(\extendsig{\Hole}{\ell}{\Hole})}} = \Record{(\extendsig{H_\Sigma}{\ell}{H_A})}}\quad \typing{r}{\Record{\Sigma}} \quad \typing{e}{A}}{\hinting{\extendrecord{r}{\ell}{e}}{H}{\Record{(\extendsig{\Sigma}{\ell}{A})}}}$
+
+  $\infrule{\sidecond{\hintlub{H}{\Record{\Hole}} = H'} \quad \hinting{\extendrecord{r}{\ell}{e}}{H'}{A}}{\hinting{\extendrecord{r}{\ell}{e}}{H}{A}}$
+
+  \vspace{2em}
+
+  $\infrule{\hinting{r}{\Record{H_\Sigma}}{\Record{\Sigma}} \quad \hinting{e}{H_A}{A}}{\hinting{\extendrecord{r}{\ell}{e}}{\Record{(\extendsig{H_\Sigma}{\ell}{H_A})}}{\Record{(\extendsig{\Sigma}{\ell}{A})}}}$
+
+  \vspace{2em}
+
+  $\infrule{\hinting{e}{\Record{(\extendsig{\Hole}{\ell}{H})}}{\Record{(\extendsig{\Sigma}{\ell}{A})}}}{\hinting{\proj{e}{\ell}}{H}{A}}$
+\end{center}
+
+\end{frame}
+
+\begin{frame}{Algorithmic typing -- variants}
+
+\begin{center}
+  $\infrule{\sidecond{\hintlub{H}{\Variant{(\extendsig{\Hole}{c}{\Hole})}} = \Variant{(\extendsig{\Sigma}{c}{H_A})}} \quad \hinting{e}{H_A}{A}}{\hinting{\cons{c}{e}}{H}{\Variant{(\extendsig{\Sigma}{c}{A})}}}$
+
+  \vspace{2em}
+
+  $\infrule{\begin{array}{l} \hinting{e_1}{\Hole}{\Variant{\Sigma}} \\ \hinting{e_2}{\Record{(\funsig{\Sigma}{H})}}{\Record{(\funsig{\Sigma}{A})}} \end{array}}{\hinting{\vcase{e_1}{e_2}}{H}{A}}$
+\end{center}
+
+\end{frame}
+
+\end{document}

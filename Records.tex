@@ -15,7 +15,6 @@
 \usetheme{Darmstadt}
 
 \title{Hinting for records and variants}
-\author{Wojciech Kołowski}
 \date{}
 
 \begin{document}
@@ -86,7 +85,7 @@ Note: the terms are, in order of appearance, variables, annotated terms, functio
 
 \end{frame}
 
-\begin{frame}{Wut}
+\begin{frame}{Well-formed signatures}
 
 \begin{center}
   $\infrule[OK-Empty]{}{\sigok{\emptysig}}$
@@ -96,6 +95,8 @@ Note: the terms are, in order of appearance, variables, annotated terms, functio
   $\infrule[OK-Extend]{\sigok{\Sigma} \quad \sidecond{\ell \notin \Sigma}}{\sigok{\extendsig{\Sigma}{\ell}{A}}}$
 \end{center}
 
+\vspace{2em}
+
 For now we will assume that signatures are finite partial maps from labels to types. A label may appear at most once.
 
 \end{frame}
@@ -103,6 +104,8 @@ For now we will assume that signatures are finite partial maps from labels to ty
 \begin{frame}{Signatures for pattern-matching}
 
 We define an operation on signatures which will be useful later.
+
+\vspace{2em}
 
 $\funsig{\emptysig}{B} = \emptysig$ \\
 $\funsig{(\extendsig{\Sigma}{\ell}{A})}{B} = (\extendsig{\funsig{\Sigma}{B}}{\ell}{\Fun{A}{B}})$
@@ -126,7 +129,7 @@ $\funsig{(\extendsig{\Sigma}{\ell}{A})}{B} = (\extendsig{\funsig{\Sigma}{B}}{\el
 \begin{frame}{Declarative typing -- type-directed rules}
 
 \begin{center}
-  $\infrule{\fulltyping{\extend{\Gamma}{x}{A}}{e}{B}}{\typing{\fun{x}{e}}{\Fun{A}{B}}}$ \quad
+  $\infrule{\typing[\extend{\Gamma}{x}{A}]{e}{B}}{\typing{\fun{x}{e}}{\Fun{A}{B}}}$ \quad
   $\infrule{\typing{f}{\Fun{A}{B}} \quad \typing{a}{A}}{\typing{\app{f}{a}}{B}}$
 
   \vspace{2em}
@@ -166,7 +169,7 @@ $\funsig{(\extendsig{\Sigma}{\ell}{A})}{B} = (\extendsig{\funsig{\Sigma}{B}}{\el
 \begin{frame}{Algorithmic typing -- functions}
 
 \begin{center}
-  $\infrule{\fullhinting{\extend{\Gamma}{x}{A}}{e}{H}{B}}{\hinting{\fun{x}{e}}{\Fun{A}{H}}{\Fun{A}{B}}}$
+  $\infrule{\hinting[\extend{\Gamma}{x}{A}]{e}{H}{B}}{\hinting{\fun{x}{e}}{\Fun{A}{H}}{\Fun{A}{B}}}$
 
   \vspace{2em}
 

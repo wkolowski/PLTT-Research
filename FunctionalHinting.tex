@@ -15,18 +15,9 @@
 \usetheme{Darmstadt}
 
 \title{Hinting for fully applicative STLC}
-\author{Wojciech Kołowski}
 \date{}
 
 \begin{document}
-
-\newcommand{\funpair}{\texttt{pair}}
-\newcommand{\funoutl}{\texttt{outl}}
-\newcommand{\funoutr}{\texttt{outr}}
-\newcommand{\funinl}{\texttt{inl}}
-\newcommand{\funinr}{\texttt{inr}}
-\newcommand{\funcase}{\texttt{case}}
-\newcommand{\funexfalso}{\texttt{exfalso}}
 
 \frame{\titlepage}
 
@@ -38,14 +29,14 @@ Terms: \\
 $e ::=$ \\
 \qquad $x \pipe \annot{e}{H} \pipe $ \\
 \qquad $\fun{x}{e} \pipe \app{e_1}{e_2} \pipe$ \\
-\qquad $\funpair \pipe \funoutl \pipe \funoutr \pipe$ \\
-\qquad $\funinl \pipe \funinr \pipe \funcase \pipe$ \\
-\qquad $\unit \pipe \funexfalso$
+\qquad $\pairfun \pipe \outlfun \pipe \outrfun \pipe$ \\
+\qquad $\inlfun \pipe \inrfun \pipe \casefun \pipe$ \\
+\qquad $\unit \pipe \emptyelimfun$
 
 \vspace{2em}
 
 Judgements: \\
-$\fullhinting{\Gamma}{e}{H}{A}$ -- in context $\Gamma$, term $e$ checks with hint $H$ and infers type $A$
+$\hinting[\Gamma]{e}{H}{A}$ -- in context $\Gamma$, term $e$ checks with hint $H$ and infers type $A$
 
 \end{frame}
 
@@ -64,31 +55,31 @@ $\fullhinting{\Gamma}{e}{H}{A}$ -- in context $\Gamma$, term $e$ checks with hin
 \begin{frame}{Declarative typing -- type-directed rules}
 
 \begin{center}
-  $\infrule{\fulltyping{\extend{\Gamma}{x}{A}}{e}{B}}{\typing{\fun{x}{e}}{\Fun{A}{B}}}$ \quad
+  $\infrule{\typing[\extend{\Gamma}{x}{A}]{e}{B}}{\typing{\fun{x}{e}}{\Fun{A}{B}}}$ \quad
   $\infrule{\typing{a}{A} \quad \typing{f}{\Fun{A}{B}}}{\typing{\app{f}{a}}{B}}$
 
   \vspace{2em}
 
-  $\infrule{}{\typing{\funpair}{\Fun{A}{\Fun{B}{\Prod{A}{B}}}}}$
+  $\infrule{}{\typing{\pairfun}{\Fun{A}{\Fun{B}{\Prod{A}{B}}}}}$
 
   \vspace{1em}
 
-  $\infrule{}{\typing{\funoutl}{\Fun{\Prod{A}{B}}{A}}}$ \quad
-  $\infrule{}{\typing{\funoutr}{\Fun{\Prod{A}{B}}{B}}}$
+  $\infrule{}{\typing{\outlfun}{\Fun{\Prod{A}{B}}{A}}}$ \quad
+  $\infrule{}{\typing{\outrfun}{\Fun{\Prod{A}{B}}{B}}}$
 
   \vspace{2em}
 
-  $\infrule{}{\typing{\funinl}{\Fun{A}{\Sum{A}{B}}}}$ \quad
-  $\infrule{}{\typing{\funinr}{\Fun{B}{\Sum{A}{B}}}}$
+  $\infrule{}{\typing{\inlfun}{\Fun{A}{\Sum{A}{B}}}}$ \quad
+  $\infrule{}{\typing{\inrfun}{\Fun{B}{\Sum{A}{B}}}}$
 
   \vspace{2em}
 
-  $\infrule{}{\typing{\funcase}{\Fun{(\Fun{A}{C})}{\Fun{(\Fun{B}{C})}{\Fun{\Sum{A}{B}}{C}}}}}$
+  $\infrule{}{\typing{\casefun}{\Fun{(\Fun{A}{C})}{\Fun{(\Fun{B}{C})}{\Fun{\Sum{A}{B}}{C}}}}}$
 
   \vspace{2em}
 
   $\infrule{}{\typing{\unit}{\Unit}}$ \quad
-  $\infrule{}{\typing{\funexfalso}{\Fun{\Empty}{A}}}$
+  $\infrule{}{\typing{\emptyelimfun}{\Fun{\Empty}{A}}}$
 \end{center}
 
 \end{frame}
@@ -108,7 +99,7 @@ $\fullhinting{\Gamma}{e}{H}{A}$ -- in context $\Gamma$, term $e$ checks with hin
 \begin{frame}{Hinting -- type-directed rules}
 
 \begin{center}
-  $\infrule{\fullhinting{\extend{\Gamma}{x}{A}}{e}{H}{B}}{\hinting{\fun{x}{e}}{\Fun{A}{H}}{\Fun{A}{B}}}$
+  $\infrule{\hinting[\extend{\Gamma}{x}{A}]{e}{H}{B}}{\hinting{\fun{x}{e}}{\Fun{A}{H}}{\Fun{A}{B}}}$
 
   \vspace{2em}
 
@@ -116,15 +107,15 @@ $\fullhinting{\Gamma}{e}{H}{A}$ -- in context $\Gamma$, term $e$ checks with hin
 
   \vspace{2em}
 
-  $\infrule{\begin{array}{c} \sidecond{\hintlub{H}{\Fun{\Hole}{\Fun{\Hole}{\Prod{\Hole}{\Hole}}}} = \Fun{H_1}{\Fun{H_2}{\Prod{H_3}{H_4}}}} \\ \sidecond{\hintlub{H_1}{H_3} = A} \quad \sidecond{\hintlub{H_2}{H_4} = B} \end{array}}{\hinting{\funpair}{H}{\Fun{A}{\Fun{B}{\Prod{A}{B}}}}}$
+  $\infrule{\begin{array}{c} \sidecond{\hintlub{H}{\Fun{\Hole}{\Fun{\Hole}{\Prod{\Hole}{\Hole}}}} = \Fun{H_1}{\Fun{H_2}{\Prod{H_3}{H_4}}}} \\ \sidecond{\hintlub{H_1}{H_3} = A} \quad \sidecond{\hintlub{H_2}{H_4} = B} \end{array}}{\hinting{\pairfun}{H}{\Fun{A}{\Fun{B}{\Prod{A}{B}}}}}$
 
   \vspace{2em}
 
-  $\infrule{\sidecond{\hintlub{H_1}{H_2} = A}}{\hinting{\funoutl}{\Fun{\Prod{H_1}{B}}{H_2}}{\Fun{\Prod{A}{B}}{A}}}$
+  $\infrule{\sidecond{\hintlub{H_1}{H_2} = A}}{\hinting{\outlfun}{\Fun{\Prod{H_1}{B}}{H_2}}{\Fun{\Prod{A}{B}}{A}}}$
 
   \vspace{1em}
 
-  $\infrule{\sidecond{\hintlub{H_1}{H_2} = B}}{\hinting{\funoutr}{\Fun{\Prod{A}{H_1}}{H_2}}{\Fun{\Prod{A}{B}}{B}}}$
+  $\infrule{\sidecond{\hintlub{H_1}{H_2} = B}}{\hinting{\outrfun}{\Fun{\Prod{A}{H_1}}{H_2}}{\Fun{\Prod{A}{B}}{B}}}$
 \end{center}
 
 \end{frame}
@@ -132,20 +123,20 @@ $\fullhinting{\Gamma}{e}{H}{A}$ -- in context $\Gamma$, term $e$ checks with hin
 \begin{frame}{Hinting -- type-directed rules}
 
 \begin{center}
-  $\infrule{\sidecond{\hintlub{H_1}{H_2} = A}}{\hinting{\funinl}{\Fun{H_1}{\Sum{H_2}{B}}}{\Fun{A}{\Sum{A}{B}}}}$
+  $\infrule{\sidecond{\hintlub{H_1}{H_2} = A}}{\hinting{\inlfun}{\Fun{H_1}{\Sum{H_2}{B}}}{\Fun{A}{\Sum{A}{B}}}}$
 
   \vspace{2em}
 
-  $\infrule{\sidecond{\hintlub{H_1}{H_2} = B}}{\hinting{\funinr}{\Fun{H_1}{\Sum{A}{H_2}}}{\Fun{B}{\Sum{A}{B}}}}$
+  $\infrule{\sidecond{\hintlub{H_1}{H_2} = B}}{\hinting{\inrfun}{\Fun{H_1}{\Sum{A}{H_2}}}{\Fun{B}{\Sum{A}{B}}}}$
 
   \vspace{2em}
 
-  $\infrule{\begin{array}{c} \sidecond{\hintlub{H}{\Fun{(\Fun{\Hole}{\Hole})}{\Fun{(\Fun{\Hole}{\Hole})}{\Fun{\Sum{\Hole}{\Hole}}{\Hole}}}} = \\ \Fun{(\Fun{H_1}{H_2})}{\Fun{(\Fun{H_3}{H_4})}{\Fun{\Sum{H_5}{H_6}}{H_7}}}} \\ \sidecond{\hintlub{H_1}{H_5} = A} \quad \sidecond{\hintlub{H_3}{H_6} = B} \quad \sidecond{\hintlub{H_2}{(\hintlub{H_4}{H_7})} = C} \end{array}}{\hinting{\funcase}{H}{{\Fun{(\Fun{A}{C})}{\Fun{(\Fun{B}{C})}{\Fun{\Sum{A}{B}}{C}}}}}}$
+  $\infrule{\begin{array}{c} \sidecond{\hintlub{H}{\Fun{(\Fun{\Hole}{\Hole})}{\Fun{(\Fun{\Hole}{\Hole})}{\Fun{\Sum{\Hole}{\Hole}}{\Hole}}}} = \\ \Fun{(\Fun{H_1}{H_2})}{\Fun{(\Fun{H_3}{H_4})}{\Fun{\Sum{H_5}{H_6}}{H_7}}}} \\ \sidecond{\hintlub{H_1}{H_5} = A} \quad \sidecond{\hintlub{H_3}{H_6} = B} \quad \sidecond{\hintlub{H_2}{(\hintlub{H_4}{H_7})} = C} \end{array}}{\hinting{\casefun}{H}{{\Fun{(\Fun{A}{C})}{\Fun{(\Fun{B}{C})}{\Fun{\Sum{A}{B}}{C}}}}}}$
 
   \vspace{2em}
 
   $\infrule{\sidecond{\hintorder{H}{\Unit}}}{\hinting{\unit}{H}{\Unit}}$ \quad
-  $\infrule{\sidecond{\hintorder{H}{\Empty}}}{\hinting{\funexfalso}{\Fun{H}{A}}{\Fun{\Empty}{A}}}$
+  $\infrule{\sidecond{\hintorder{H}{\Empty}}}{\hinting{\emptyelimfun}{\Fun{H}{A}}{\Fun{\Empty}{A}}}$
 \end{center}
 
 \end{frame}

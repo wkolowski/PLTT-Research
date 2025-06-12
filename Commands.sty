@@ -1,7 +1,11 @@
 \ProvidesPackage{Commands}
 
-% Pipes - used when specifying grammars in BDNF format.
+\usepackage{xparse}
+
+% Pipes - used when specifying grammars in BNF format.
 \newcommand{\pipe}{\ |\ }
+
+% Programming language.
 
 % Types.
 \newcommand{\Fun}[2]{#1 \to #2}
@@ -15,45 +19,54 @@
 \newcommand{\Int}{\texttt{Int}}
 \newcommand{\String}{\texttt{String}}
 
+% Commands for coloring differences in term syntax between calculi.
+\newcommand{\newterm}[1]{\mathcolor{green}{#1}}
+\newcommand{\termdiff}[1]{\mathcolor{red}{#1}}
+
+% An optional type annotation.
+\newcommand{\optionalannot}[1]{\IfValueTF{#1}{: #1}{}}
+\newcommand{\optionalspace}[1]{\IfValueTF{#1}{\ #1}{}}
+
 % Terms.
 \newcommand{\annot}[2]{(#1 : #2)}
-\newcommand{\fun}[2]{\lambda #1.\, #2}
-\newcommand{\app}[2]{#1\ #2}
+\NewDocumentCommand{\fun}{m o m}{\lambda #1 \optionalannot{#2} .\, #3}
+\NewDocumentCommand{\app}{o m m}{\IfValueTF{#1}{\texttt{app}_{#1}\ #2\ #3}{#2\ #3}}
 \newcommand{\pair}[2]{(#1, #2)}
-\newcommand{\outl}[1]{\texttt{outl}\ #1}
-\newcommand{\outr}[1]{\texttt{outr}\ #1}
-\newcommand{\inl}[1]{\texttt{inl}\ #1}
-\newcommand{\inr}[1]{\texttt{inr}\ #1}
+\newcommand{\outl}[2][]{\texttt{outl}_{#1}\ #2}
+\newcommand{\outr}[2][]{\texttt{outr}_{#1}\ #2}
+\newcommand{\inl}[2][]{\texttt{inl}_{#1}\ #2}
+\newcommand{\inr}[2][]{\texttt{inr}_{#1}\ #2}
 \newcommand{\case}[3]{\texttt{case}\ #1\ \texttt{of}\ (#2, #3)}
 \newcommand{\unit}{\texttt{unit}}
-\newcommand{\exfalso}[1]{\texttt{exfalso}\ #1}
+\newcommand{\emptyelim}[2][]{\Empty\texttt{-elim}_{#1}\ #2}
 
-% Intrinsic terms.
-\newcommand{\ifun}[3]{\lambda #1 : #2.\, #3}
-\newcommand{\iinl}[2]{\texttt{inl}_{#1}\ #2}
-\newcommand{\iinr}[2]{\texttt{inr}_{#1}\ #2}
-\newcommand{\iexfalso}[2]{\texttt{exfalso}_{#1}\ #2}
+% Annotated terms.
+\newcommand{\caseannot}[5]{\texttt{case}_{#1, #2}\ #3\ \texttt{of}\ (#4, #5)}
 
-% Dual Intrinsic terms.
-\newcommand{\iapp}[3]{\texttt{app}_{#1}\ #2\ #3}
-\newcommand{\ioutl}[2]{\texttt{outl}_{#1}\ #2}
-\newcommand{\ioutr}[2]{\texttt{outr}_{#1}\ #2}
-\newcommand{\icase}[5]{\texttt{case}_{#1, #2}\ #3\ \texttt{of}\ (#4, #5)}
+% Unapplied terms.
+\newcommand{\pairfun}{\texttt{pair}}
+\newcommand{\outlfun}{\texttt{outl}}
+\newcommand{\outrfun}{\texttt{outr}}
+\newcommand{\inlfun}{\texttt{inl}}
+\newcommand{\inrfun}{\texttt{inr}}
+\newcommand{\casefun}{\texttt{case}}
+\newcommand{\emptyelimfun}{\Empty\texttt{-elim}}
 
 % Polymorphic terms.
 \newcommand{\tfun}[2]{\Lambda #1.\, #2}
 \newcommand{\tapp}[2]{#1\ \texttt{@}#2}
 
+% Some defined functions.
+\NewDocumentCommand{\swap}{o}{\texttt{swap} \optionalspace{#1}}
+
 % Computation.
 \newcommand{\subst}[3]{#1\left[#2 := #3\right]}
 \newcommand{\val}[1]{#1\ \texttt{value}}
-\newcommand{\compstep}[2]{#1 \longrightarrow #2}
-\newcommand{\compsteps}[2]{#1 \longrightarrow^* #2}
-\newcommand{\result}[2]{#1 \Downarrow #2}
-
-% Commands for coloring differences in terms syntax between calculi.
-\newcommand{\newterm}[1]{\mathcolor{green}{#1}}
-\newcommand{\termdiff}[1]{\mathcolor{red}{#1}}
+\newcommand{\smallstep}[2]{#1 \longrightarrow #2}
+\newcommand{\smallsteps}[2]{#1 \longrightarrow^* #2}
+\newcommand{\bigstep}[2]{#1 \Downarrow #2}
+\newcommand{\whnf}[1]{#1\ \texttt{whnf}}
+\newcommand{\smallstepwhnf}[2]{#1 \longrightarrow_{\texttt{whnf}} #2}
 
 % Hints.
 \newcommand{\Hole}{\textbf{?}}
@@ -67,53 +80,8 @@
 \newcommand{\termorder}[2]{#1 \sqsubseteq #2}
 \newcommand{\stricttermorder}[2]{#1 \sqsubset #2}
 \newcommand{\tripletermorder}[3]{#1 \sqsubseteq #2 \sqsubseteq #3}
-
-% Output contexts.
 \newcommand{\ctxorder}[2]{#1 \sqsubseteq #2}
 \newcommand{\triplectxorder}[3]{#1 \sqsubseteq #2 \sqsubseteq #3}
-
-% Typing contexts.
-\newcommand{\emptytypingctx}{\cdot}
-\newcommand{\extend}[3]{#1, #2 : #3}
-\newcommand{\extenddef}[4]{#1, #2 : #3 := #4}
-\newcommand{\extendtype}[2]{#1, #2}
-
-% Side conditions - this command semantically marks side conditions in inference rules, but otherwise does nothing.
-\newcommand{\sidecond}[1]{#1}
-
-% Inference rules.
-\newcommand{\rulename}[1]{\textsc{\footnotesize{#1}}}
-\newcommand{\infrule}[3][]{\displaystyle \frac{#2}{#3} \rulename{#1}}
-
-% Judgements.
-
-% Declarative typing.
-\newcommand{\fulltyping}[3]{#1 \vdash #2 : #3}
-\newcommand{\typing}[2]{\fulltyping{\Gamma}{#1}{#2}}
-
-% Type checking (blue arrow pointing left).
-\newcommand{\fullcheck}[3]{#1 \vdash #2 \mathcolor{blue}{\Leftarrow} #3}
-\renewcommand{\check}[2]{\fullcheck{\Gamma}{#1}{#2}}
-
-% Type inference (red arrow pointing right).
-\newcommand{\fullinfer}[3]{#1 \vdash #2 \mathcolor{red}{\Rightarrow} #3}
-\newcommand{\infer}[2]{\fullinfer{\Gamma}{#1}{#2}}
-
-% Hinting.
-\newcommand{\fullhinting}[4]{#1 \vdash #2 \mathcolor{blue}{\Leftarrow} #3 \mathcolor{red}{\Rightarrow} #4}
-\newcommand{\hinting}[3]{\fullhinting{\Gamma}{#1}{#2}{#3}}
-
-% Hinting with output context.
-\newcommand{\fulloutctx}[5]{#1 \vdash #2 \mathcolor{blue}{\Leftarrow} #3 \mathcolor{red}{\Rightarrow} #4 \dashv #5}
-\newcommand{\outctx}[3]{\fulloutctx{\Gamma}{#1}{#2}{#3}{\Gamma'}}
-\newcommand{\shortoutctx}[3]{#1 \mathcolor{blue}{\Leftarrow} #2 \mathcolor{red}{\Rightarrow} #3}
-
-% Valid context.
-\newcommand{\tyctx}[1]{#1\ \texttt{ctx}}
-
-% Valid type.
-\newcommand{\fulltype}[2]{#1 \vdash #2\ \texttt{type}}
-\newcommand{\type}[1]{\fulltype{\Gamma}{#1}}
 
 % Subtyping.
 \newcommand{\Top}{\top}
@@ -122,3 +90,44 @@
 \newcommand{\subtyping}[2]{#1 <: #2}
 \newcommand{\subtypinglub}[2]{#1 \sqcup #2}
 \newcommand{\subtypingglb}[2]{#1 \sqcap #2}
+
+% Contexts.
+
+% Typing contexts.
+\newcommand{\emptytypingctx}{\cdot}
+\NewDocumentCommand{\extend}{m m m o}{#1, #2 : #3 \IfValueTF{#4}{:= #4}{}}
+\newcommand{\extendtype}[2]{#1, #2}
+
+% Judgements.
+
+% Declarative typing.
+\NewDocumentCommand{\typing}{O{\Gamma} m m}{#1 \vdash #2 : #3}
+
+% Type checking (blue arrow pointing left).
+\RenewDocumentCommand{\check}{O{\Gamma} m m}{#1 \vdash #2 \mathcolor{blue}{\Leftarrow} #3}
+
+% Type inference (red arrow pointing right).
+\NewDocumentCommand{\infer}{O{\Gamma} m m}{#1 \vdash #2 \mathcolor{red}{\Rightarrow} #3}
+
+% Hinting.
+\NewDocumentCommand{\hinting}{O{\Gamma} m m m}{#1 \vdash #2 \mathcolor{blue}{\Leftarrow} #3 \mathcolor{red}{\Rightarrow} #4}
+
+% Hinting with output context.
+\NewDocumentCommand{\outctx}{O{\Gamma} m m m O{\Gamma'}}{#1 \vdash #2 \mathcolor{blue}{\Leftarrow} #3 \mathcolor{red}{\Rightarrow} #4 \dashv #5}
+\newcommand{\shortoutctx}[3]{#1 \mathcolor{blue}{\Leftarrow} #2 \mathcolor{red}{\Rightarrow} #3}
+
+% Computational equality.
+\NewDocumentCommand{\compeq}{O{\Gamma} m m m}{#1 \vdash #2 \equiv #3 : #4}
+
+% Valid context.
+\newcommand{\ctx}[1]{#1\ \texttt{ctx}}
+
+% Valid type.
+\NewDocumentCommand{\type}{O{\Gamma} m}{#1 \vdash #2\ \texttt{type}}
+
+% Inference rules.
+\newcommand{\rulename}[1]{\textsc{\footnotesize{#1}}}
+\newcommand{\infrule}[3][]{\displaystyle \frac{#2}{#3} \rulename{#1}}
+
+% Side conditions - this command semantically marks side conditions in inference rules, but otherwise does nothing.
+\newcommand{\sidecond}[1]{#1}

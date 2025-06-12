@@ -222,22 +222,22 @@ Intuitively, $\termorder{e_1}{e_2}$ holds when $e_2$ has more informative hints 
   \vspace{2em}
 
   $\infrule{}{\termorder{\unit}{\unit}}$ \quad
-  $\infrule{\termorder{e_1}{e_2}}{\termorder{\exfalso{e_1}}{\exfalso{e_2}}}$
+  $\infrule{\termorder{e_1}{e_2}}{\termorder{\emptyelim{e_1}}{\emptyelim{e_2}}}$
 \end{center}
 
 \end{frame}
 
-\begin{frame}{Hints for term constructors}
+%\begin{frame}{Hints for term constructors}
 
-\begin{center}
+%\begin{center}
   %$\hintfor{\fun{x}{e}} = \Fun{\Hole}{\Hole}$ \\
-  $\hintfor{\pair{e_1}{e_2}} = \Prod{\Hole}{\Hole}$ \\
+  %$\hintfor{\pair{e_1}{e_2}} = \Prod{\Hole}{\Hole}$ \\
   %$\hintfor{\inl{e}} = \Sum{\Hole}{\Hole}$ \\
   %$\hintfor{\inr{e}} = \Sum{\Hole}{\Hole}$ \\
-  $\hintfor{\unit} = \Unit$
-\end{center}
+  %$\hintfor{\unit} = \Unit$
+%\end{center}
 
-\end{frame}
+%\end{frame}
 
 \section{Declarative typing}
 
@@ -249,7 +249,7 @@ $e ::=$ \\
 \qquad $\fun{x}{e} \pipe \app{e_1}{e_2} \pipe$ \\
 \qquad $\pair{e_1}{e_2} \pipe \outl{e} \pipe \outr{e} \pipe$ \\
 \qquad $\inl{e} \pipe \inr{e} \pipe \case{e}{e_1}{e_2} \pipe$ \\
-\qquad $\unit \pipe \exfalso{e}$
+\qquad $\unit \pipe \emptyelim{e}$
 
 \vspace{2em}
 
@@ -258,7 +258,7 @@ Note: red color marks differences from Bidirectional STLC.
 \vspace{2em}
 
 Judgements: \\
-$\fullhinting{\Gamma}{e}{H}{A}$ -- in context $\Gamma$, term $e$ checks with hint $H$ and infers type $A$
+$\hinting[\Gamma]{e}{H}{A}$ -- in context $\Gamma$, term $e$ checks with hint $H$ and infers type $A$
 
 \end{frame}
 
@@ -287,7 +287,7 @@ $\fullhinting{\Gamma}{e}{H}{A}$ -- in context $\Gamma$, term $e$ checks with hin
 \begin{frame}{Algorithmic typing -- type-directed rules}
 
 \begin{center}
-  $\infrule{\fullhinting{\extend{\Gamma}{x}{A}}{e}{H}{B}}{\hinting{\fun{x}{e}}{\Fun{A}{H}}{\Fun{A}{B}}}$
+  $\infrule{\hinting[\extend{\Gamma}{x}{A}]{e}{H}{B}}{\hinting{\fun{x}{e}}{\Fun{A}{H}}{\Fun{A}{B}}}$
 
   \vspace{2em}
 
@@ -321,7 +321,7 @@ $\fullhinting{\Gamma}{e}{H}{A}$ -- in context $\Gamma$, term $e$ checks with hin
   \vspace{2em}
 
   $\infrule{\sidecond{\hintorder{H}{\Unit}}}{\hinting{\unit}{H}{\Unit}}$ \quad
-  $\infrule{\hinting{e}{\Empty}{\Empty}}{\hinting{\exfalso{e}}{A}{A}}$
+  $\infrule{\hinting{e}{\Empty}{\Empty}}{\hinting{\emptyelim{e}}{A}{A}}$
 \end{center}
 
 \end{frame}
@@ -358,18 +358,18 @@ We could have made some different choices.
 
 \begin{frame}{Metatheory -- basics}
 
-If $\fullhinting{\Gamma}{e}{H}{A}$ then:
+If $\hinting[\Gamma]{e}{H}{A}$ then:
 
 \begin{itemize}
-  \item (Soundness) $\fulltyping{\Gamma}{e}{A}$ (proof: induction)
+  \item (Soundness) $\typing[\Gamma]{e}{A}$ (proof: induction)
   \item (Compatibility) $\hintorder{H}{A}$ (proof: induction)
-  \item (Squeeze) If $\hintorder{H}{H'}$ and $\hintorder{H'}{A}$, then $\fullhinting{\Gamma}{e}{H'}{A}$ (proof: induction)
+  \item (Squeeze) If $\hintorder{H}{H'}$ and $\hintorder{H'}{A}$, then $\hinting[\Gamma]{e}{H'}{A}$ (proof: induction)
   \item (Determinism) If $\hinting{e}{H}{B}$, then $A = B$.
 \end{itemize}
 
 \vspace{2em}
 
-(Decidability) For $\Gamma, e, H$ it is decidable whether there exists $A$ such that $\fullhinting{\Gamma}{e}{H}{A}$ (proof: the rules are literally the algorithm)
+(Decidability) For $\Gamma, e, H$ it is decidable whether there exists $A$ such that $\hinting[\Gamma]{e}{H}{A}$ (proof: the rules are literally the algorithm)
 
 \end{frame}
 
@@ -382,7 +382,7 @@ If $\hinting{e}{H_1}{A}$ and $\hinting{e}{H_2}{A}$, then $\hinting{e}{\hintglb{H
 
 \begin{frame}{Metatheory -- minimality}
 
-(Minimality) There exists $\hintorder{H'}{H}$ such that $\fullhinting{\Gamma}{e}{H'}{A}$ and for all $\stricthintorder{H''}{H'}$ it is not the case that $\fullhinting{\Gamma}{e}{H''}{A}$ (proof: induction, the only hard case is $\rulename{Annot}$)
+(Minimality) There exists $\hintorder{H'}{H}$ such that $\hinting[\Gamma]{e}{H'}{A}$ and for all $\stricthintorder{H''}{H'}$ it is not the case that $\hinting[\Gamma]{e}{H''}{A}$ (proof: induction, the only hard case is $\rulename{Annot}$)
 
 \vspace{1em}
 
@@ -402,7 +402,7 @@ TODO
 
 \begin{frame}{Metatheory -- minimality v2}
 
-(Minimality v2) There exists $\hintorder{M}{H}$ such that $\fullhinting{\Gamma}{e}{M}{A}$ and for all $\hintorder{M'}{M}$ such that $\fullhinting{\Gamma}{e}{M'}{A}$ we have $M' = M$ (proof: TODO)
+(Minimality v2) There exists $\hintorder{M}{H}$ such that $\hinting[\Gamma]{e}{M}{A}$ and for all $\hintorder{M'}{M}$ such that $\hinting[\Gamma]{e}{M'}{A}$ we have $M' = M$ (proof: TODO)
 
 \vspace{1em}
 
@@ -410,13 +410,13 @@ TODO
 
 \begin{frame}{Metatheory 2}
 
-If $\fulltyping{\Gamma}{e}{A}$, then:
+If $\typing[\Gamma]{e}{A}$, then:
 
 \begin{itemize}
-  \item (Annotability, checking) There exists $e'$ such that $\termorder{e}{e'}$ and $\fullhinting{\Gamma}{e'}{A}{A}$ (proof: induction; annotations need to be put on eliminators, like in Dual Intrinsic STLC)
-  \item (Annotability, inference) There exists $e'$ such that $\termorder{e}{e'}$ and $\fullhinting{\Gamma}{e'}{\Hole}{A}$ (proof: induction; annotations need to be put on constructors, like in Intrinsic STLC)
-  \item (Minimal annotability) There exists $e'$ such that $\termorder{e}{e'}$ and $\fullhinting{\Gamma}{e'}{A}{A}$ and for all $e''$ such that $\termorder{e}{e''}$ and $\termorder{e''}{e'}$ it is not the case that $\fullhinting{\Gamma}{e''}{A}{A}$
-  \item There exist $\termorder{e}{e_1}$ and $\hintorder{H_1}{A}$ such that $\fullhinting{\Gamma}{e_1}{H_1}{A}$ and for all $\tripletermorder{e}{e_2}{e_1}$ and $\triplehintorder{H}{H'}{A}$ it is not the case that $\fullhinting{\Gamma}{e_2}{H_2}{A}$
+  \item (Annotability, checking) There exists $e'$ such that $\termorder{e}{e'}$ and $\hinting[\Gamma]{e'}{A}{A}$ (proof: induction; annotations need to be put on eliminators, like in Dual Intrinsic STLC)
+  \item (Annotability, inference) There exists $e'$ such that $\termorder{e}{e'}$ and $\hinting[\Gamma]{e'}{\Hole}{A}$ (proof: induction; annotations need to be put on constructors, like in Intrinsic STLC)
+  \item (Minimal annotability) There exists $e'$ such that $\termorder{e}{e'}$ and $\hinting[\Gamma]{e'}{A}{A}$ and for all $e''$ such that $\termorder{e}{e''}$ and $\termorder{e''}{e'}$ it is not the case that $\hinting[\Gamma]{e''}{A}{A}$
+  \item There exist $\termorder{e}{e_1}$ and $\hintorder{H_1}{A}$ such that $\hinting[\Gamma]{e_1}{H_1}{A}$ and for all $\tripletermorder{e}{e_2}{e_1}$ and $\triplehintorder{H}{H'}{A}$ it is not the case that $\hinting[\Gamma]{e_2}{H_2}{A}$
 \end{itemize}
 
 \end{frame}
@@ -479,7 +479,7 @@ Subsumption is a bit harder to prove, but it boils down to our squeeze theorem. 
 \begin{frame}{Embedding Bidirectional STLC -- checked rules}
 
 \begin{center}
-  $\infrule{\fullcheck{\extend{\Gamma}{x}{A}}{e}{B}}{\check{\fun{x}{e}}{\Fun{A}{B}}}$
+  $\infrule{\check[\extend{\Gamma}{x}{A}]{e}{B}}{\check{\fun{x}{e}}{\Fun{A}{B}}}$
 
   \vspace{2em}
 
@@ -493,7 +493,7 @@ Subsumption is a bit harder to prove, but it boils down to our squeeze theorem. 
   \vspace{2em}
 
   $\infrule{}{\check{\unit}{\Unit}}$ \quad
-  $\infrule{\check{e}{\Empty}}{\check{\exfalso{e}}{A}}$
+  $\infrule{\check{e}{\Empty}}{\check{\emptyelim{e}}{A}}$
 \end{center}
 
 \vspace{1em}
@@ -539,7 +539,7 @@ To prove rules which make use of inference mode, we need to use the squeeze theo
 
 \vspace{1em}
 
-The inferred rule for case also requires using the squeeze theorem, but this time we need to do it three times, once for each premise. As for the inferred rules for unit and pairs, they follow from the corresponding hint-based rules, but first we need to use the rule $\rulename{Hole}$ to adjust the hint.
+The inferred rule for case also requires using the squeeze theorem, but this time we need to do it three times, once for each premise. As for the inferred rules for unit and pairs, they follow from the corresponding hint-based rules.
 
 \end{frame}
 
@@ -548,10 +548,10 @@ The inferred rule for case also requires using the squeeze theorem, but this tim
 We can also embed Intrinsic STLC. First, we define the missing terms using partial annotations:
 
 \begin{itemize}
-  \item $\ifun{x}{A}{e} :\equiv \annot{\fun{x}{e}}{\Fun{A}{\Hole}}$ \\
-  \item $\iinl{B}{e} :\equiv \annot{\inl{e}}{\Sum{\Hole}{B}}$ \\
-  \item $\iinr{A}{e} :\equiv \annot{\inr{e}}{\Sum{A}{\Hole}}$ \\
-  \item $\iexfalso{A}{e} :\equiv \annot{\exfalso{e}}{A}$
+  \item $\fun{x}[A]{e} :\equiv \annot{\fun{x}{e}}{\Fun{A}{\Hole}}$ \\
+  \item $\inl[B]{e} :\equiv \annot{\inl{e}}{\Sum{\Hole}{B}}$ \\
+  \item $\inr[A]{e} :\equiv \annot{\inr{e}}{\Sum{A}{\Hole}}$ \\
+  \item $\emptyelim[A]{e} :\equiv \annot{\emptyelim{e}}{A}$
 \end{itemize}
 
 \vspace{2em}
@@ -563,21 +563,21 @@ Second, we will show that the typing rules are admissible in the hint-based syst
 \begin{frame}{Embedding Intrinsic STLC -- rules}
 
 \begin{center}
-  $\infrule{\fullinfer{\extend{\Gamma}{x}{A}}{e}{B}}{\infer{\ifun{x}{A}{e}}{\Fun{A}{B}}}$
+  $\infrule{\infer[\extend{\Gamma}{x}{A}]{e}{B}}{\infer{\fun{x}[A]{e}}{\Fun{A}{B}}}$
 
   \vspace{2em}
 
-  $\infrule{\infer{e}{A}}{\infer{\iinl{B}{e}}{\Sum{A}{B}}}$ \quad
-  $\infrule{\infer{e}{B}}{\infer{\iinr{A}{e}}{\Sum{A}{B}}}$
+  $\infrule{\infer{e}{A}}{\infer{\inl[B]{e}}{\Sum{A}{B}}}$ \quad
+  $\infrule{\infer{e}{B}}{\infer{\inr[A]{e}}{\Sum{A}{B}}}$
 
   \vspace{2em}
 
-  $\infrule{\infer{e}{\Empty}}{\infer{\iexfalso{A}{e}}{A}}$
+  $\infrule{\infer{e}{\Empty}}{\infer{\emptyelim[A]{e}}{A}}$
 \end{center}
 
 \vspace{2em}
 
-Rules for lambdas and sum constructors can be derived by first using the rule for annotations and then the corresponding hint-based rule. For $\exfalso{}$ we also need to use the squeeze theorem on the premise.
+Rules for lambdas and sum constructors can be derived by first using the rule for annotations and then the corresponding hint-based rule. For $\emptyelim{}$ we also need to use the squeeze theorem on the premise.
 
 \end{frame}
 
@@ -586,10 +586,10 @@ Rules for lambdas and sum constructors can be derived by first using the rule fo
 We can also embed Dual Intrinsic STLC. First, we define the missing terms using partial annotations:
 
 \begin{itemize}
-  \item $\iapp{A}{f}{a} :\equiv \app{\annot{f}{\Fun{A}{\Hole}}}{a}$
-  \item $\ioutl{B}{e} :\equiv \outl{\annot{e}{\Prod{\Hole}{B}}}$
-  \item $\ioutr{A}{e} :\equiv \outr{\annot{e}{\Prod{A}{\Hole}}}$
-  \item $\icase{A}{B}{e}{f}{g} :\equiv \case{\annot{e}{\Sum{A}{B}}}{f}{g}$
+  \item $\app[A]{f}{a} :\equiv \app{\annot{f}{\Fun{A}{\Hole}}}{a}$
+  \item $\outl[B]{e} :\equiv \outl{\annot{e}{\Prod{\Hole}{B}}}$
+  \item $\outr[A]{e} :\equiv \outr{\annot{e}{\Prod{A}{\Hole}}}$
+  \item $\caseannot{A}{B}{e}{f}{g} :\equiv \case{\annot{e}{\Sum{A}{B}}}{f}{g}$
 \end{itemize}
 
 \vspace{2em}
@@ -601,16 +601,16 @@ Second, we will show that the typing rules are admissible in the hint-based syst
 \begin{frame}{Embedding Dual Intrinsic STLC -- rules}
 
 \begin{center}
-  $\infrule{\check{f}{\Fun{A}{B}} \quad \check{a}{A}}{\check{\iapp{A}{f}{a}}{B}}$
+  $\infrule{\check{f}{\Fun{A}{B}} \quad \check{a}{A}}{\check{\app[A]{f}{a}}{B}}$
 
   \vspace{2em}
 
-  $\infrule{\check{e}{\Prod{A}{B}}}{\check{\ioutl{B}{e}}{A}}$ \enspace
-  $\infrule{\check{e}{\Prod{A}{B}}}{\check{\ioutr{A}{e}}{B}}$
+  $\infrule{\check{e}{\Prod{A}{B}}}{\check{\outl[B]{e}}{A}}$ \enspace
+  $\infrule{\check{e}{\Prod{A}{B}}}{\check{\outr[A]{e}}{B}}$
 
   \vspace{2em}
 
-  $\infrule{\check{e}{\Sum{A}{B}} \quad \check{f}{\Fun{A}{C}} \quad \check{g}{\Fun{B}{C}}}{\check{\icase{A}{B}{e}{f}{g}}{C}}$
+  $\infrule{\check{e}{\Sum{A}{B}} \quad \check{f}{\Fun{A}{C}} \quad \check{g}{\Fun{B}{C}}}{\check{\caseannot{A}{B}{e}{f}{g}}{C}}$
 \end{center}
 
 \vspace{2em}

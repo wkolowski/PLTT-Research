@@ -7,7 +7,6 @@
 \usetheme{Darmstadt}
 
 \title{Hint-based typing for polymorphism}
-\author{Wojciech Kołowski}
 \date{}
 
 \begin{document}
@@ -36,15 +35,15 @@ $\typing{e}{A}$, $\type{A}$
 \begin{frame}{Valid context judgement}
 
 \begin{center}
-  $\infrule[Ctx-Empty]{}{\tyctx{\emptytypingctx}}$
+  $\infrule[Ctx-Empty]{}{\ctx{\emptytypingctx}}$
 
   \vspace{2em}
 
-  $\infrule[Ctx-Extend]{\tyctx{\Gamma} \quad \sidecond{x \notin \Gamma} \quad \type{A}}{\tyctx{\extend{\Gamma}{x}{A}}}$
+  $\infrule[Ctx-Extend]{\ctx{\Gamma} \quad \sidecond{x \notin \Gamma} \quad \type{A}}{\ctx{\extend{\Gamma}{x}{A}}}$
 
   \vspace{2em}
 
-  $\infrule[Ctx-ExtendType]{\tyctx{\Gamma} \quad \sidecond{\alpha \notin \Gamma}}{\tyctx{\extendtype{\Gamma}{\alpha}}}$
+  $\infrule[Ctx-ExtendType]{\ctx{\Gamma} \quad \sidecond{\alpha \notin \Gamma}}{\ctx{\extendtype{\Gamma}{\alpha}}}$
 \end{center}
 
 \end{frame}
@@ -52,11 +51,11 @@ $\typing{e}{A}$, $\type{A}$
 \begin{frame}{Valid type judgement}
 
 \begin{center}
-  $\infrule[TyVar]{\tyctx{\Gamma} \quad \sidecond{\alpha \in \Gamma}}{\type{\alpha}}$
+  $\infrule[TyVar]{\ctx{\Gamma} \quad \sidecond{\alpha \in \Gamma}}{\type{\alpha}}$
 
   \vspace{2em}
 
-  $\infrule[All]{\fulltype{\extendtype{\Gamma}{\alpha}}{A}}{\type{\ForallT{\alpha}{A}}}$
+  $\infrule[All]{\type[\extendtype{\Gamma}{\alpha}]{A}}{\type{\ForallT{\alpha}{A}}}$
 
   \vspace{2em}
 
@@ -68,8 +67,8 @@ $\typing{e}{A}$, $\type{A}$
 \begin{frame}{Sanity checks}
 
 \begin{itemize}
-  \item If $\type{A}$, then $\tyctx{\Gamma}$
-  \item If $\tyctx{\Gamma}$ and $(x : A) \in \Gamma$, then $\type{A}$
+  \item If $\type{A}$, then $\ctx{\Gamma}$
+  \item If $\ctx{\Gamma}$ and $(x : A) \in \Gamma$, then $\type{A}$
   \item We will set up the system so that if $\typing{e}{A}$, then $\type{A}$
 \end{itemize}
 
@@ -82,7 +81,7 @@ $\typing{e}{A}$, $\type{A}$
 Terms: \\
 $e ::=$ \\
 \qquad $x \pipe $ \\
-\qquad $\ifun{x}{A}{e} \pipe \app{e_1}{e_2} \pipe$ \\
+\qquad $\fun{x}[A]{e} \pipe \app{e_1}{e_2} \pipe$ \\
 \qquad $\tfun{\alpha}{e} \pipe \tapp{e}{A}$
 
 \end{frame}
@@ -90,16 +89,16 @@ $e ::=$ \\
 \begin{frame}{Declarative typing}
 
 \begin{center}
-  $\infrule[Var]{\tyctx{\Gamma} \quad \sidecond{(x : A) \in \Gamma}}{\typing{x}{A}}$
+  $\infrule[Var]{\ctx{\Gamma} \quad \sidecond{(x : A) \in \Gamma}}{\typing{x}{A}}$
 
   \vspace{2em}
 
-  $\infrule{\fulltyping{\extend{\Gamma}{x}{A}}{e}{B}}{\typing{\ifun{x}{A}{e}}{\Fun{A}{B}}}$ \quad
+  $\infrule{\typing[\extend{\Gamma}{x}{A}]{e}{B}}{\typing{\fun{x}[A]{e}}{\Fun{A}{B}}}$ \quad
   $\infrule{\typing{f}{\Fun{A}{B}} \quad \typing{a}{A}}{\typing{\app{f}{a}}{B}}$
 
   \vspace{2em}
 
-  $\infrule{\fulltyping{\extendtype{\Gamma}{\alpha}}{e}{A}}{\typing{\tfun{\alpha}{e}}{\ForallT{\alpha}{A}}}$
+  $\infrule{\typing[\extendtype{\Gamma}{\alpha}]{e}{A}}{\typing{\tfun{\alpha}{e}}{\ForallT{\alpha}{A}}}$
 
   \vspace{2em}
 
@@ -111,16 +110,16 @@ $e ::=$ \\
 \begin{frame}{Algorithmic typing}
 
 \begin{center}
-  $\infrule[Var]{\tyctx{\Gamma} \quad \sidecond{(x : A) \in \Gamma}}{\infer{x}{A}}$
+  $\infrule[Var]{\ctx{\Gamma} \quad \sidecond{(x : A) \in \Gamma}}{\infer{x}{A}}$
 
   \vspace{2em}
 
-  $\infrule{\fullinfer{\extend{\Gamma}{x}{A}}{e}{B}}{\infer{\ifun{x}{A}{e}}{\Fun{A}{B}}}$ \quad
+  $\infrule{\infer[\extend{\Gamma}{x}{A}]{e}{B}}{\infer{\fun{x}[A]{e}}{\Fun{A}{B}}}$ \quad
   $\infrule{\infer{f}{\Fun{A}{B}} \quad \infer{a}{A}}{\infer{\app{f}{a}}{B}}$
 
   \vspace{2em}
 
-  $\infrule{\fullinfer{\extendtype{\Gamma}{\alpha}}{e}{A}}{\infer{\tfun{\alpha}{e}}{\ForallT{\alpha}{A}}}$
+  $\infrule{\infer[\extendtype{\Gamma}{\alpha}]{e}{A}}{\infer{\tfun{\alpha}{e}}{\ForallT{\alpha}{A}}}$
 
   \vspace{2em}
 
@@ -136,7 +135,7 @@ $e ::=$ \\
 Terms: \\
 $e ::=$ \\
 \qquad $x \pipe $ \\
-\qquad $\fun{x}{e} \pipe \iapp{A}{e_1}{e_2} \pipe$ \\
+\qquad $\fun{x}{e} \pipe \app[A]{e_1}{e_2} \pipe$ \\
 \qquad $\tapp{e}{A}$
 
 \end{frame}
@@ -144,16 +143,16 @@ $e ::=$ \\
 \begin{frame}{Declarative typing}
 
 \begin{center}
-  $\infrule[Var]{\tyctx{\Gamma} \quad \sidecond{(x : A) \in \Gamma}}{\typing{x}{A}}$
+  $\infrule[Var]{\ctx{\Gamma} \quad \sidecond{(x : A) \in \Gamma}}{\typing{x}{A}}$
 
   \vspace{2em}
 
-  $\infrule{\fulltyping{\extend{\Gamma}{x}{A}}{e}{B}}{\typing{\fun{x}{e}}{\Fun{A}{B}}}$ \quad
-  $\infrule{\typing{f}{\Fun{A}{B}} \quad \typing{a}{A}}{\typing{\iapp{A}{f}{a}}{B}}$
+  $\infrule{\typing[\extend{\Gamma}{x}{A}]{e}{B}}{\typing{\fun{x}{e}}{\Fun{A}{B}}}$ \quad
+  $\infrule{\typing{f}{\Fun{A}{B}} \quad \typing{a}{A}}{\typing{\app[A]{f}{a}}{B}}$
 
   \vspace{2em}
 
-  $\infrule{\fulltyping{\extendtype{\Gamma}{\alpha}}{e}{A}}{\typing{e}{\ForallT{\alpha}{A}}}$
+  $\infrule{\typing[\extendtype{\Gamma}{\alpha}]{e}{A}}{\typing{e}{\ForallT{\alpha}{A}}}$
 
   \vspace{2em}
 
@@ -165,16 +164,16 @@ $e ::=$ \\
 \begin{frame}{Algorithmic typing}
 
 \begin{center}
-  $\infrule[Var]{\tyctx{\Gamma} \quad \sidecond{(x : A) \in \Gamma}}{\check{x}{A}}$
+  $\infrule[Var]{\ctx{\Gamma} \quad \sidecond{(x : A) \in \Gamma}}{\check{x}{A}}$
 
   \vspace{2em}
 
-  $\infrule{\fullcheck{\extend{\Gamma}{x}{A}}{e}{B}}{\check{\fun{x}{e}}{\Fun{A}{B}}}$ \quad
-  $\infrule{\check{f}{\Fun{A}{B}} \quad \check{a}{A}}{\check{\iapp{A}{f}{a}}{B}}$
+  $\infrule{\check[\extend{\Gamma}{x}{A}]{e}{B}}{\check{\fun{x}{e}}{\Fun{A}{B}}}$ \quad
+  $\infrule{\check{f}{\Fun{A}{B}} \quad \check{a}{A}}{\check{\app[A]{f}{a}}{B}}$
 
   \vspace{2em}
 
-  $\infrule{\fullcheck{\extendtype{\Gamma}{\alpha}}{e}{A}}{\check{e}{\ForallT{\alpha}{A}}}$
+  $\infrule{\check[\extendtype{\Gamma}{\alpha}]{e}{A}}{\check{e}{\ForallT{\alpha}{A}}}$
 
   \vspace{2em}
 
@@ -197,16 +196,16 @@ $e ::=$ \\
 \begin{frame}{Declarative typing}
 
 \begin{center}
-  $\infrule[Var]{\tyctx{\Gamma} \quad \sidecond{(x : A) \in \Gamma}}{\typing{x}{A}}$
+  $\infrule[Var]{\ctx{\Gamma} \quad \sidecond{(x : A) \in \Gamma}}{\typing{x}{A}}$
 
   \vspace{2em}
 
-  $\infrule{\fulltyping{\extend{\Gamma}{x}{A}}{e}{B}}{\typing{\fun{x}{e}}{\Fun{A}{B}}}$ \quad
+  $\infrule{\typing[\extend{\Gamma}{x}{A}]{e}{B}}{\typing{\fun{x}{e}}{\Fun{A}{B}}}$ \quad
   $\infrule{\typing{f}{\Fun{A}{B}} \quad \typing{a}{A}}{\typing{\app{f}{a}}{B}}$
 
   \vspace{2em}
 
-  $\infrule{\fulltyping{\extendtype{\Gamma}{\alpha}}{e}{A}}{\typing{e}{\ForallT{\alpha}{A}}}$
+  $\infrule{\typing[\extendtype{\Gamma}{\alpha}]{e}{A}}{\typing{e}{\ForallT{\alpha}{A}}}$
 
   \vspace{2em}
 
@@ -217,8 +216,7 @@ $e ::=$ \\
 
 \section{System F with Hints}
 
-\newcommand{\fullvalidhint}[2]{#1 \vdash #2\ \texttt{hint}}
-\newcommand{\validhint}[1]{\fullvalidhint{\Gamma}{#1}}
+\NewDocumentCommand{\validhint}{O{\Gamma} m}{#1 \vdash #2\ \texttt{hint}}
 
 \begin{frame}{Hints}
 
@@ -230,15 +228,15 @@ $H ::= \Hole \pipe \Fun{H_1}{H_2} \pipe \ForallT{\alpha}{H} \pipe \alpha$
 \begin{frame}{Valid hint judgement}
 
 \begin{center}
-  $\infrule[Hint-Hole]{\tyctx{\Gamma}}{\validhint{\Hole}}$
+  $\infrule[Hint-Hole]{\ctx{\Gamma}}{\validhint{\Hole}}$
 
   \vspace{2em}
 
-  $\infrule[Hint-TyVar]{\tyctx{\Gamma} \quad \sidecond{\alpha \in \Gamma}}{\validhint{\alpha}}$
+  $\infrule[Hint-TyVar]{\ctx{\Gamma} \quad \sidecond{\alpha \in \Gamma}}{\validhint{\alpha}}$
 
   \vspace{2em}
 
-  $\infrule[Hint-All]{\fullvalidhint{\extendtype{\Gamma}{\alpha}}{H}}{\validhint{\ForallT{\alpha}{H}}}$
+  $\infrule[Hint-All]{\validhint[\extendtype{\Gamma}{\alpha}]{H}}{\validhint{\ForallT{\alpha}{H}}}$
 
   \vspace{2em}
 
@@ -247,8 +245,7 @@ $H ::= \Hole \pipe \Fun{H_1}{H_2} \pipe \ForallT{\alpha}{H} \pipe \alpha$
 
 \end{frame}
 
-\newcommand{\fullhintorderinctx}[3]{#1 \vdash \hintorder{#2}{#3}}
-\newcommand{\hintorderinctx}[2]{\fullhintorderinctx{\Gamma}{#1}{#2}}
+\NewDocumentCommand{\hintorderinctx}{O{\Gamma} m m}{#1 \vdash \hintorder{#2}{#3}}
 
 \begin{frame}{Order on hints}
 
@@ -257,11 +254,11 @@ $H ::= \Hole \pipe \Fun{H_1}{H_2} \pipe \ForallT{\alpha}{H} \pipe \alpha$
 
   \vspace{2em}
 
-  $\infrule{\tyctx{\Gamma}}{\hintorderinctx{\alpha}{\alpha}}$
+  $\infrule{\ctx{\Gamma}}{\hintorderinctx{\alpha}{\alpha}}$
 
   \vspace{2em}
 
-  $\infrule{\fullhintorderinctx{\extendtype{\Gamma}{\alpha}}{H_1}{H_2}}{\hintorderinctx{\ForallT{\alpha}{H_1}}{\ForallT{\alpha}{H_2}}}$
+  $\infrule{\hintorderinctx[\extendtype{\Gamma}{\alpha}]{H_1}{H_2}}{\hintorderinctx{\ForallT{\alpha}{H_1}}{\ForallT{\alpha}{H_2}}}$
 
   \vspace{2em}
 
@@ -283,14 +280,6 @@ $H ::= \Hole \pipe \Fun{H_1}{H_2} \pipe \ForallT{\alpha}{H} \pipe \alpha$
 
 \end{frame}
 
-\begin{frame}{Hints for term constructors}
-
-\begin{center}
-  $\hintfor{\fun{x}{e}} = \Fun{\Hole}{\Hole}$ \\
-\end{center}
-
-\end{frame}
-
 \begin{frame}{Terms}
 
 Terms: \\
@@ -303,7 +292,7 @@ $e ::=$ \\
 \begin{frame}{Declarative typing}
 
 \begin{center}
-  $\infrule[Var]{\tyctx{\Gamma} \quad \sidecond{(x : A) \in \Gamma}}{\typing{x}{A}}$
+  $\infrule[Var]{\ctx{\Gamma} \quad \sidecond{(x : A) \in \Gamma}}{\typing{x}{A}}$
 
   \vspace{2em}
 
@@ -311,12 +300,12 @@ $e ::=$ \\
 
   \vspace{2em}
 
-  $\infrule{\fulltyping{\extend{\Gamma}{x}{A}}{e}{B}}{\typing{\fun{x}{e}}{\Fun{A}{B}}}$ \quad
+  $\infrule{\typing[\extend{\Gamma}{x}{A}]{e}{B}}{\typing{\fun{x}{e}}{\Fun{A}{B}}}$ \quad
   $\infrule{\typing{f}{\Fun{A}{B}} \quad \typing{a}{A}}{\typing{\app{f}{a}}{B}}$
 
   \vspace{2em}
 
-  $\infrule{\fulltyping{\extendtype{\Gamma}{\alpha}}{e}{A}}{\typing{e}{\ForallT{\alpha}{A}}}$
+  $\infrule{\typing[\extendtype{\Gamma}{\alpha}]{e}{A}}{\typing{e}{\ForallT{\alpha}{A}}}$
 
   \vspace{2em}
 
@@ -328,15 +317,11 @@ $e ::=$ \\
 \begin{frame}{Algorithmic typing -- basic rules}
 
 \begin{center}
-  $\infrule[Var]{\tyctx{\Gamma} \quad \sidecond{(x : A) \in \Gamma} \quad \sidecond{\hintorderinctx{H}{A}}}{\hinting{x}{H}{A}}$
+  $\infrule[Var]{\sidecond{(x : A) \in \Gamma} \quad \sidecond{\hintorderinctx{H}{A}}}{\hinting{x}{H}{A}}$
 
   \vspace{2em}
 
   $\infrule[Annot]{\hinting{e}{\hintlub{H_1}{H_2}}{A}}{\hinting{\annot{e}{H_1}}{H_2}{A}}$
-
-  \vspace{2em}
-
-  $\infrule[Hole]{\hinting{e}{\hintfor{e}}{A} \quad \sidecond{e\ \texttt{constructor}}}{\hinting{e}{\Hole}{A}}$
 \end{center}
 
 \end{frame}
@@ -344,7 +329,7 @@ $e ::=$ \\
 \begin{frame}{Algorithmic typing -- other rules}
 
 \begin{center}
-  $\infrule{\fullhinting{\extend{\Gamma}{x}{A}}{e}{H}{B}}{\hinting{\fun{x}{e}}{\Fun{A}{H}}{\Fun{A}{B}}}$
+  $\infrule{\hinting[\extend{\Gamma}{x}{A}]{e}{H}{B}}{\hinting{\fun{x}{e}}{\Fun{A}{H}}{\Fun{A}{B}}}$
 
   \vspace{2em}
 
@@ -352,7 +337,7 @@ $e ::=$ \\
 
   \vspace{2em}
 
-  $\infrule{\fullhinting{\extendtype{\Gamma}{\alpha}}{e}{H}{A}}{\hinting{e}{\ForallT{\alpha}{H}}{\ForallT{\alpha}{A}}}$
+  $\infrule{\hinting[\extendtype{\Gamma}{\alpha}]{e}{H}{A}}{\hinting{e}{\ForallT{\alpha}{H}}{\ForallT{\alpha}{A}}}$
 \end{center}
 
 \end{frame}
@@ -360,11 +345,15 @@ $e ::=$ \\
 \begin{frame}{Embedding}
 
 \begin{itemize}
-  \item $\ifun{x}{A}{e} :\equiv \annot{\fun{x}{e}}{\Fun{A}{\Hole}}$ \\
-  \item $\iapp{A}{f}{a} :\equiv \app{\annot{f}{\Fun{A}{\Hole}}}{a}$
+  \item $\fun{x}[A]{e} :\equiv \annot{\fun{x}{e}}{\Fun{A}{\Hole}}$ \\
+  \item $\app[A]{f}{a} :\equiv \app{\annot{f}{\Fun{A}{\Hole}}}{a}$
   \item $\tfun{\alpha}{e} :\equiv \annot{e}{\ForallT{\alpha}{\Hole}}$
-  \item $\tapp{e}{A} :\equiv \qquad ???$
+  \item $\tapp{e}{A} :\equiv\ ???$
 \end{itemize}
+
+\vspace{2em}
+
+As we can see, we can think of type abstraction as just another kind of annotation, but type application doesn't admit such thinking.
 
 \end{frame}
 
